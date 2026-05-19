@@ -1,0 +1,147 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&display=swap');
+
+:root {
+  --purple-primary: #7c3aed;
+  --purple-soft: #a78bfa;
+  --purple-glow: rgba(124, 58, 237, 0.35);
+  --bg-deep: #0c0718;
+  --bg-mid: #130d2a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg-deep);
+  color: #f0edf8;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, .syne {
+  font-family: 'Syne', sans-serif;
+}
+
+/* ── Liquid Glass Button ── */
+.liquid-glass-btn {
+  background: rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow:
+    0 4px 24px rgba(124, 58, 237, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.08);
+  transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.liquid-glass-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(167, 139, 250, 0.5);
+  box-shadow:
+    0 8px 40px rgba(124, 58, 237, 0.30),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+}
+
+/* ── Glass Card ── */
+.glass-card {
+  background: rgba(255, 255, 255, 0.055);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 8px 32px rgba(124, 58, 237, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* ── Navbar Glass ── */
+.navbar-glass {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(30px) saturate(200%);
+  -webkit-backdrop-filter: blur(30px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 4px 30px rgba(124, 58, 237, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+/* ── Text Roll Animation ── */
+.text-roll-wrap {
+  overflow: hidden;
+  height: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.text-roll-inner {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.group:hover .text-roll-inner {
+  transform: translateY(-50%);
+}
+
+/* ── Animated gradient background ── */
+@keyframes aurora {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.aurora-bg {
+  background: linear-gradient(-45deg, #0c0718, #1a0a35, #0d1530, #150826, #0c0718);
+  background-size: 400% 400%;
+  animation: aurora 18s ease infinite;
+}
+
+@keyframes float-orb {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50%       { transform: translateY(-30px) scale(1.05); }
+}
+
+.orb-1 { animation: float-orb 9s ease-in-out infinite; }
+.orb-2 { animation: float-orb 13s ease-in-out infinite reverse; }
+.orb-3 { animation: float-orb 17s ease-in-out infinite 2s; }
+
+@keyframes shimmer {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(200%); }
+}
+
+.shimmer-line {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%);
+  animation: shimmer 3.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ── Scroll fade-in ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-up {
+  animation: fadeUp 0.7s cubic-bezier(0.25, 0.1, 0.25, 1) both;
+}
+
+.fade-up-delay-1 { animation-delay: 0.1s; }
+.fade-up-delay-2 { animation-delay: 0.22s; }
+.fade-up-delay-3 { animation-delay: 0.36s; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #0c0718; }
+::-webkit-scrollbar-thumb { background: rgba(124, 58, 237, 0.45); border-radius: 3px; }
+
+html { scroll-behavior: smooth; }
