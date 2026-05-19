@@ -133,7 +133,7 @@ function CustomCursor() {
         <motion.div
           animate={{ scale: isHover ? 0 : 1 }}
           transition={{ duration: 0.15 }}
-          className="w-[6px] h-[6px] rounded-full bg-violet-300"
+          className="w-[6px] h-[6px] rounded-full bg-[#0A84FF]"
         />
       </motion.div>
       {/* Ring — lagging */}
@@ -145,7 +145,7 @@ function CustomCursor() {
           animate={{
             width: isHover ? 44 : 28,
             height: isHover ? 44 : 28,
-            borderColor: isHover ? 'rgba(167,139,250,0.55)' : 'rgba(255,255,255,0.2)',
+            borderColor: isHover ? 'rgba(10,132,255,0.6)' : 'rgba(255,255,255,0.2)',
           }}
           transition={{ duration: 0.2 }}
           className="rounded-full border"
@@ -330,7 +330,7 @@ function GlassButton({
               <span>{children}</span>
             </span>
           </span>
-          <span className="w-7 h-7 rounded-full bg-violet-600/50 border border-violet-400/40 flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-rotate-45 flex-shrink-0 backdrop-blur-sm">
+          <span className="w-7 h-7 rounded-full bg-[#0A84FF]/30 border border-[#0A84FF]/30 flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-rotate-45 flex-shrink-0 backdrop-blur-sm">
             <ArrowRight size={13} className="text-white/90" />
           </span>
         </>
@@ -360,7 +360,7 @@ function GlassButton({
 function SectionBadge({ num, label }: { num: string; label: string }) {
   return (
     <div className="flex items-center gap-3 mb-6 sm:mb-8 px-5 sm:px-8 lg:px-12">
-      <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-violet-600/70 backdrop-blur-sm border border-violet-400/30 text-white text-[11px] font-semibold flex items-center justify-center flex-shrink-0">
+      <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#0A84FF]/60 border border-[#0A84FF]/30 text-white text-[11px] font-semibold flex items-center justify-center flex-shrink-0">
         {num}
       </span>
       <span className="text-[12px] sm:text-[13px] font-medium border border-white/12 rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-white/60 glass-card">
@@ -390,13 +390,13 @@ function SharedNavbar() {
 
   return (
     <>
-      <nav className="sticky top-0 z-40 px-4 sm:px-6 py-3 bg-[#0c0718]/90 backdrop-blur-md border-b border-white/5">
+      <nav className="sticky top-0 z-40 px-4 sm:px-6 py-3 bg-[#050508]/90 backdrop-blur-md border-b border-white/5">
         <div className="max-w-[1440px] mx-auto flex items-center justify-between">
           <div className="flex items-center gap-5">
             <Link to="/" className="flex items-center">
               <div
-                className="w-9 h-9 rounded-full bg-violet-600 border border-violet-400/40 flex items-center justify-center"
-                style={{ boxShadow: '0 0 18px rgba(124,58,237,0.5)' }}
+                className="w-9 h-9 rounded-full bg-[#0A84FF] border border-[#0A84FF]/40 flex items-center justify-center"
+                style={{ boxShadow: '0 0 18px rgba(10,132,255,0.5)' }}
               >
                 <span className="text-white text-[11px] font-bold tracking-tight syne">MP</span>
               </div>
@@ -426,7 +426,7 @@ function SharedNavbar() {
             {isAuth ? (
               <button
                 onClick={logout}
-                className="flex items-center gap-1.5 text-[12px] text-violet-300/60 hover:text-violet-300 transition-colors duration-200"
+                className="flex items-center gap-1.5 text-[12px] text-[#5AC8FA]/60 hover:text-[#5AC8FA] transition-colors duration-200"
               >
                 <LogOut size={13} />
                 Sign out
@@ -434,7 +434,7 @@ function SharedNavbar() {
             ) : (
               <Link
                 to="/login"
-                className="flex items-center gap-1.5 text-[12px] text-violet-300/60 hover:text-violet-300 transition-colors duration-200"
+                className="flex items-center gap-1.5 text-[12px] text-[#5AC8FA]/60 hover:text-[#5AC8FA] transition-colors duration-200"
               >
                 <Lock size={12} />
                 Private
@@ -491,7 +491,7 @@ function SharedNavbar() {
           {isAuth ? (
             <button
               onClick={() => { logout(); setOpen(false) }}
-              className="flex items-center gap-2 text-[13px] text-violet-300/60"
+              className="flex items-center gap-2 text-[13px] text-[#5AC8FA]/60"
             >
               <LogOut size={13} /> Sign out
             </button>
@@ -499,7 +499,7 @@ function SharedNavbar() {
             <Link
               to="/login"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2 text-[13px] text-violet-300/60"
+              className="flex items-center gap-2 text-[13px] text-[#5AC8FA]/60"
             >
               <Lock size={13} /> Private access
             </Link>
@@ -608,7 +608,7 @@ function ProjectCard({ project, index, total }: { project: ProjectData; index: n
     <div ref={containerRef} className="h-[60vh]">
       <motion.div
         style={{ scale, position: 'sticky', top: 80 + index * 24, transformOrigin: 'top center' }}
-        className="w-full rounded-[24px] sm:rounded-[32px] border border-white/8 bg-[#0d0b1e] p-4 sm:p-5 glass-card"
+        className="w-full rounded-[24px] sm:rounded-[32px] border border-white/8 bg-[#0c0c18] p-4 sm:p-5 glass-card"
       >
         {/* Top row */}
         <div className="flex items-center justify-between mb-4">
@@ -620,7 +620,7 @@ function ProjectCard({ project, index, total }: { project: ProjectData; index: n
               {project.num}
             </span>
             <div>
-              <p className="text-[10px] text-violet-300/50 tracking-widest uppercase mb-0.5">
+              <p className="text-[10px] text-[#5AC8FA]/50 tracking-widest uppercase mb-0.5">
                 {project.category}
               </p>
               <p className="syne font-semibold text-white leading-tight" style={{ fontSize: 'clamp(0.95rem, 2vw, 1.45rem)' }}>
@@ -656,7 +656,7 @@ function ProjectCard({ project, index, total }: { project: ProjectData; index: n
               <p className="text-[12px] leading-relaxed text-white/40 mb-2 line-clamp-2">{project.desc}</p>
               <div className="flex flex-wrap gap-1.5">
                 {project.tags.map((t) => (
-                  <span key={t} className="text-[10px] px-2.5 py-0.5 rounded-full glass-card text-violet-300/60">{t}</span>
+                  <span key={t} className="text-[10px] px-2.5 py-0.5 rounded-full glass-card text-[#5AC8FA]/60">{t}</span>
                 ))}
               </div>
             </div>
@@ -668,7 +668,7 @@ function ProjectCard({ project, index, total }: { project: ProjectData; index: n
           <p className="text-[11px] leading-relaxed text-white/40 mb-2 line-clamp-2">{project.desc}</p>
           <div className="flex flex-wrap gap-1.5">
             {project.tags.map((t) => (
-              <span key={t} className="text-[10px] px-2 py-0.5 rounded-full glass-card text-violet-300/60">{t}</span>
+              <span key={t} className="text-[10px] px-2 py-0.5 rounded-full glass-card text-[#5AC8FA]/60">{t}</span>
             ))}
           </div>
         </div>
@@ -712,9 +712,9 @@ function TechMarquee() {
   }
 
   return (
-    <section ref={sectionRef} className="bg-[#0c0718] pt-16 pb-8 overflow-hidden">
+    <section ref={sectionRef} className="bg-[#050508] pt-16 pb-8 overflow-hidden">
       <FadeIn y={16} delay={0}>
-        <p className="text-[11px] text-violet-300/35 font-medium tracking-widest uppercase text-center mb-7">
+        <p className="text-[11px] text-[#5AC8FA]/35 font-medium tracking-widest uppercase text-center mb-7">
           Technologies I work with
         </p>
       </FadeIn>
@@ -754,17 +754,17 @@ function HomePage() {
         <div
           className="absolute inset-0 pointer-events-none z-10 transition-all duration-75"
           style={{
-            background: `radial-gradient(480px circle at ${spotlight.x} ${spotlight.y}, rgba(139,92,246,0.11) 0%, transparent 65%)`,
+            background: `radial-gradient(480px circle at ${spotlight.x} ${spotlight.y}, rgba(10,132,255,0.12) 0%, transparent 65%)`,
           }}
         />
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="orb-1 absolute top-[12%] left-[8%] w-[500px] h-[500px] rounded-full bg-violet-700/20 blur-[110px]" />
-          <div className="orb-2 absolute top-[45%] right-[3%] w-[420px] h-[420px] rounded-full bg-purple-500/14 blur-[95px]" />
-          <div className="orb-3 absolute bottom-[8%] left-[38%] w-[360px] h-[360px] rounded-full bg-indigo-600/14 blur-[85px]" />
+          <div className="orb-1 absolute top-[12%] left-[8%] w-[500px] h-[500px] rounded-full bg-[#0A84FF]/15 blur-[110px]" />
+          <div className="orb-2 absolute top-[45%] right-[3%] w-[420px] h-[420px] rounded-full bg-[#5856D6]/12 blur-[95px]" />
+          <div className="orb-3 absolute bottom-[8%] left-[38%] w-[360px] h-[360px] rounded-full bg-[#5AC8FA]/08 blur-[85px]" />
           <div
-            className="absolute inset-0 opacity-[0.035]"
+            className="absolute inset-0 opacity-[0.025]"
             style={{
-              backgroundImage: 'linear-gradient(rgba(167,139,250,1) 1px, transparent 1px), linear-gradient(90deg, rgba(167,139,250,1) 1px, transparent 1px)',
+              backgroundImage: 'linear-gradient(rgba(10,132,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(10,132,255,0.6) 1px, transparent 1px)',
               backgroundSize: '80px 80px',
             }}
           />
@@ -776,8 +776,8 @@ function HomePage() {
               <div className="navbar-glass rounded-full px-2 py-1.5 flex items-center justify-between">
                 <div className="flex items-center gap-5">
                   <div
-                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-violet-600 border border-violet-400/40 flex items-center justify-center flex-shrink-0"
-                    style={{ boxShadow: '0 0 20px rgba(124,58,237,0.55)' }}
+                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#0A84FF] border border-[#0A84FF]/40 flex items-center justify-center flex-shrink-0"
+                    style={{ boxShadow: '0 0 20px rgba(10,132,255,0.55)' }}
                   >
                     <span className="text-white text-[11px] font-bold tracking-tight syne">MP</span>
                   </div>
@@ -795,7 +795,7 @@ function HomePage() {
                     <Clock size={13} />{time} Bern
                   </span>
                   {isAuth ? (
-                    <Link to="/about" className="flex items-center gap-1.5 text-[12px] text-violet-300 liquid-glass-btn rounded-full px-4 py-2">
+                    <Link to="/about" className="flex items-center gap-1.5 text-[12px] text-[#5AC8FA] liquid-glass-btn rounded-full px-4 py-2">
                       <Lock size={11} /> Private view
                     </Link>
                   ) : (
@@ -812,7 +812,7 @@ function HomePage() {
 
         <div className="relative z-20 flex-1 flex flex-col justify-end max-w-[1440px] mx-auto w-full px-5 sm:px-8 lg:px-12 pb-14 sm:pb-16 lg:pb-20">
           <FadeIn delay={0.05} y={20}>
-            <p className="text-[13px] sm:text-[14px] text-violet-300/75 tracking-[0.18em] uppercase mb-5 sm:mb-8 syne">
+            <p className="text-[13px] sm:text-[14px] text-[#5AC8FA]/75 tracking-[0.18em] uppercase mb-5 sm:mb-8 syne">
               Mykyta · Developer · Bern, CH
             </p>
           </FadeIn>
@@ -828,25 +828,25 @@ function HomePage() {
           <FadeIn delay={0.3} y={20}>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
               <GlassButton to="/projects">View my work</GlassButton>
-              <div className="group inline-flex items-center gap-2.5 glass-card rounded-2xl px-4 py-2.5 cursor-default hover:border-violet-400/28 transition-all duration-300">
-                <StarburstIcon className="w-5 h-5 sm:w-6 sm:h-6 fill-violet-400/75 flex-shrink-0" />
+              <div className="group inline-flex items-center gap-2.5 glass-card rounded-2xl px-4 py-2.5 cursor-default hover:border-[#0A84FF]/28 transition-all duration-300">
+                <StarburstIcon className="w-5 h-5 sm:w-6 sm:h-6 fill-[#0A84FF]/75 flex-shrink-0" />
                 <span className="text-[13px] sm:text-[14px] font-medium text-white/75">Seeking Apprenticeship</span>
-                <span className="text-[10px] sm:text-[11px] bg-violet-600/70 backdrop-blur-sm border border-violet-400/30 text-white px-1.5 sm:px-2 py-0.5 rounded-full font-medium">2026</span>
+                <span className="text-[10px] sm:text-[11px] bg-[#0A84FF]/60 border border-[#0A84FF]/30 text-white px-1.5 sm:px-2 py-0.5 rounded-full font-medium">2026</span>
               </div>
             </div>
           </FadeIn>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0c0718] to-transparent pointer-events-none z-10" />
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#050508] to-transparent pointer-events-none z-10" />
       </section>
 
       {/* ── Tech Marquee ── */}
       <TechMarquee />
 
       {/* ── Skills overview ── */}
-      <section id="skills" className="bg-[#0e0a20] pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28 relative overflow-hidden">
+      <section id="skills" className="bg-[#080810] pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute bottom-0 left-1/3 w-[500px] h-[300px] bg-violet-800/10 blur-[110px]" />
+          <div className="absolute bottom-0 left-1/3 w-[500px] h-[300px] bg-[#0A84FF]/08 blur-[110px]" />
         </div>
         <div className="max-w-[1440px] mx-auto">
           <FadeIn delay={0} x={-20} y={0}>
@@ -860,14 +860,14 @@ function HomePage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 px-5 sm:px-8 lg:px-12">
             <div>
-              <p className="text-[12px] text-violet-300/55 font-medium tracking-widest uppercase mb-6">Technical</p>
+              <p className="text-[12px] text-[#5AC8FA]/55 font-medium tracking-widest uppercase mb-6">Technical</p>
               <div className="space-y-5">
                 {skills.map(({ label, level }, i) => (
                   <FadeIn key={label} delay={i * 0.08} y={16}>
                     <div>
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-[14px] text-white/78 font-medium">{label}</span>
-                        <span className="text-[12px] text-violet-300/55"><CountUp to={level} />%</span>
+                        <span className="text-[12px] text-[#5AC8FA]/55"><CountUp to={level} />%</span>
                       </div>
                       <div className="h-1.5 rounded-full bg-white/6 overflow-hidden">
                         <motion.div
@@ -876,7 +876,7 @@ function HomePage() {
                           whileInView={{ width: `${level}%` }}
                           viewport={{ once: true }}
                           transition={{ duration: 1.1, ease: [0.25, 0.1, 0.25, 1], delay: 0.1 }}
-                          style={{ background: 'linear-gradient(90deg, #7c3aed, #a78bfa)', boxShadow: '0 0 10px rgba(124,58,237,0.6)' }}
+                          style={{ background: 'linear-gradient(90deg, #0A84FF, #5AC8FA)', boxShadow: '0 0 10px rgba(10,132,255,0.55)' }}
                         />
                       </div>
                     </div>
@@ -886,12 +886,12 @@ function HomePage() {
             </div>
 
             <div>
-              <p className="text-[12px] text-violet-300/55 font-medium tracking-widest uppercase mb-6">Character</p>
+              <p className="text-[12px] text-[#5AC8FA]/55 font-medium tracking-widest uppercase mb-6">Character</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {traits.map(({ Icon, title, desc }, i) => (
                   <FadeIn key={title} delay={i * 0.1} y={20}>
-                    <div className="glass-card rounded-2xl p-5 hover:border-violet-400/22 transition-all duration-300">
-                      <Icon size={20} className="text-violet-400/75 mb-3" />
+                    <div className="glass-card rounded-2xl p-5 hover:border-[#0A84FF]/22 transition-all duration-300">
+                      <Icon size={20} className="text-[#5AC8FA]/75 mb-3" />
                       <p className="text-[14px] font-semibold text-white mb-1.5 syne">{title}</p>
                       <p className="text-[13px] leading-[1.65] text-white/50">{desc}</p>
                     </div>
@@ -917,8 +917,8 @@ function ProjectsPage() {
   return (
     <>
       <SharedNavbar />
-      <section className="bg-[#0c0718] pt-12 pb-8 relative overflow-hidden min-h-screen">
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-violet-800/10 blur-[120px] pointer-events-none" />
+      <section className="bg-[#050508] pt-12 pb-8 relative overflow-hidden min-h-screen">
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#0A84FF]/08 blur-[120px] pointer-events-none" />
         <div className="max-w-[1440px] mx-auto">
           <FadeIn delay={0} x={-20} y={0}>
             <SectionBadge num="02" label="Selected work" />
@@ -953,8 +953,8 @@ function AboutPage() {
   return (
     <>
       <SharedNavbar />
-      <section className="bg-[#0c0718] pt-12 pb-24 relative overflow-hidden min-h-screen">
-        <div className="absolute top-0 right-0 w-[600px] h-[400px] bg-violet-900/10 blur-[130px] pointer-events-none" />
+      <section className="bg-[#050508] pt-12 pb-24 relative overflow-hidden min-h-screen">
+        <div className="absolute top-0 right-0 w-[600px] h-[400px] bg-[#0A84FF]/07 blur-[130px] pointer-events-none" />
         <div className="max-w-[1440px] mx-auto">
           <FadeIn delay={0} x={-20} y={0}>
             <SectionBadge num="03" label="About me" />
@@ -1000,10 +1000,10 @@ function AboutPage() {
                   <div>
                     <div className="flex items-center justify-between mb-8">
                       <div className="flex items-center gap-3">
-                        <div className="w-7 h-7 rounded-full bg-violet-600/60 border border-violet-400/30 flex items-center justify-center">
-                          <Lock size={12} className="text-violet-200" />
+                        <div className="w-7 h-7 rounded-full bg-[#0A84FF]/55 border border-[#0A84FF]/30 flex items-center justify-center">
+                          <Lock size={12} className="text-white/90" />
                         </div>
-                        <span className="text-[13px] text-violet-300/70 font-medium tracking-widest uppercase">Private information</span>
+                        <span className="text-[13px] text-[#5AC8FA]/70 font-medium tracking-widest uppercase">Private information</span>
                       </div>
                       <button onClick={logout} className="flex items-center gap-1.5 text-[12px] text-white/30 hover:text-white/60 transition-colors">
                         <LogOut size={12} /> Sign out
@@ -1019,18 +1019,18 @@ function AboutPage() {
                         { Icon: User, label: 'Salary expectation', value: 'CHF 800–1 000 / month' },
                         { Icon: GitBranch, label: 'Reference', value: 'Available on request' },
                       ].map(({ Icon, label, value }) => (
-                        <div key={label} className="glass-card rounded-2xl p-5 border border-violet-400/10">
+                        <div key={label} className="glass-card rounded-2xl p-5 border border-[#0A84FF]/15">
                           <div className="flex items-center gap-2 mb-2">
-                            <Icon size={14} className="text-violet-400/60" />
-                            <span className="text-[11px] text-violet-300/50 tracking-widest uppercase font-medium">{label}</span>
+                            <Icon size={14} className="text-[#5AC8FA]/60" />
+                            <span className="text-[11px] text-[#5AC8FA]/50 tracking-widest uppercase font-medium">{label}</span>
                           </div>
                           <p className="text-[14px] text-white/80 font-medium">{value}</p>
                         </div>
                       ))}
                     </div>
 
-                    <div className="mt-6 glass-card rounded-2xl p-5 border border-violet-400/10">
-                      <p className="text-[11px] text-violet-300/50 tracking-widest uppercase font-medium mb-3">Additional notes</p>
+                    <div className="mt-6 glass-card rounded-2xl p-5 border border-[#0A84FF]/15">
+                      <p className="text-[11px] text-[#5AC8FA]/50 tracking-widest uppercase font-medium mb-3">Additional notes</p>
                       <p className="text-[14px] text-white/65 leading-relaxed">
                         Available to start an apprenticeship from August 2026. Prefer companies working with modern web stacks — React, Next.js, TypeScript, Go. Comfortable in German and English. Based in Bern; open to Bern and greater Bern region.
                       </p>
@@ -1040,8 +1040,8 @@ function AboutPage() {
               ) : (
                 <FadeIn delay={0} y={20}>
                   <div className="flex flex-col items-center text-center py-16">
-                    <div className="w-14 h-14 rounded-full glass-card border border-violet-400/20 flex items-center justify-center mb-6">
-                      <Lock size={22} className="text-violet-400/60" />
+                    <div className="w-14 h-14 rounded-full glass-card border border-[#0A84FF]/20 flex items-center justify-center mb-6">
+                      <Lock size={22} className="text-[#5AC8FA]/60" />
                     </div>
                     <h3 className="syne text-[1.3rem] font-semibold text-white mb-3">Private section</h3>
                     <p className="text-[14px] text-white/45 leading-relaxed max-w-sm mb-8">
@@ -1066,9 +1066,9 @@ function ContactPage() {
   return (
     <>
       <SharedNavbar />
-      <section className="bg-[#0e0a20] pt-12 pb-20 sm:pb-28 lg:pb-36 relative overflow-hidden min-h-screen">
+      <section className="bg-[#080810] pt-12 pb-20 sm:pb-28 lg:pb-36 relative overflow-hidden min-h-screen">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-violet-700/10 blur-[140px]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-[#0A84FF]/08 blur-[140px]" />
         </div>
 
         <div className="max-w-[1440px] mx-auto relative z-10">
@@ -1104,9 +1104,9 @@ function ContactPage() {
                 { Icon: GitBranch, label: 'GitHub', value: 'github.com/Fallka0', href: 'https://github.com/Fallka0' },
                 { Icon: MapPin, label: 'Location', value: 'Bern, Switzerland', href: undefined },
               ].map(({ Icon, label, value, href }) => (
-                <div key={label} className="glass-card rounded-2xl p-5 group hover:border-violet-400/22 transition-all duration-300">
-                  <Icon size={16} className="text-violet-400/60 mb-3" />
-                  <p className="text-[11px] text-violet-300/50 tracking-widest uppercase font-medium mb-1">{label}</p>
+                <div key={label} className="glass-card rounded-2xl p-5 group hover:border-[#0A84FF]/22 transition-all duration-300">
+                  <Icon size={16} className="text-[#5AC8FA]/60 mb-3" />
+                  <p className="text-[11px] text-[#5AC8FA]/50 tracking-widest uppercase font-medium mb-1">{label}</p>
                   {href ? (
                     <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" className="text-[14px] text-white/70 group-hover:text-white transition-colors duration-200">
                       {value}
@@ -1122,7 +1122,7 @@ function ContactPage() {
           {/* Footer */}
           <div className="border-t border-white/7 pt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-5 sm:px-8 lg:px-12">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-violet-600/75 border border-violet-400/30 flex items-center justify-center" style={{ boxShadow: '0 0 16px rgba(124,58,237,0.4)' }}>
+              <div className="w-8 h-8 rounded-full bg-[#0A84FF]/70 border border-[#0A84FF]/30 flex items-center justify-center" style={{ boxShadow: '0 0 16px rgba(10,132,255,0.4)' }}>
                 <span className="text-white text-[10px] font-bold syne">MP</span>
               </div>
               <span className="text-[13px] text-white/35">Mykyta Pantelei · 2026</span>
@@ -1167,9 +1167,9 @@ function LoginPage() {
   return (
     <>
       <SharedNavbar />
-      <section className="bg-[#0c0718] min-h-[calc(100vh-64px)] flex items-center justify-center px-4 relative overflow-hidden">
+      <section className="bg-[#050508] min-h-[calc(100vh-64px)] flex items-center justify-center px-4 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-violet-700/12 blur-[130px]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-[#0A84FF]/08 blur-[130px]" />
         </div>
 
         <motion.div
@@ -1180,7 +1180,7 @@ function LoginPage() {
           <FadeIn delay={0} y={24}>
             <div className="glass-card rounded-3xl p-8 border border-white/10">
               <div className="flex justify-center mb-7">
-                <div className="w-12 h-12 rounded-full bg-violet-600/70 border border-violet-400/30 flex items-center justify-center" style={{ boxShadow: '0 0 28px rgba(124,58,237,0.45)' }}>
+                <div className="w-12 h-12 rounded-full bg-[#0A84FF]/60 border border-[#0A84FF]/30 flex items-center justify-center" style={{ boxShadow: '0 0 28px rgba(10,132,255,0.4)' }}>
                   <Lock size={20} className="text-white" />
                 </div>
               </div>
@@ -1198,7 +1198,7 @@ function LoginPage() {
                     onChange={(e) => { setPw(e.target.value); setError('') }}
                     placeholder="Password"
                     autoComplete="current-password"
-                    className="w-full bg-white/5 border border-white/12 rounded-xl px-4 py-3 text-[14px] text-white placeholder-white/30 focus:outline-none focus:border-violet-400/50 transition-colors duration-200 pr-10"
+                    className="w-full bg-white/5 border border-white/12 rounded-xl px-4 py-3 text-[14px] text-white placeholder-white/30 focus:outline-none focus:border-[#0A84FF]/50 transition-colors duration-200 pr-10"
                   />
                   <button
                     type="button"
