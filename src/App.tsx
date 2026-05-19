@@ -1,5 +1,14 @@
-import { useState, useEffect } from 'react'
-import { ArrowRight, Clock, Menu, X, GitBranch, ExternalLink, Mail, Link } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import {
+  ArrowRight, Clock, Menu, X, GitBranch, ExternalLink, Mail,
+  Target, Zap, Users, Search,
+} from 'lucide-react'
+import {
+  motion,
+  useScroll,
+  useTransform,
+  type MotionValue,
+} from 'framer-motion'
 import './index.css'
 
 /* ── Live Clock (Zurich / CET) ── */
@@ -7,18 +16,97 @@ function useClock() {
   const [time, setTime] = useState('')
   useEffect(() => {
     const tick = () => {
-      const t = new Date().toLocaleTimeString('en-GB', {
-        timeZone: 'Europe/Zurich',
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-      setTime(t)
+      setTime(
+        new Date().toLocaleTimeString('en-GB', {
+          timeZone: 'Europe/Zurich',
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+      )
     }
     tick()
     const id = setInterval(tick, 1000)
     return () => clearInterval(id)
   }, [])
   return time
+}
+
+/* ── FadeIn (Framer Motion whileInView) ── */
+function FadeIn({
+  children,
+  delay = 0,
+  duration = 0.7,
+  y = 30,
+  x = 0,
+  className = '',
+}: {
+  children: React.ReactNode
+  delay?: number
+  duration?: number
+  y?: number
+  x?: number
+  className?: string
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y, x }}
+      whileInView={{ opacity: 1, y: 0, x: 0 }}
+      viewport={{ once: true, margin: '50px', amount: 0 }}
+      transition={{ duration, delay, ease: [0.25, 0.1, 0.25, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+/* ── AnimatedChar (scroll-driven per-character opacity) ── */
+function AnimatedChar({
+  char,
+  scrollYProgress,
+  start,
+  end,
+}: {
+  char: string
+  scrollYProgress: MotionValue<number>
+  start: number
+  end: number
+}) {
+  const opacity = useTransform(scrollYProgress, [start, end], [0.18, 1])
+  return (
+    <motion.span style={{ opacity }} className="inline-block">
+      {char === ' ' ? ' ' : char}
+    </motion.span>
+  )
+}
+
+/* ── AnimatedText (character-by-character scroll reveal) ── */
+function AnimatedText({ text, className = '' }: { text: string; className?: string }) {
+  const ref = useRef<HTMLParagraphElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start 0.85', 'end 0.15'],
+  })
+  const chars = text.split('')
+  const N = chars.length
+
+  return (
+    <p ref={ref} className={className} aria-label={text}>
+      {chars.map((char, i) => {
+        const start = (i / N) * 0.8
+        const end = Math.min(start + Math.max(1 / N, 0.1), 1)
+        return (
+          <AnimatedChar
+            key={i}
+            char={char}
+            scrollYProgress={scrollYProgress}
+            start={start}
+            end={end}
+          />
+        )
+      })}
+    </p>
+  )
 }
 
 /* ── Starburst SVG ── */
@@ -49,9 +137,7 @@ function GlassButton({
   const inner = (
     <span
       className={`group inline-flex items-center gap-2 rounded-full pl-5 pr-2 py-2 cursor-pointer ${
-        dark
-          ? 'liquid-glass-btn text-white/80'
-          : 'liquid-glass-btn text-white'
+        dark ? 'liquid-glass-btn text-white/80' : 'liquid-glass-btn text-white'
       } ${className}`}
     >
       {arrow ? (
@@ -72,7 +158,7 @@ function GlassButton({
     </span>
   )
 
-  if (href) return <a href={href}>{inner}</a>
+  if (href) return <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer">{inner}</a>
   return <button onClick={onClick}>{inner}</button>
 }
 
@@ -99,12 +185,10 @@ function Hero({ onMenuOpen }: { onMenuOpen: () => void }) {
 
   return (
     <section className="relative min-h-screen flex flex-col aurora-bg overflow-hidden">
-      {/* Background orbs */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="orb-1 absolute top-[12%] left-[8%] w-[500px] h-[500px] rounded-full bg-violet-700/20 blur-[110px]" />
         <div className="orb-2 absolute top-[45%] right-[3%] w-[420px] h-[420px] rounded-full bg-purple-500/14 blur-[95px]" />
         <div className="orb-3 absolute bottom-[8%] left-[38%] w-[360px] h-[360px] rounded-full bg-indigo-600/14 blur-[85px]" />
-        {/* Subtle grid */}
         <div
           className="absolute inset-0 opacity-[0.035]"
           style={{
@@ -115,87 +199,152 @@ function Hero({ onMenuOpen }: { onMenuOpen: () => void }) {
         />
       </div>
 
-      {/* Navbar */}
-      <nav className="relative z-20 px-4 sm:px-6 pt-4 sm:pt-5">
-        <div className="max-w-[1440px] mx-auto">
-          <div className="navbar-glass rounded-full px-2 py-1.5 flex items-center justify-between">
-            <div className="flex items-center gap-5">
-              <div
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-violet-600 border border-violet-400/40 flex items-center justify-center flex-shrink-0"
-                style={{ boxShadow: '0 0 20px rgba(124,58,237,0.55)' }}
+      <FadeIn delay={0} y={-20} className="relative z-20">
+        <nav className="px-4 sm:px-6 pt-4 sm:pt-5">
+          <div className="max-w-[1440px] mx-auto">
+            <div className="navbar-glass rounded-full px-2 py-1.5 flex items-center justify-between">
+              <div className="flex items-center gap-5">
+                <div
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-violet-600 border border-violet-400/40 flex items-center justify-center flex-shrink-0"
+                  style={{ boxShadow: '0 0 20px rgba(124,58,237,0.55)' }}
+                >
+                  <span className="text-white text-[11px] font-bold tracking-tight syne">NK</span>
+                </div>
+                <div className="hidden md:flex items-center gap-6">
+                  {navLinks.map((l) => (
+                    <a
+                      key={l}
+                      href={`#${l.toLowerCase()}`}
+                      className="text-[14px] text-white/65 hover:text-white transition-colors duration-300"
+                    >
+                      {l}
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              <div className="hidden md:flex items-center gap-4">
+                <span className="hidden lg:block text-[13px] text-white/45">
+                  Open to apprenticeships
+                </span>
+                <span className="flex items-center gap-1.5 text-[13px] text-white/55">
+                  <Clock size={13} />
+                  {time} in Zurich
+                </span>
+                <GlassButton href="#contact">Get in touch</GlassButton>
+              </div>
+
+              <button
+                onClick={onMenuOpen}
+                className="md:hidden liquid-glass-btn rounded-full p-2 text-white"
+                aria-label="Open menu"
               >
-                <span className="text-white text-[11px] font-bold tracking-tight syne">AX</span>
-              </div>
-              <div className="hidden md:flex items-center gap-6">
-                {navLinks.map((l) => (
-                  <a
-                    key={l}
-                    href={`#${l.toLowerCase()}`}
-                    className="text-[14px] text-white/65 hover:text-white transition-colors duration-300"
-                  >
-                    {l}
-                  </a>
-                ))}
-              </div>
+                <Menu size={18} />
+              </button>
             </div>
-
-            <div className="hidden md:flex items-center gap-4">
-              <span className="hidden lg:block text-[13px] text-white/45">
-                Open to apprenticeships
-              </span>
-              <span className="flex items-center gap-1.5 text-[13px] text-white/55">
-                <Clock size={13} />
-                {time} in Zurich
-              </span>
-              <GlassButton href="#contact">Get in touch</GlassButton>
-            </div>
-
-            <button
-              onClick={onMenuOpen}
-              className="md:hidden liquid-glass-btn rounded-full p-2 text-white"
-              aria-label="Open menu"
-            >
-              <Menu size={18} />
-            </button>
           </div>
-        </div>
-      </nav>
+        </nav>
+      </FadeIn>
 
-      {/* Hero copy */}
       <div className="relative z-20 flex-1 flex flex-col justify-end max-w-[1440px] mx-auto w-full px-5 sm:px-8 lg:px-12 pb-14 sm:pb-16 lg:pb-20">
-        <p className="text-[13px] sm:text-[14px] text-violet-300/75 tracking-[0.18em] uppercase mb-5 sm:mb-8 syne fade-up">
-          Apprentice · Developer · Creator
-        </p>
-        <h1
-          className="syne font-medium leading-[1.06] tracking-[-0.03em] text-white mb-8 sm:mb-10 fade-up fade-up-delay-1"
-          style={{ fontSize: 'clamp(2.2rem, 7vw, 4.8rem)' }}
-        >
-          Crafting digital experiences
-          <br className="hidden sm:block" /><span className="sm:hidden"> </span>
-          that stand out — ready
-          <br className="hidden sm:block" /><span className="sm:hidden"> </span>
-          to learn, build &amp; grow.
-        </h1>
+        <FadeIn delay={0.05} y={20}>
+          <p className="text-[13px] sm:text-[14px] text-violet-300/75 tracking-[0.18em] uppercase mb-5 sm:mb-8 syne">
+            Apprentice · Developer · Builder
+          </p>
+        </FadeIn>
+        <FadeIn delay={0.15} y={40}>
+          <h1
+            className="syne font-medium leading-[1.06] tracking-[-0.03em] text-white mb-8 sm:mb-10"
+            style={{ fontSize: 'clamp(2.2rem, 7vw, 4.8rem)' }}
+          >
+            Crafting digital experiences
+            <br className="hidden sm:block" /><span className="sm:hidden"> </span>
+            that stand out — ready
+            <br className="hidden sm:block" /><span className="sm:hidden"> </span>
+            to learn, build &amp; grow.
+          </h1>
+        </FadeIn>
 
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 fade-up fade-up-delay-2">
-          <GlassButton href="#projects">View my work</GlassButton>
-
-          <div className="group inline-flex items-center gap-2.5 glass-card rounded-2xl px-4 py-2.5 cursor-default hover:border-violet-400/28 transition-all duration-300">
-            <StarburstIcon className="w-5 h-5 sm:w-6 sm:h-6 fill-violet-400/75 flex-shrink-0" />
-            <span className="text-[13px] sm:text-[14px] font-medium text-white/75">
-              Seeking Apprenticeship
-            </span>
-            <span
-              className="text-[10px] sm:text-[11px] bg-violet-600/70 backdrop-blur-sm border border-violet-400/30 text-white px-1.5 sm:px-2 py-0.5 rounded-full font-medium"
-            >
-              2025
-            </span>
+        <FadeIn delay={0.3} y={20}>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
+            <GlassButton href="#projects">View my work</GlassButton>
+            <div className="group inline-flex items-center gap-2.5 glass-card rounded-2xl px-4 py-2.5 cursor-default hover:border-violet-400/28 transition-all duration-300">
+              <StarburstIcon className="w-5 h-5 sm:w-6 sm:h-6 fill-violet-400/75 flex-shrink-0" />
+              <span className="text-[13px] sm:text-[14px] font-medium text-white/75">
+                Seeking Apprenticeship
+              </span>
+              <span className="text-[10px] sm:text-[11px] bg-violet-600/70 backdrop-blur-sm border border-violet-400/30 text-white px-1.5 sm:px-2 py-0.5 rounded-full font-medium">
+                2025
+              </span>
+            </div>
           </div>
-        </div>
+        </FadeIn>
       </div>
 
-      {/* Bottom fade into next section */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0c0718] to-transparent pointer-events-none z-10" />
+    </section>
+  )
+}
+
+/* ══════════════════════════════════════
+   TECH MARQUEE (scroll-driven horizontal scroll)
+══════════════════════════════════════ */
+const row1Items = [
+  'Next.js', 'TypeScript', 'React', 'Tailwind CSS', 'Supabase',
+  'Framer Motion', 'PostgreSQL', 'Go', 'Vite', 'REST APIs', 'JWT Auth',
+]
+const row2Items = [
+  'Vercel', 'Git & GitHub', 'Docker', 'PHP', 'C#', 'Node.js',
+  'SQL', 'HTML & CSS', 'Responsive Design', 'Authentication', 'Chart.js',
+]
+
+function TechMarquee() {
+  const sectionRef = useRef<HTMLDivElement>(null)
+  const [offset, setOffset] = useState(0)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!sectionRef.current) return
+      const sectionTop =
+        sectionRef.current.getBoundingClientRect().top + window.scrollY
+      setOffset((window.scrollY - sectionTop + window.innerHeight) * 0.3)
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    handleScroll()
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  const renderRow = (items: string[], moveRight: boolean) => {
+    const tripled = [...items, ...items, ...items]
+    const tx = moveRight ? offset - 200 : -(offset - 200)
+    return (
+      <div
+        className="flex gap-3 py-1.5"
+        style={{ transform: `translateX(${tx}px)`, willChange: 'transform' }}
+      >
+        {tripled.map((item, i) => (
+          <div
+            key={i}
+            className="flex-shrink-0 glass-card rounded-full px-5 py-2.5 text-[13px] sm:text-[14px] font-medium text-white/55 whitespace-nowrap"
+          >
+            {item}
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  return (
+    <section ref={sectionRef} className="bg-[#0c0718] pt-20 pb-10 overflow-hidden">
+      <FadeIn y={20} delay={0}>
+        <p className="text-[11px] text-violet-300/40 font-medium tracking-widest uppercase text-center mb-8">
+          Technologies I work with
+        </p>
+      </FadeIn>
+      <div className="space-y-3">
+        {renderRow(row1Items, true)}
+        {renderRow(row2Items, false)}
+      </div>
     </section>
   )
 }
@@ -203,29 +352,37 @@ function Hero({ onMenuOpen }: { onMenuOpen: () => void }) {
 /* ══════════════════════════════════════
    ABOUT
 ══════════════════════════════════════ */
+const ABOUT_TEXT =
+  'Ambitious apprentice based in Zurich, building full-stack applications across TypeScript, Go, and SQL. I ship clean, performant products — from property portals and tournament platforms to trading dashboards. Motivated, reliable, and ready to grow fast inside a great team.'
+
 function About() {
   return (
     <section id="about" className="bg-[#0c0718] pt-16 sm:pt-20 lg:pt-32 pb-12 sm:pb-16 lg:pb-24 overflow-hidden relative">
       <div className="absolute top-0 right-0 w-[600px] h-[400px] bg-violet-900/10 blur-[130px] pointer-events-none" />
       <div className="max-w-[1440px] mx-auto">
-        <SectionBadge num="1" label="About me" />
+        <FadeIn delay={0} x={-20} y={0}>
+          <SectionBadge num="1" label="About me" />
+        </FadeIn>
 
-        <h2
-          className="syne font-medium leading-[1.12] tracking-[-0.02em] text-white mb-12 sm:mb-16 lg:mb-24 px-5 sm:px-8 lg:px-12"
-          style={{ fontSize: 'clamp(1.6rem, 4vw, 3.4rem)' }}
-        >
-          Motivated &amp; technical —
-          <br className="hidden sm:block" />
-          passionate about building things
-          <br className="hidden sm:block" />
-          that actually work.
-        </h2>
+        <FadeIn delay={0.1} y={30}>
+          <h2
+            className="syne font-medium leading-[1.12] tracking-[-0.02em] text-white mb-12 sm:mb-16 lg:mb-24 px-5 sm:px-8 lg:px-12"
+            style={{ fontSize: 'clamp(1.6rem, 4vw, 3.4rem)' }}
+          >
+            Motivated &amp; technical —
+            <br className="hidden sm:block" />
+            passionate about building things
+            <br className="hidden sm:block" />
+            that actually work.
+          </h2>
+        </FadeIn>
 
         {/* Mobile/tablet */}
         <div className="lg:hidden px-5 sm:px-8">
-          <p className="text-[15px] sm:text-[17px] leading-[1.7] font-light text-white/65 mb-7 max-w-xl">
-            I'm an ambitious apprentice with a drive to create clean, performant, and thoughtful digital products. I bring reliability, curiosity, and a hands-on mindset to every project — always eager to learn from experienced teams and contribute from day one.
-          </p>
+          <AnimatedText
+            text={ABOUT_TEXT}
+            className="text-[15px] sm:text-[17px] leading-[1.7] font-light text-white/65 mb-7 max-w-xl"
+          />
           <GlassButton href="#contact" className="mb-10">Start a conversation</GlassButton>
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 mt-10">
             <div className="sm:w-[45%] aspect-[438/346] rounded-xl sm:rounded-2xl overflow-hidden glass-card">
@@ -247,29 +404,33 @@ function About() {
 
         {/* Desktop 3-col */}
         <div className="hidden lg:grid grid-cols-[26%_1fr_48%] items-end gap-6 xl:gap-8 px-5 sm:px-8 lg:px-12">
-          <div className="self-end aspect-[438/346] rounded-2xl overflow-hidden glass-card">
-            <img
-              src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&q=80"
-              alt="Developer at work"
-              className="w-full h-full object-cover opacity-75"
-            />
-          </div>
-          <div className="self-start flex flex-col items-start pb-4">
-            <p className="text-[16px] leading-[1.75] font-light text-white/65 mb-8">
-              Motivated &amp; reliable — I show up,<br />
-              put in the work, and grow fast.<br />
-              Technical skills across front-end<br />
-              and back-end development.
-            </p>
-            <GlassButton href="#contact">Let's connect</GlassButton>
-          </div>
-          <div className="self-end aspect-[3/2] rounded-2xl overflow-hidden glass-card">
-            <img
-              src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80"
-              alt="Code on screen"
-              className="w-full h-full object-cover opacity-75"
-            />
-          </div>
+          <FadeIn delay={0.15} x={-40} y={0}>
+            <div className="self-end aspect-[438/346] rounded-2xl overflow-hidden glass-card">
+              <img
+                src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&q=80"
+                alt="Developer at work"
+                className="w-full h-full object-cover opacity-75"
+              />
+            </div>
+          </FadeIn>
+          <FadeIn delay={0.2} y={20}>
+            <div className="self-start flex flex-col items-start pb-4">
+              <AnimatedText
+                text={ABOUT_TEXT}
+                className="text-[16px] leading-[1.75] font-light text-white/65 mb-8"
+              />
+              <GlassButton href="#contact">Let's connect</GlassButton>
+            </div>
+          </FadeIn>
+          <FadeIn delay={0.25} x={40} y={0}>
+            <div className="self-end aspect-[3/2] rounded-2xl overflow-hidden glass-card">
+              <img
+                src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80"
+                alt="Code on screen"
+                className="w-full h-full object-cover opacity-75"
+              />
+            </div>
+          </FadeIn>
         </div>
       </div>
     </section>
@@ -280,19 +441,35 @@ function About() {
    SKILLS
 ══════════════════════════════════════ */
 const skills = [
-  { label: 'JavaScript / TypeScript', level: 80 },
-  { label: 'React & Modern Frameworks', level: 75 },
-  { label: 'HTML & CSS / Tailwind', level: 88 },
-  { label: 'Node.js & REST APIs', level: 68 },
-  { label: 'Git & Version Control', level: 82 },
-  { label: 'UI/UX Thinking', level: 72 },
+  { label: 'TypeScript / JavaScript', level: 85 },
+  { label: 'React & Next.js', level: 82 },
+  { label: 'HTML & CSS / Tailwind', level: 90 },
+  { label: 'Go & REST APIs', level: 65 },
+  { label: 'Supabase & PostgreSQL', level: 70 },
+  { label: 'Git & Version Control', level: 85 },
 ]
 
 const traits = [
-  { icon: '🎯', title: 'Goal-oriented', desc: 'I set clear targets and work systematically to reach them.' },
-  { icon: '⚡', title: 'Fast learner', desc: 'New technologies, frameworks, and concepts — I pick them up quickly.' },
-  { icon: '🤝', title: 'Team player', desc: 'Collaborative, communicative, and dependable in group settings.' },
-  { icon: '🔍', title: 'Detail-focused', desc: 'I care about quality — from code structure to the final pixel.' },
+  {
+    Icon: Target,
+    title: 'Goal-oriented',
+    desc: 'I set clear targets and work systematically to reach them.',
+  },
+  {
+    Icon: Zap,
+    title: 'Fast learner',
+    desc: 'New technologies, frameworks, and concepts — I pick them up quickly.',
+  },
+  {
+    Icon: Users,
+    title: 'Team player',
+    desc: 'Collaborative, communicative, and dependable in group settings.',
+  },
+  {
+    Icon: Search,
+    title: 'Detail-focused',
+    desc: 'I care about quality — from code structure to the final pixel.',
+  },
 ]
 
 function Skills() {
@@ -302,53 +479,56 @@ function Skills() {
         <div className="absolute bottom-0 left-1/3 w-[500px] h-[300px] bg-violet-800/10 blur-[110px]" />
       </div>
       <div className="max-w-[1440px] mx-auto">
-        <SectionBadge num="2" label="What I bring" />
-        <h2
-          className="syne font-medium leading-[1.08] tracking-[-0.03em] text-white mb-12 sm:mb-16 px-5 sm:px-8 lg:px-12"
-          style={{ fontSize: 'clamp(1.75rem, 5vw, 3.6rem)' }}
-        >
-          Skills &amp; strengths
-        </h2>
+        <FadeIn delay={0} x={-20} y={0}>
+          <SectionBadge num="2" label="What I bring" />
+        </FadeIn>
+        <FadeIn delay={0.1} y={30}>
+          <h2
+            className="syne font-medium leading-[1.08] tracking-[-0.03em] text-white mb-12 sm:mb-16 px-5 sm:px-8 lg:px-12"
+            style={{ fontSize: 'clamp(1.75rem, 5vw, 3.6rem)' }}
+          >
+            Skills &amp; strengths
+          </h2>
+        </FadeIn>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 px-5 sm:px-8 lg:px-12">
-          {/* Technical */}
           <div>
             <p className="text-[12px] text-violet-300/55 font-medium tracking-widest uppercase mb-6">Technical</p>
             <div className="space-y-5">
-              {skills.map(({ label, level }) => (
-                <div key={label}>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-[14px] text-white/78 font-medium">{label}</span>
-                    <span className="text-[12px] text-violet-300/55">{level}%</span>
+              {skills.map(({ label, level }, i) => (
+                <FadeIn key={label} delay={i * 0.08} y={16}>
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-[14px] text-white/78 font-medium">{label}</span>
+                      <span className="text-[12px] text-violet-300/55">{level}%</span>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-white/6 overflow-hidden">
+                      <div
+                        className="h-full rounded-full"
+                        style={{
+                          width: `${level}%`,
+                          background: 'linear-gradient(90deg, #7c3aed, #a78bfa)',
+                          boxShadow: '0 0 10px rgba(124,58,237,0.6)',
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div className="h-1.5 rounded-full bg-white/6 overflow-hidden">
-                    <div
-                      className="h-full rounded-full"
-                      style={{
-                        width: `${level}%`,
-                        background: 'linear-gradient(90deg, #7c3aed, #a78bfa)',
-                        boxShadow: '0 0 10px rgba(124,58,237,0.6)',
-                      }}
-                    />
-                  </div>
-                </div>
+                </FadeIn>
               ))}
             </div>
           </div>
 
-          {/* Character traits */}
           <div>
             <p className="text-[12px] text-violet-300/55 font-medium tracking-widest uppercase mb-6">Character</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {traits.map(({ icon, title, desc }) => (
-                <div
-                  key={title}
-                  className="glass-card rounded-2xl p-5 hover:border-violet-400/22 transition-all duration-300 group"
-                >
-                  <span className="text-2xl mb-3 block">{icon}</span>
-                  <p className="text-[14px] font-semibold text-white mb-1.5 syne">{title}</p>
-                  <p className="text-[13px] leading-[1.65] text-white/50">{desc}</p>
-                </div>
+              {traits.map(({ Icon, title, desc }, i) => (
+                <FadeIn key={title} delay={i * 0.1} y={20}>
+                  <div className="glass-card rounded-2xl p-5 hover:border-violet-400/22 transition-all duration-300">
+                    <Icon size={20} className="text-violet-400/75 mb-3" />
+                    <p className="text-[14px] font-semibold text-white mb-1.5 syne">{title}</p>
+                    <p className="text-[13px] leading-[1.65] text-white/50">{desc}</p>
+                  </div>
+                </FadeIn>
               ))}
             </div>
           </div>
@@ -359,91 +539,218 @@ function Skills() {
 }
 
 /* ══════════════════════════════════════
-   PROJECTS
+   PROJECTS (sticky stacking cards)
 ══════════════════════════════════════ */
-const projects = [
+interface ProjectData {
+  num: string
+  title: string
+  category: string
+  desc: string
+  tags: string[]
+  href: string
+  img1: string
+  img2: string
+  img3: string
+}
+
+const projects: ProjectData[] = [
   {
-    title: 'Portfolio Site',
-    desc: 'Personal portfolio built with React, TypeScript & Tailwind — clean UI, smooth animations, glassmorphism aesthetics.',
-    tags: ['React', 'TypeScript', 'Tailwind'],
-    bg: '#12082a',
-    img: 'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=900&q=80',
+    num: '01',
+    title: 'Verdant Realty',
+    category: 'Full-Stack App',
+    desc: 'Property portal for the Torrevieja region. Public listings with search and filtering, individual property pages with inquiry forms, and a private admin panel for managing inventory, pricing, and availability.',
+    tags: ['Next.js', 'TypeScript', 'Supabase'],
+    href: 'https://verdant-realty.vercel.app',
+    img1: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600&q=80',
+    img2: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
+    img3: 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?w=900&q=80',
   },
   {
-    title: 'Task Manager App',
-    desc: 'Full-stack productivity app with real-time sync, drag-and-drop boards, and user authentication.',
-    tags: ['Node.js', 'React', 'PostgreSQL'],
-    bg: '#0d1530',
-    img: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=900&q=80',
+    num: '02',
+    title: 'Tournamount',
+    category: 'Platform',
+    desc: 'Tournament management for gaming communities. Organizers create brackets and manage rosters across group stage, knockout, and hybrid formats. Players track standings in real time with a fully responsive interface.',
+    tags: ['Next.js', 'TypeScript', 'Supabase', 'Framer Motion'],
+    href: 'https://m294-d5ns.vercel.app',
+    img1: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&q=80',
+    img2: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&q=80',
+    img3: 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=900&q=80',
   },
   {
-    title: 'Weather Dashboard',
-    desc: 'Live weather visualisation pulling from multiple APIs with custom charting and location search.',
-    tags: ['JavaScript', 'REST API', 'Chart.js'],
-    bg: '#0f1a20',
-    img: 'https://images.unsplash.com/photo-1504608524841-42584120d693?w=900&q=80',
+    num: '03',
+    title: 'Planary',
+    category: 'Full-Stack App',
+    desc: 'Wishlist sharing platform with a React + Vite frontend, Go backend deployed as Vercel functions, and PostgreSQL for persistent storage. Secure authentication via HTTP-only cookies with a standalone dashboard.',
+    tags: ['React', 'Go', 'PostgreSQL', 'Vite'],
+    href: 'https://planary-wishlist.vercel.app',
+    img1: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=600&q=80',
+    img2: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=600&q=80',
+    img3: 'https://images.unsplash.com/photo-1557838923-2985c318be48?w=900&q=80',
   },
   {
-    title: 'E-Commerce Concept',
-    desc: 'Modern storefront UI/UX concept with product filtering, cart, and checkout flow.',
-    tags: ['React', 'CSS', 'UX Design'],
-    bg: '#150e28',
-    img: 'https://images.unsplash.com/photo-1542744094-24638eff58bb?w=900&q=80',
+    num: '04',
+    title: 'AutoBot Dashboard',
+    category: 'Dashboard',
+    desc: 'Live monitoring UI for a paper trading bot. Displays portfolio positions, broker order lifecycle, decision feed, and market context. Deployed as a Vercel-ready Next.js shell designed to wire into a real backend.',
+    tags: ['Next.js', 'TypeScript', 'Vercel'],
+    href: 'https://autobot-dashboard.vercel.app',
+    img1: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&q=80',
+    img2: 'https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=600&q=80',
+    img3: 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=900&q=80',
   },
 ]
 
+function ProjectCard({
+  project,
+  index,
+  total,
+}: {
+  project: ProjectData
+  index: number
+  total: number
+}) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end start'],
+  })
+  const targetScale = 1 - (total - 1 - index) * 0.03
+  const scale = useTransform(scrollYProgress, [0, 1], [1, targetScale])
+
+  return (
+    <div ref={containerRef} className="h-[85vh]">
+      <motion.div
+        style={{
+          scale,
+          position: 'sticky',
+          top: 96 + index * 28,
+          transformOrigin: 'top center',
+        }}
+        className="w-full rounded-[28px] sm:rounded-[36px] border border-white/8 bg-[#0d0b1e] p-4 sm:p-6 md:p-8 glass-card"
+      >
+        {/* Top row */}
+        <div className="flex items-center justify-between mb-5 sm:mb-6">
+          <div className="flex items-center gap-4 sm:gap-6">
+            <span
+              className="syne font-bold text-white/12 leading-none select-none"
+              style={{ fontSize: 'clamp(2rem, 6vw, 4.5rem)' }}
+            >
+              {project.num}
+            </span>
+            <div>
+              <p className="text-[11px] text-violet-300/55 tracking-widest uppercase mb-0.5">
+                {project.category}
+              </p>
+              <p
+                className="syne font-semibold text-white leading-tight"
+                style={{ fontSize: 'clamp(1rem, 2.2vw, 1.6rem)' }}
+              >
+                {project.title}
+              </p>
+            </div>
+          </div>
+          <a
+            href={project.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:flex items-center gap-1.5 liquid-glass-btn rounded-full px-4 py-2 text-[11px] text-white/65 font-medium tracking-widest uppercase hover:text-white transition-colors duration-300"
+          >
+            Live <ExternalLink size={10} className="ml-1" />
+          </a>
+        </div>
+
+        {/* Image grid */}
+        <div className="flex gap-3 sm:gap-4" style={{ height: 'clamp(220px, 38vh, 380px)' }}>
+          {/* Left col: 2 stacked */}
+          <div className="w-[38%] flex flex-col gap-3 sm:gap-4">
+            <div className="flex-1 rounded-xl sm:rounded-2xl overflow-hidden glass-card">
+              <img
+                src={project.img1}
+                alt=""
+                className="w-full h-full object-cover opacity-65 hover:opacity-85 transition-opacity duration-500"
+                loading="lazy"
+              />
+            </div>
+            <div className="flex-[1.4] rounded-xl sm:rounded-2xl overflow-hidden glass-card">
+              <img
+                src={project.img2}
+                alt=""
+                className="w-full h-full object-cover opacity-65 hover:opacity-85 transition-opacity duration-500"
+                loading="lazy"
+              />
+            </div>
+          </div>
+          {/* Right col: main image + meta */}
+          <div className="flex-1 flex flex-col gap-3 sm:gap-4">
+            <div className="flex-1 rounded-xl sm:rounded-2xl overflow-hidden glass-card">
+              <img
+                src={project.img3}
+                alt={project.title}
+                className="w-full h-full object-cover opacity-65 hover:opacity-85 transition-opacity duration-500"
+                loading="lazy"
+              />
+            </div>
+            <div className="hidden sm:block">
+              <p className="text-[12px] sm:text-[13px] leading-relaxed text-white/45 mb-3 line-clamp-2">
+                {project.desc}
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {project.tags.map((t) => (
+                  <span
+                    key={t}
+                    className="text-[11px] px-2.5 py-0.5 rounded-full glass-card text-violet-300/65"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile meta */}
+        <div className="sm:hidden mt-3">
+          <p className="text-[12px] leading-relaxed text-white/45 mb-2 line-clamp-2">{project.desc}</p>
+          <div className="flex flex-wrap gap-1.5">
+            {project.tags.map((t) => (
+              <span key={t} className="text-[10px] px-2 py-0.5 rounded-full glass-card text-violet-300/65">
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
 function Projects() {
   return (
-    <section id="projects" className="bg-[#0c0718] pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28 relative overflow-hidden">
+    <section
+      id="projects"
+      className="bg-[#0c0718] pt-16 sm:pt-20 lg:pt-28 pb-4 relative overflow-hidden"
+    >
       <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-violet-800/10 blur-[120px] pointer-events-none" />
       <div className="max-w-[1440px] mx-auto">
-        <SectionBadge num="3" label="Selected projects" />
-        <h2
-          className="syne font-medium leading-[1.08] tracking-[-0.03em] text-white mb-10 sm:mb-14 lg:mb-16 px-5 sm:px-8 lg:px-12"
-          style={{ fontSize: 'clamp(1.75rem, 7vw, 4.2rem)' }}
-        >
-          My projects
-        </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 lg:gap-7 px-5 sm:px-8 lg:px-12">
-          {projects.map((p) => (
-            <div key={p.title} className="group">
-              <div
-                className="aspect-[329/246] rounded-2xl overflow-hidden cursor-pointer relative"
-                style={{ background: p.bg }}
-              >
-                <img
-                  src={p.img}
-                  alt={p.title}
-                  className="w-full h-full object-cover opacity-45 group-hover:opacity-65 group-hover:scale-105 transition-all duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
-
-                {/* Hover expand pill */}
-                <div className="absolute bottom-4 left-4">
-                  <div className="flex items-center gap-2 h-9 w-9 group-hover:w-[145px] transition-all duration-300 ease-in-out liquid-glass-btn rounded-full overflow-hidden">
-                    <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100 text-[13px] font-medium text-white pl-3 whitespace-nowrap">
-                      View project
-                    </span>
-                    <span className="w-7 h-7 rounded-full bg-violet-600/50 border border-violet-400/40 flex items-center justify-center ml-auto mr-1 flex-shrink-0">
-                      <ExternalLink size={12} className="text-white/90" />
-                    </span>
-                  </div>
-                </div>
-
-                {/* Tags */}
-                <div className="absolute top-3 right-3 flex flex-wrap gap-1.5 justify-end">
-                  {p.tags.map((t) => (
-                    <span key={t} className="text-[11px] px-2 py-0.5 rounded-full glass-card text-white/65">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <p className="text-[13px] sm:text-[14px] text-white/48 mt-4 leading-relaxed">{p.desc}</p>
-              <p className="text-[14px] sm:text-[15px] font-semibold text-white mt-1 syne">{p.title}</p>
-            </div>
+        <FadeIn delay={0} x={-20} y={0}>
+          <SectionBadge num="3" label="Selected projects" />
+        </FadeIn>
+        <FadeIn delay={0.1} y={30}>
+          <h2
+            className="syne font-medium leading-[1.08] tracking-[-0.03em] text-white mb-10 sm:mb-14 lg:mb-16 px-5 sm:px-8 lg:px-12"
+            style={{ fontSize: 'clamp(1.75rem, 7vw, 4.2rem)' }}
+          >
+            My projects
+          </h2>
+        </FadeIn>
+        <div className="px-5 sm:px-8 lg:px-12">
+          {projects.map((project, i) => (
+            <ProjectCard
+              key={project.num}
+              project={project}
+              index={i}
+              total={projects.length}
+            />
           ))}
         </div>
       </div>
@@ -456,47 +763,54 @@ function Projects() {
 ══════════════════════════════════════ */
 function Contact() {
   return (
-    <section id="contact" className="bg-[#0e0a20] pt-16 sm:pt-20 lg:pt-28 pb-20 sm:pb-28 lg:pb-36 relative overflow-hidden">
+    <section
+      id="contact"
+      className="bg-[#0e0a20] pt-16 sm:pt-20 lg:pt-28 pb-20 sm:pb-28 lg:pb-36 relative overflow-hidden"
+    >
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-violet-700/10 blur-[140px]" />
       </div>
 
       <div className="max-w-[1440px] mx-auto relative z-10">
-        <SectionBadge num="4" label="Get in touch" />
-        <h2
-          className="syne font-medium leading-[1.08] tracking-[-0.03em] text-white mb-6 sm:mb-8 px-5 sm:px-8 lg:px-12"
-          style={{ fontSize: 'clamp(1.75rem, 7vw, 4.2rem)' }}
-        >
-          Let's work together
-        </h2>
-        <p className="text-[15px] sm:text-[17px] leading-[1.7] text-white/50 mb-10 max-w-lg font-light px-5 sm:px-8 lg:px-12">
-          I'm actively seeking apprenticeship opportunities where I can grow, contribute, and build real things. If you think I'd be a good fit, I'd love to hear from you.
-        </p>
+        <FadeIn delay={0} x={-20} y={0}>
+          <SectionBadge num="4" label="Get in touch" />
+        </FadeIn>
+        <FadeIn delay={0.1} y={30}>
+          <h2
+            className="syne font-medium leading-[1.08] tracking-[-0.03em] text-white mb-6 sm:mb-8 px-5 sm:px-8 lg:px-12"
+            style={{ fontSize: 'clamp(1.75rem, 7vw, 4.2rem)' }}
+          >
+            Let's work together
+          </h2>
+        </FadeIn>
+        <FadeIn delay={0.2} y={20}>
+          <p className="text-[15px] sm:text-[17px] leading-[1.7] text-white/50 mb-10 max-w-lg font-light px-5 sm:px-8 lg:px-12">
+            I'm actively seeking apprenticeship opportunities where I can grow, contribute, and build real things. If you think I'd be a good fit, I'd love to hear from you.
+          </p>
+        </FadeIn>
 
-        <div className="flex flex-col sm:flex-row gap-4 mb-16 px-5 sm:px-8 lg:px-12">
-          <GlassButton href="mailto:hello@example.com">Send me an email</GlassButton>
-          <GlassButton href="https://linkedin.com" dark>
-            <span className="flex items-center gap-2">
-              <Link size={14} />
+        <FadeIn delay={0.3} y={20}>
+          <div className="flex flex-col sm:flex-row gap-4 mb-16 px-5 sm:px-8 lg:px-12">
+            <GlassButton href="mailto:hello@example.com">Send me an email</GlassButton>
+            <GlassButton href="https://linkedin.com" dark>
               LinkedIn
-            </span>
-          </GlassButton>
-          <GlassButton href="https://github.com" dark>
-            <span className="flex items-center gap-2">
-              <GitBranch size={14} />
-              GitHub
-            </span>
-          </GlassButton>
-        </div>
+            </GlassButton>
+            <GlassButton href="https://github.com/Fallka0" dark>
+              <span className="flex items-center gap-2">
+                <GitBranch size={14} />
+                GitHub
+              </span>
+            </GlassButton>
+          </div>
+        </FadeIn>
 
-        {/* Footer */}
         <div className="border-t border-white/7 pt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-5 sm:px-8 lg:px-12">
           <div className="flex items-center gap-3">
             <div
               className="w-8 h-8 rounded-full bg-violet-600/75 border border-violet-400/30 flex items-center justify-center"
               style={{ boxShadow: '0 0 16px rgba(124,58,237,0.4)' }}
             >
-              <span className="text-white text-[10px] font-bold syne">AX</span>
+              <span className="text-white text-[10px] font-bold syne">NK</span>
             </div>
             <span className="text-[13px] text-white/35">Apprentice Portfolio · 2025</span>
           </div>
@@ -577,6 +891,7 @@ export default function App() {
   return (
     <>
       <Hero onMenuOpen={() => setMenuOpen(true)} />
+      <TechMarquee />
       <About />
       <Skills />
       <Projects />
