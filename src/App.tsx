@@ -38,6 +38,9 @@ import {
   motion,
   useScroll,
   useTransform,
+  useMotionValue,
+  useSpring,
+  useInView,
   type MotionValue,
 } from 'framer-motion'
 import './index.css'
@@ -84,6 +87,95 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
       {children}
     </AuthContext.Provider>
   )
+}
+
+/* ══════════════════════════════════════
+   CURSOR (desktop only)
+══════════════════════════════════════ */
+function CustomCursor() {
+  const x = useMotionValue(-120)
+  const y = useMotionValue(-120)
+  const ringX = useSpring(x, { damping: 22, stiffness: 280, mass: 0.6 })
+  const ringY = useSpring(y, { damping: 22, stiffness: 280, mass: 0.6 })
+  const [isTouch, setIsTouch] = useState(false)
+  const [isHover, setIsHover] = useState(false)
+
+  useEffect(() => {
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+      setIsTouch(true)
+      return
+    }
+    const move = (e: MouseEvent) => { x.set(e.clientX); y.set(e.clientY) }
+    const over = (e: MouseEvent) => {
+      const el = e.target as HTMLElement
+      setIsHover(
+        el.closest('a, button, [role="button"]') !== null ||
+        el.tagName === 'A' || el.tagName === 'BUTTON'
+      )
+    }
+    window.addEventListener('mousemove', move)
+    window.addEventListener('mouseover', over)
+    return () => {
+      window.removeEventListener('mousemove', move)
+      window.removeEventListener('mouseover', over)
+    }
+  }, [x, y])
+
+  if (isTouch) return null
+
+  return (
+    <>
+      {/* Dot — precise */}
+      <motion.div
+        className="fixed top-0 left-0 pointer-events-none z-[9999]"
+        style={{ x, y, translateX: '-50%', translateY: '-50%' }}
+      >
+        <motion.div
+          animate={{ scale: isHover ? 0 : 1 }}
+          transition={{ duration: 0.15 }}
+          className="w-[6px] h-[6px] rounded-full bg-violet-300"
+        />
+      </motion.div>
+      {/* Ring — lagging */}
+      <motion.div
+        className="fixed top-0 left-0 pointer-events-none z-[9998]"
+        style={{ x: ringX, y: ringY, translateX: '-50%', translateY: '-50%' }}
+      >
+        <motion.div
+          animate={{
+            width: isHover ? 44 : 28,
+            height: isHover ? 44 : 28,
+            borderColor: isHover ? 'rgba(167,139,250,0.55)' : 'rgba(255,255,255,0.2)',
+          }}
+          transition={{ duration: 0.2 }}
+          className="rounded-full border"
+        />
+      </motion.div>
+    </>
+  )
+}
+
+/* ══════════════════════════════════════
+   COUNT-UP (scroll-triggered number)
+══════════════════════════════════════ */
+function CountUp({ to, duration = 1100 }: { to: number; duration?: number }) {
+  const [val, setVal] = useState(0)
+  const ref = useRef<HTMLSpanElement>(null)
+  const inView = useInView(ref, { once: true })
+
+  useEffect(() => {
+    if (!inView) return
+    const start = performance.now()
+    const tick = (now: number) => {
+      const p = Math.min((now - start) / duration, 1)
+      const eased = 1 - (1 - p) ** 3
+      setVal(Math.round(eased * to))
+      if (p < 1) requestAnimationFrame(tick)
+    }
+    requestAnimationFrame(tick)
+  }, [inView, to, duration])
+
+  return <span ref={ref}>{val}</span>
 }
 
 /* ══════════════════════════════════════
@@ -306,7 +398,7 @@ function SharedNavbar() {
                 className="w-9 h-9 rounded-full bg-violet-600 border border-violet-400/40 flex items-center justify-center"
                 style={{ boxShadow: '0 0 18px rgba(124,58,237,0.5)' }}
               >
-                <span className="text-white text-[11px] font-bold tracking-tight syne">NK</span>
+                <span className="text-white text-[11px] font-bold tracking-tight syne">MP</span>
               </div>
             </Link>
             <div className="hidden md:flex items-center gap-5">
@@ -376,7 +468,7 @@ function SharedNavbar() {
           }`}
         >
           <div className="flex items-center justify-between mb-6">
-            <span className="text-[13px] text-white/50">{time} Zurich</span>
+            <span className="text-[13px] text-white/50">{time} Bern</span>
             <button
               onClick={() => setOpen(false)}
               className="w-8 h-8 rounded-full glass-card flex items-center justify-center text-white/65"
@@ -640,6 +732,11 @@ function TechMarquee() {
 function HomePage() {
   const time = useClock()
   const { isAuth } = useAuth()
+  const [spotlight, setSpotlight] = useState({ x: '50%', y: '40%' })
+  const handleHeroMove = (e: React.MouseEvent<HTMLElement>) => {
+    const r = e.currentTarget.getBoundingClientRect()
+    setSpotlight({ x: `${e.clientX - r.left}px`, y: `${e.clientY - r.top}px` })
+  }
   const navLinks = [
     { label: 'Projects', to: '/projects' },
     { label: 'About', to: '/about' },
@@ -649,7 +746,17 @@ function HomePage() {
   return (
     <>
       {/* ── Hero ── */}
-      <section className="relative min-h-screen flex flex-col aurora-bg overflow-hidden">
+      <section
+        className="relative min-h-screen flex flex-col aurora-bg overflow-hidden"
+        onMouseMove={handleHeroMove}
+      >
+        {/* Mouse spotlight */}
+        <div
+          className="absolute inset-0 pointer-events-none z-10 transition-all duration-75"
+          style={{
+            background: `radial-gradient(480px circle at ${spotlight.x} ${spotlight.y}, rgba(139,92,246,0.11) 0%, transparent 65%)`,
+          }}
+        />
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="orb-1 absolute top-[12%] left-[8%] w-[500px] h-[500px] rounded-full bg-violet-700/20 blur-[110px]" />
           <div className="orb-2 absolute top-[45%] right-[3%] w-[420px] h-[420px] rounded-full bg-purple-500/14 blur-[95px]" />
@@ -672,7 +779,7 @@ function HomePage() {
                     className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-violet-600 border border-violet-400/40 flex items-center justify-center flex-shrink-0"
                     style={{ boxShadow: '0 0 20px rgba(124,58,237,0.55)' }}
                   >
-                    <span className="text-white text-[11px] font-bold tracking-tight syne">NK</span>
+                    <span className="text-white text-[11px] font-bold tracking-tight syne">MP</span>
                   </div>
                   <div className="hidden md:flex items-center gap-6">
                     {navLinks.map(({ label, to }) => (
@@ -685,7 +792,7 @@ function HomePage() {
                 <div className="hidden md:flex items-center gap-4">
                   <span className="hidden lg:block text-[13px] text-white/40">Open to apprenticeships</span>
                   <span className="flex items-center gap-1.5 text-[13px] text-white/50">
-                    <Clock size={13} />{time} Zurich
+                    <Clock size={13} />{time} Bern
                   </span>
                   {isAuth ? (
                     <Link to="/about" className="flex items-center gap-1.5 text-[12px] text-violet-300 liquid-glass-btn rounded-full px-4 py-2">
@@ -706,16 +813,16 @@ function HomePage() {
         <div className="relative z-20 flex-1 flex flex-col justify-end max-w-[1440px] mx-auto w-full px-5 sm:px-8 lg:px-12 pb-14 sm:pb-16 lg:pb-20">
           <FadeIn delay={0.05} y={20}>
             <p className="text-[13px] sm:text-[14px] text-violet-300/75 tracking-[0.18em] uppercase mb-5 sm:mb-8 syne">
-              Apprentice · Developer · Builder
+              Mykyta · Developer · Bern, CH
             </p>
           </FadeIn>
           <FadeIn delay={0.15} y={40}>
             <h1 className="syne font-medium leading-[1.06] tracking-[-0.03em] text-white mb-8 sm:mb-10" style={{ fontSize: 'clamp(2.2rem, 7vw, 4.8rem)' }}>
-              Crafting digital experiences
+              Hi, I'm Mykyta —
               <br className="hidden sm:block" /><span className="sm:hidden"> </span>
-              that stand out — ready
+              building things that
               <br className="hidden sm:block" /><span className="sm:hidden"> </span>
-              to learn, build &amp; grow.
+              actually ship.
             </h1>
           </FadeIn>
           <FadeIn delay={0.3} y={20}>
@@ -724,7 +831,7 @@ function HomePage() {
               <div className="group inline-flex items-center gap-2.5 glass-card rounded-2xl px-4 py-2.5 cursor-default hover:border-violet-400/28 transition-all duration-300">
                 <StarburstIcon className="w-5 h-5 sm:w-6 sm:h-6 fill-violet-400/75 flex-shrink-0" />
                 <span className="text-[13px] sm:text-[14px] font-medium text-white/75">Seeking Apprenticeship</span>
-                <span className="text-[10px] sm:text-[11px] bg-violet-600/70 backdrop-blur-sm border border-violet-400/30 text-white px-1.5 sm:px-2 py-0.5 rounded-full font-medium">2025</span>
+                <span className="text-[10px] sm:text-[11px] bg-violet-600/70 backdrop-blur-sm border border-violet-400/30 text-white px-1.5 sm:px-2 py-0.5 rounded-full font-medium">2026</span>
               </div>
             </div>
           </FadeIn>
@@ -760,10 +867,17 @@ function HomePage() {
                     <div>
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-[14px] text-white/78 font-medium">{label}</span>
-                        <span className="text-[12px] text-violet-300/55">{level}%</span>
+                        <span className="text-[12px] text-violet-300/55"><CountUp to={level} />%</span>
                       </div>
                       <div className="h-1.5 rounded-full bg-white/6 overflow-hidden">
-                        <div className="h-full rounded-full" style={{ width: `${level}%`, background: 'linear-gradient(90deg, #7c3aed, #a78bfa)', boxShadow: '0 0 10px rgba(124,58,237,0.6)' }} />
+                        <motion.div
+                          className="h-full rounded-full"
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${level}%` }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 1.1, ease: [0.25, 0.1, 0.25, 1], delay: 0.1 }}
+                          style={{ background: 'linear-gradient(90deg, #7c3aed, #a78bfa)', boxShadow: '0 0 10px rgba(124,58,237,0.6)' }}
+                        />
                       </div>
                     </div>
                   </FadeIn>
@@ -831,7 +945,7 @@ function ProjectsPage() {
    PAGE: ABOUT
 ══════════════════════════════════════ */
 const ABOUT_PUBLIC =
-  'Ambitious apprentice based in Zurich, building full-stack applications across TypeScript, Go, and SQL. I ship clean, performant products — from property portals and tournament platforms to trading dashboards. Motivated, reliable, and ready to grow fast inside a great team.'
+  "I'm Mykyta — an ambitious apprentice based in Bern, building full-stack applications across TypeScript, Go, and SQL. I ship clean, performant products: property portals, tournament platforms, and trading dashboards. Motivated, reliable, and ready to grow fast inside a great team."
 
 function AboutPage() {
   const { isAuth, logout } = useAuth()
@@ -899,10 +1013,10 @@ function AboutPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       {[
                         { Icon: Phone, label: 'Phone', value: '+41 79 000 00 00' },
-                        { Icon: Mail, label: 'Personal email', value: 'personal@example.com' },
-                        { Icon: MapPin, label: 'Location', value: 'Zurich, Switzerland' },
-                        { Icon: BookOpen, label: 'School', value: 'Berufsfachschule, avg. 5.2' },
-                        { Icon: User, label: 'Salary expectation', value: 'CHF 800–1000 / month' },
+                        { Icon: Mail, label: 'Email', value: 'mykytapantelei@gmail.com' },
+                        { Icon: MapPin, label: 'Location', value: 'Bern, Switzerland' },
+                        { Icon: BookOpen, label: 'School', value: 'Berufsfachschule Bern' },
+                        { Icon: User, label: 'Salary expectation', value: 'CHF 800–1 000 / month' },
                         { Icon: GitBranch, label: 'Reference', value: 'Available on request' },
                       ].map(({ Icon, label, value }) => (
                         <div key={label} className="glass-card rounded-2xl p-5 border border-violet-400/10">
@@ -918,7 +1032,7 @@ function AboutPage() {
                     <div className="mt-6 glass-card rounded-2xl p-5 border border-violet-400/10">
                       <p className="text-[11px] text-violet-300/50 tracking-widest uppercase font-medium mb-3">Additional notes</p>
                       <p className="text-[14px] text-white/65 leading-relaxed">
-                        Available to start an apprenticeship from August 2025. Prefer companies working with modern web stacks (React / Next.js / TypeScript). Comfortable with German and English. Driver's licence not required for office-based roles.
+                        Available to start an apprenticeship from August 2026. Prefer companies working with modern web stacks — React, Next.js, TypeScript, Go. Comfortable in German and English. Based in Bern; open to Bern and greater Bern region.
                       </p>
                     </div>
                   </div>
@@ -974,7 +1088,7 @@ function ContactPage() {
 
           <FadeIn delay={0.3} y={20}>
             <div className="flex flex-col sm:flex-row gap-4 mb-20 px-5 sm:px-8 lg:px-12">
-              <GlassButton href="mailto:hello@example.com">Send me an email</GlassButton>
+              <GlassButton href="mailto:mykytapantelei@gmail.com">Send me an email</GlassButton>
               <GlassButton href="https://linkedin.com" dark>LinkedIn</GlassButton>
               <GlassButton href="https://github.com/Fallka0" dark>
                 <span className="flex items-center gap-2"><GitBranch size={14} /> GitHub</span>
@@ -986,9 +1100,9 @@ function ContactPage() {
           <FadeIn delay={0.4} y={20}>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 px-5 sm:px-8 lg:px-12 mb-16">
               {[
-                { Icon: Mail, label: 'Email', value: 'hello@example.com', href: 'mailto:hello@example.com' },
+                { Icon: Mail, label: 'Email', value: 'mykytapantelei@gmail.com', href: 'mailto:mykytapantelei@gmail.com' },
                 { Icon: GitBranch, label: 'GitHub', value: 'github.com/Fallka0', href: 'https://github.com/Fallka0' },
-                { Icon: MapPin, label: 'Location', value: 'Zurich, Switzerland', href: undefined },
+                { Icon: MapPin, label: 'Location', value: 'Bern, Switzerland', href: undefined },
               ].map(({ Icon, label, value, href }) => (
                 <div key={label} className="glass-card rounded-2xl p-5 group hover:border-violet-400/22 transition-all duration-300">
                   <Icon size={16} className="text-violet-400/60 mb-3" />
@@ -1009,9 +1123,9 @@ function ContactPage() {
           <div className="border-t border-white/7 pt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-5 sm:px-8 lg:px-12">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-violet-600/75 border border-violet-400/30 flex items-center justify-center" style={{ boxShadow: '0 0 16px rgba(124,58,237,0.4)' }}>
-                <span className="text-white text-[10px] font-bold syne">NK</span>
+                <span className="text-white text-[10px] font-bold syne">MP</span>
               </div>
-              <span className="text-[13px] text-white/35">Portfolio · 2025</span>
+              <span className="text-[13px] text-white/35">Mykyta Pantelei · 2026</span>
             </div>
             <Link to="/" className="text-[13px] text-white/25 hover:text-white/50 transition-colors duration-200">
               Back to home
@@ -1130,6 +1244,10 @@ export default function App() {
   return (
     <HashRouter>
       <AuthProvider>
+        {/* Film-grain overlay — subtle texture across all pages */}
+        <div className="grain-overlay" aria-hidden="true" />
+        {/* Custom cursor — desktop only */}
+        <CustomCursor />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/projects" element={<ProjectsPage />} />
