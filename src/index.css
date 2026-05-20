@@ -18,12 +18,13 @@ body {
   overflow-x: hidden;
   min-height: 100vh;
   background:
-    radial-gradient(ellipse at 8%  18%, rgba(0,   122, 255, 0.28) 0%, transparent 45%),
-    radial-gradient(ellipse at 92% 12%, rgba(255, 149,   0, 0.18) 0%, transparent 40%),
-    radial-gradient(ellipse at 88% 82%, rgba(88,   86, 214, 0.22) 0%, transparent 46%),
-    radial-gradient(ellipse at 12% 88%, rgba(52,  199,  89, 0.15) 0%, transparent 40%),
-    radial-gradient(ellipse at 52% 52%, rgba(0,   199, 190, 0.12) 0%, transparent 38%),
-    #EEF0F7;
+    radial-gradient(circle at 12% 18%,  rgba(0,   122, 255, 0.42) 0%, transparent 38%),
+    radial-gradient(circle at 88% 8%,   rgba(255, 105, 180, 0.32) 0%, transparent 36%),
+    radial-gradient(circle at 92% 76%,  rgba(88,   86, 214, 0.36) 0%, transparent 42%),
+    radial-gradient(circle at 8%  88%,  rgba(52,  199,  89, 0.26) 0%, transparent 38%),
+    radial-gradient(circle at 50% 50%,  rgba(0,   199, 190, 0.20) 0%, transparent 44%),
+    radial-gradient(circle at 70% 42%,  rgba(255, 149,   0, 0.22) 0%, transparent 36%),
+    #F5F6FA;
   background-attachment: fixed;
 }
 
@@ -32,131 +33,137 @@ h1, h2, h3, .syne {
   letter-spacing: -0.02em;
 }
 
-/*
- * ── Liquid Glass Material ──
- *
- * Two pseudo-element system matching the reference technique:
- *   ::after  (z-index: -1) — Lens layer: backdrop-filter captures the
- *            ambient mesh gradient, SVG feDisplacementMap warps it to
- *            simulate real glass refraction. This is what separates
- *            "glass" from a plain frosted blur.
- *   ::before (z-index:  0) — Specular layer: diagonal gradient + inset
- *            box-shadows draw the edge highlights and top-gloss.
- *
- * The parent uses isolation: isolate so ::after z-index: -1 stays
- * within the element's stacking context instead of going behind the page.
- */
+/* ══════════════════════════════════════════════════════════════════════
+   LIQUID GLASS — iOS 26
+   ══════════════════════════════════════════════════════════════════════
+   The look is built from four optical layers stacked on every glass surface:
 
-.liquid-glass-btn,
+     1. Backdrop blur + saturation boost  → the frosted base translucency
+     2. Diagonal tint gradient            → the body of the glass
+     3. ::before  specular highlight       → the bright curved-surface gloss
+     4. ::after   refracted inner shadow   → the dark edge where light bends
+
+   Combined with a bright pixel border and a soft cool drop shadow, this
+   reproduces the dome / pebble feel of Liquid Glass without needing a
+   shader. No SVG displacement — the stochastic noise approach produced
+   glitchy speckle rather than smooth refraction.
+   ════════════════════════════════════════════════════════════════════ */
+
+.liquid-glass,
 .glass-card,
+.liquid-glass-btn,
+.liquid-glass-pill,
 .navbar-glass {
   position: relative;
   isolation: isolate;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.55) 0%,
+      rgba(255, 255, 255, 0.22) 45%,
+      rgba(255, 255, 255, 0.38) 100%
+    );
+  backdrop-filter: blur(22px) saturate(190%) brightness(1.06);
+  -webkit-backdrop-filter: blur(22px) saturate(190%) brightness(1.06);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    0 10px 36px -8px  rgba(15, 30, 80, 0.14),
+    0 3px  10px -3px  rgba(15, 30, 80, 0.08),
+    inset 0  1px 1px  rgba(255, 255, 255, 0.95),
+    inset 0 -1px 1px  rgba(255, 255, 255, 0.30);
 }
 
-/* ── Specular highlights (above content) ── */
-.liquid-glass-btn::before,
+/* ── Specular layer (curved-surface gloss) ── */
+.liquid-glass::before,
 .glass-card::before,
+.liquid-glass-btn::before,
+.liquid-glass-pill::before,
 .navbar-glass::before {
   content: '';
   position: absolute;
   inset: 0;
-  z-index: 0;
   border-radius: inherit;
   pointer-events: none;
-  box-shadow:
-    inset 0  2px  0    rgba(255, 255, 255, 1.00),
-    inset 0 -1px  0    rgba(255, 255, 255, 0.30),
-    inset  1.5px 0 0   rgba(255, 255, 255, 0.40),
-    inset -1.5px 0 0   rgba(255, 255, 255, 0.40);
+  z-index: 0;
+  background:
+    radial-gradient(120% 80% at 18% -8%, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0) 55%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 40%);
 }
 
-/* ── Lens layer (behind content, distorts the backdrop) ── */
-.liquid-glass-btn::after,
+/* ── Refraction layer (rim of bent light along inner edges) ── */
+.liquid-glass::after,
 .glass-card::after,
+.liquid-glass-btn::after,
+.liquid-glass-pill::after,
 .navbar-glass::after {
   content: '';
   position: absolute;
   inset: 0;
-  z-index: -1;
   border-radius: inherit;
-  overflow: hidden;
-  isolation: isolate;
-  filter: url(#lg-distort);
-  background: rgba(255, 255, 255, 0.06);
+  pointer-events: none;
+  z-index: 0;
+  box-shadow:
+    inset 0  -14px 22px -18px rgba(10, 30, 80, 0.30),
+    inset  12px 0   22px -18px rgba(255, 255, 255, 0.45),
+    inset -12px 0   22px -18px rgba(255, 255, 255, 0.45),
+    inset 0   12px 22px -18px rgba(255, 255, 255, 0.55);
 }
 
-/* ── Liquid Glass Button ── */
+/* Children sit above the optical layers */
+.liquid-glass > *,
+.glass-card > *,
+.liquid-glass-btn > *,
+.liquid-glass-pill > *,
+.navbar-glass > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Variant: button (compact, interactive) ── */
 .liquid-glass-btn {
-  border: 1px solid rgba(255, 255, 255, 0.65);
-  box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.08),
-    0 1px 4px  rgba(0, 0, 0, 0.04);
-  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+  transition:
+    transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1),
+    box-shadow 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
-.liquid-glass-btn::before {
-  background: linear-gradient(145deg,
-    rgba(255, 255, 255, 0.44)  0%,
-    rgba(255, 255, 255, 0.10) 40%,
-    rgba(255, 255, 255, 0.01) 100%);
-}
-.liquid-glass-btn::after {
-  backdrop-filter: blur(40px) saturate(200%) brightness(1.10);
-  -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(1.10);
-  background: rgba(255, 255, 255, 0.08);
-}
-
 .liquid-glass-btn:hover {
-  box-shadow:
-    0 6px 32px rgba(0, 0, 0, 0.10),
-    0 2px 6px  rgba(0, 0, 0, 0.05);
   transform: translateY(-1px);
-}
-.liquid-glass-btn:hover::before {
-  background: linear-gradient(145deg,
-    rgba(255, 255, 255, 0.58)  0%,
-    rgba(255, 255, 255, 0.16) 40%,
-    rgba(255, 255, 255, 0.03) 100%);
-}
-
-/* ── Glass Card ── */
-.glass-card {
-  border: 1px solid rgba(255, 255, 255, 0.60);
   box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.06),
-    0 1px 4px  rgba(0, 0, 0, 0.04);
-}
-.glass-card::before {
-  background: linear-gradient(145deg,
-    rgba(255, 255, 255, 0.30)  0%,
-    rgba(255, 255, 255, 0.07) 50%,
-    rgba(255, 255, 255, 0.01) 100%);
-}
-.glass-card::after {
-  backdrop-filter: blur(32px) saturate(180%) brightness(1.06);
-  -webkit-backdrop-filter: blur(32px) saturate(180%) brightness(1.06);
+    0 14px 40px -8px  rgba(15, 30, 80, 0.18),
+    0 4px  12px -3px  rgba(15, 30, 80, 0.10),
+    inset 0  1px 1px  rgba(255, 255, 255, 1.00),
+    inset 0 -1px 1px  rgba(255, 255, 255, 0.40);
 }
 
-/* ── Navbar Glass ── */
+/* ── Variant: pill (small inline tag) ── */
+.liquid-glass-pill {
+  backdrop-filter: blur(14px) saturate(170%) brightness(1.04);
+  -webkit-backdrop-filter: blur(14px) saturate(170%) brightness(1.04);
+  box-shadow:
+    0 2px 8px -2px rgba(15, 30, 80, 0.10),
+    inset 0  1px 0 rgba(255, 255, 255, 0.90),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.25);
+}
+.liquid-glass-pill::after { box-shadow: none; }
+
+/* ── Variant: navbar (stronger blur, more presence) ── */
 .navbar-glass {
-  border: 1px solid rgba(255, 255, 255, 0.70);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.62) 0%,
+      rgba(255, 255, 255, 0.28) 50%,
+      rgba(255, 255, 255, 0.42) 100%
+    );
+  backdrop-filter: blur(28px) saturate(210%) brightness(1.08);
+  -webkit-backdrop-filter: blur(28px) saturate(210%) brightness(1.08);
   box-shadow:
-    0 8px 40px rgba(0, 0, 0, 0.08),
-    0 2px 8px  rgba(0, 0, 0, 0.05);
-}
-.navbar-glass::before {
-  background: linear-gradient(145deg,
-    rgba(255, 255, 255, 0.52)  0%,
-    rgba(255, 255, 255, 0.14) 40%,
-    rgba(255, 255, 255, 0.02) 100%);
-}
-.navbar-glass::after {
-  backdrop-filter: blur(60px) saturate(220%) brightness(1.12);
-  -webkit-backdrop-filter: blur(60px) saturate(220%) brightness(1.12);
-  background: rgba(255, 255, 255, 0.10);
+    0 14px 44px -10px rgba(15, 30, 80, 0.18),
+    0 4px  14px -4px  rgba(15, 30, 80, 0.10),
+    inset 0  1px 1px  rgba(255, 255, 255, 1.00),
+    inset 0 -1px 1px  rgba(255, 255, 255, 0.35);
 }
 
-/* ── Text Roll Animation ── */
+/* ── Text Roll Animation (button hover) ── */
 .text-roll-wrap {
   overflow: hidden;
   height: 20px;
@@ -169,16 +176,6 @@ h1, h2, h3, .syne {
   transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 .group:hover .text-roll-inner { transform: translateY(-50%); }
-
-/* ── Scroll fade-in ── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(28px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.fade-up { animation: fadeUp 0.7s cubic-bezier(0.25, 0.1, 0.25, 1) both; }
-.fade-up-delay-1 { animation-delay: 0.1s; }
-.fade-up-delay-2 { animation-delay: 0.22s; }
-.fade-up-delay-3 { animation-delay: 0.36s; }
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 5px; }

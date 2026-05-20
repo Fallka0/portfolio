@@ -19,7 +19,6 @@ import {
   Menu,
   X,
   GitBranch,
-  ExternalLink,
   Mail,
   Target,
   Zap,
@@ -216,49 +215,6 @@ function AnimatedText({
 /* ══════════════════════════════════════
    SHARED UI
 ══════════════════════════════════════ */
-/* ══════════════════════════════════════
-   SVG FILTER DEFINITIONS
-   Hidden SVG that defines the liquid-glass lens distortion filter.
-   The ::after pseudo-elements on glass classes reference #lg-distort
-   via CSS filter: url(#lg-distort) to create real refraction.
-══════════════════════════════════════ */
-function GlassFilters() {
-  return (
-    <svg
-      aria-hidden="true"
-      style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden', pointerEvents: 'none' }}
-    >
-      <defs>
-        <filter
-          id="lg-distort"
-          x="-20%" y="-20%" width="140%" height="140%"
-          colorInterpolationFilters="sRGB"
-        >
-          {/* Organic fractal noise drives the displacement map */}
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.012 0.018"
-            numOctaves="2"
-            seed="5"
-            result="noise"
-          />
-          {/* Displace the captured backdrop to simulate glass refraction */}
-          <feDisplacementMap
-            in="SourceGraphic"
-            in2="noise"
-            scale="18"
-            xChannelSelector="R"
-            yChannelSelector="G"
-            result="displaced"
-          />
-          {/* Clip displaced result back to the original element shape */}
-          <feComposite in="displaced" in2="SourceGraphic" operator="in" />
-        </filter>
-      </defs>
-    </svg>
-  )
-}
-
 function StarburstIcon({ className = '' }: { className?: string }) {
   return (
     <svg
@@ -571,87 +527,93 @@ const row1Items = ['Next.js', 'TypeScript', 'React', 'Tailwind CSS', 'Supabase',
 const row2Items = ['Vercel', 'Git & GitHub', 'Docker', 'PHP', 'C#', 'Node.js', 'SQL', 'HTML & CSS', 'Responsive Design', 'Authentication', 'Chart.js']
 
 /* ══════════════════════════════════════
-   PROJECT CARD (stacking)
+   PROJECT CARD
 ══════════════════════════════════════ */
-function ProjectCard({ project, index, total }: { project: ProjectData; index: number; total: number }) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start start', 'end start'],
-  })
-  const targetScale = 1 - (total - 1 - index) * 0.03
-  const scale = useTransform(scrollYProgress, [0, 1], [1, targetScale])
-
+function ProjectCard({ project, index }: { project: ProjectData; index: number }) {
+  const reverse = index % 2 === 1
   return (
-    <div ref={containerRef} className="h-[35vh]">
-      <motion.div
-        style={{ scale, position: 'sticky', top: 70 + index * 18, transformOrigin: 'top center' }}
-        className="w-full rounded-[24px] sm:rounded-[32px] border border-[#3C3C43]/10 p-4 sm:p-5 glass-card"
-      >
-        {/* Top row */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3 sm:gap-5">
-            <span
-              className="syne font-bold text-[#1C1C1E]/8 leading-none select-none"
-              style={{ fontSize: 'clamp(1.8rem, 5vw, 4rem)' }}
-            >
-              {project.num}
-            </span>
-            <div>
-              <p className="text-[10px] text-[#007AFF]/60 tracking-widest uppercase mb-0.5">
+    <FadeIn delay={index * 0.06} y={40}>
+      <article className="glass-card rounded-[28px] sm:rounded-[36px] p-5 sm:p-7 lg:p-8 mb-6 sm:mb-8">
+        <div
+          className={`grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-6 lg:gap-10 items-center ${
+            reverse ? 'lg:[&>:first-child]:order-2' : ''
+          }`}
+        >
+          {/* Image collage */}
+          <div className="grid grid-cols-3 grid-rows-2 gap-2.5 sm:gap-3 h-[260px] sm:h-[340px] lg:h-[380px]">
+            <div className="col-span-2 row-span-2 rounded-2xl overflow-hidden glass-card">
+              <img
+                src={project.img3}
+                alt={project.title}
+                className="w-full h-full object-cover transition-transform duration-700 hover:scale-[1.04]"
+                loading="lazy"
+              />
+            </div>
+            <div className="col-span-1 row-span-1 rounded-2xl overflow-hidden glass-card">
+              <img
+                src={project.img1}
+                alt=""
+                className="w-full h-full object-cover transition-transform duration-700 hover:scale-[1.04]"
+                loading="lazy"
+              />
+            </div>
+            <div className="col-span-1 row-span-1 rounded-2xl overflow-hidden glass-card">
+              <img
+                src={project.img2}
+                alt=""
+                className="w-full h-full object-cover transition-transform duration-700 hover:scale-[1.04]"
+                loading="lazy"
+              />
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="flex flex-col">
+            <div className="flex items-center gap-4 mb-4">
+              <span
+                className="syne font-bold leading-none select-none text-transparent bg-clip-text"
+                style={{
+                  fontSize: 'clamp(2.4rem, 5vw, 3.6rem)',
+                  backgroundImage:
+                    'linear-gradient(135deg, rgba(0,122,255,0.55) 0%, rgba(88,86,214,0.35) 100%)',
+                }}
+              >
+                {project.num}
+              </span>
+              <span className="text-[11px] text-[#007AFF]/75 tracking-[0.18em] uppercase font-semibold">
                 {project.category}
-              </p>
-              <p className="syne font-semibold text-[#1C1C1E] leading-tight" style={{ fontSize: 'clamp(0.95rem, 2vw, 1.45rem)' }}>
-                {project.title}
-              </p>
+              </span>
             </div>
-          </div>
-          <a
-            href={project.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden sm:flex items-center gap-1.5 liquid-glass-btn rounded-full px-3.5 py-1.5 text-[11px] text-[#3C3C43]/60 font-medium tracking-widest uppercase hover:text-[#1C1C1E] transition-colors duration-300"
-          >
-            Live <ExternalLink size={10} className="ml-0.5" />
-          </a>
-        </div>
 
-        {/* Image grid */}
-        <div className="flex gap-2.5 sm:gap-3" style={{ height: 'clamp(180px, 30vh, 300px)' }}>
-          <div className="w-[36%] flex flex-col gap-2.5 sm:gap-3">
-            <div className="flex-1 rounded-xl overflow-hidden glass-card">
-              <img src={project.img1} alt="" className="w-full h-full object-cover opacity-75 hover:opacity-90 transition-opacity duration-500" loading="lazy" />
-            </div>
-            <div className="flex-[1.3] rounded-xl overflow-hidden glass-card">
-              <img src={project.img2} alt="" className="w-full h-full object-cover opacity-75 hover:opacity-90 transition-opacity duration-500" loading="lazy" />
-            </div>
-          </div>
-          <div className="flex-1 flex flex-col gap-2.5 sm:gap-3">
-            <div className="flex-1 rounded-xl overflow-hidden glass-card">
-              <img src={project.img3} alt={project.title} className="w-full h-full object-cover opacity-75 hover:opacity-90 transition-opacity duration-500" loading="lazy" />
-            </div>
-            <div className="hidden sm:block">
-              <p className="text-[12px] leading-relaxed text-[#3C3C43]/60 mb-2 line-clamp-2">{project.desc}</p>
-              <div className="flex flex-wrap gap-1.5">
-                {project.tags.map((t) => (
-                  <span key={t} className="text-[10px] px-2.5 py-0.5 rounded-full glass-card text-[#007AFF]/80">{t}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+            <h3
+              className="syne font-medium text-[#1C1C1E] mb-3 tracking-tight leading-[1.1]"
+              style={{ fontSize: 'clamp(1.5rem, 2.6vw, 2.1rem)' }}
+            >
+              {project.title}
+            </h3>
 
-        {/* Mobile meta */}
-        <div className="sm:hidden mt-2.5">
-          <p className="text-[11px] leading-relaxed text-[#3C3C43]/60 mb-2 line-clamp-2">{project.desc}</p>
-          <div className="flex flex-wrap gap-1.5">
-            {project.tags.map((t) => (
-              <span key={t} className="text-[10px] px-2 py-0.5 rounded-full glass-card text-[#007AFF]/80">{t}</span>
-            ))}
+            <p className="text-[14px] sm:text-[15px] leading-[1.7] text-[#3C3C43]/70 mb-6">
+              {project.desc}
+            </p>
+
+            <div className="flex flex-wrap gap-1.5 mb-7">
+              {project.tags.map((t) => (
+                <span
+                  key={t}
+                  className="liquid-glass-pill text-[11px] px-3 py-1 rounded-full text-[#007AFF]/85 font-medium"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+
+            <div>
+              <GlassButton href={project.href}>Visit live site</GlassButton>
+            </div>
           </div>
         </div>
-      </motion.div>
-    </div>
+      </article>
+    </FadeIn>
   )
 }
 
@@ -681,7 +643,7 @@ function TechMarquee() {
         style={{ transform: `translateX(${tx}px)`, willChange: 'transform' }}
       >
         {[...items, ...items, ...items].map((item, i) => (
-          <div key={i} className="flex-shrink-0 glass-card rounded-full px-5 py-2.5 text-[13px] font-medium text-[#3C3C43]/60 whitespace-nowrap">
+          <div key={i} className="flex-shrink-0 liquid-glass-pill rounded-full px-5 py-2.5 text-[13px] font-medium text-[#3C3C43]/70 whitespace-nowrap">
             {item}
           </div>
         ))}
@@ -856,10 +818,10 @@ function ProjectsPage() {
           </FadeIn>
           <div className="px-5 sm:px-8 lg:px-12">
             {projects.map((project, i) => (
-              <ProjectCard key={project.num} project={project} index={i} total={projects.length} />
+              <ProjectCard key={project.num} project={project} index={i} />
             ))}
           </div>
-          <div className="h-32" />
+          <div className="h-20" />
         </div>
       </section>
     </>
@@ -1169,7 +1131,6 @@ export default function App() {
   return (
     <HashRouter>
       <AuthProvider>
-        <GlassFilters />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/projects" element={<ProjectsPage />} />
