@@ -247,18 +247,29 @@ function GlassButton({
   dark?: boolean
   type?: 'button' | 'submit' | 'reset'
 }) {
-  const textColor = dark ? 'text-[#3C3C43]/75' : 'text-[#1C1C1E]'
+  const navigate = useNavigate()
+  const textColor = dark ? 'text-[#3C3C43]/80' : 'text-[#1C1C1E]'
+
+  const handleClick = () => {
+    if (onClick) return onClick()
+    if (to) return navigate(to)
+    if (href) {
+      if (href.startsWith('http')) window.open(href, '_blank', 'noopener,noreferrer')
+      else window.location.href = href
+    }
+  }
+
   const glass = (
     <LiquidGlass
       cornerRadius={100}
-      padding={arrow ? '6px 6px 6px 18px' : '8px 18px'}
+      padding={arrow ? '6px 6px 6px 18px' : '10px 22px'}
       displacementScale={48}
       blurAmount={0.06}
       saturation={150}
       aberrationIntensity={2}
-      elasticity={0.3}
+      elasticity={0}
       overLight
-      onClick={onClick}
+      onClick={type === 'submit' ? undefined : handleClick}
     >
       {arrow ? (
         <span className={`group inline-flex items-center gap-2 ${textColor}`}>
@@ -273,31 +284,21 @@ function GlassButton({
           </span>
         </span>
       ) : (
-        <span className={`text-[13px] font-medium ${textColor}`}>{children}</span>
+        <span className={`text-[13px] font-medium whitespace-nowrap ${textColor}`}>{children}</span>
       )}
     </LiquidGlass>
   )
 
-  const wrapper = (node: React.ReactNode) => (
-    <span className={`inline-block ${className}`}>{node}</span>
-  )
-
-  if (to) return <Link to={to}>{wrapper(glass)}</Link>
-  if (href)
+  // type="submit" needs a real <button> so the form fires.
+  if (type === 'submit') {
     return (
-      <a
-        href={href}
-        target={href.startsWith('http') ? '_blank' : undefined}
-        rel="noopener noreferrer"
-      >
-        {wrapper(glass)}
-      </a>
+      <button type="submit" className={`inline-block bg-transparent border-0 p-0 ${className}`}>
+        {glass}
+      </button>
     )
-  return (
-    <button type={type ?? 'button'} onClick={onClick} className={className}>
-      {glass}
-    </button>
-  )
+  }
+
+  return <span className={`inline-block ${className}`}>{glass}</span>
 }
 
 function SectionBadge({ num, label }: { num: string; label: string }) {
@@ -321,7 +322,6 @@ function FloatingNav() {
   const { isAuth, logout } = useAuth()
   const location = useLocation()
   const [open, setOpen] = useState(false)
-  const navRef = useRef<HTMLDivElement>(null)
 
   const links = [
     { label: 'Home', to: '/' },
@@ -335,21 +335,9 @@ function FloatingNav() {
 
   return (
     <>
-      <nav ref={navRef} className="fixed top-0 left-0 right-0 z-40 px-4 sm:px-6 pt-4">
+      <nav className="fixed top-0 left-0 right-0 z-40 px-4 sm:px-6 pt-4">
         <div className="max-w-[1440px] mx-auto">
-          <LiquidGlass
-            cornerRadius={999}
-            padding="6px 8px"
-            displacementScale={36}
-            blurAmount={0.08}
-            saturation={160}
-            aberrationIntensity={1.5}
-            elasticity={0.2}
-            mouseContainer={navRef}
-            overLight
-            className="block"
-          >
-          <div className="flex items-center justify-between gap-4">
+          <div className="nav-pill rounded-full px-2 py-1.5 flex items-center justify-between gap-4">
             <div className="flex items-center gap-5">
               <Link to="/" className="flex items-center">
                 <div
@@ -410,7 +398,6 @@ function FloatingNav() {
               <Menu size={18} />
             </button>
           </div>
-          </LiquidGlass>
         </div>
       </nav>
 
@@ -425,11 +412,10 @@ function FloatingNav() {
           onClick={() => setOpen(false)}
         />
         <div
-          className={`absolute bottom-0 left-3 right-3 mb-3 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+          className={`absolute bottom-0 left-3 right-3 mb-3 rounded-2xl nav-pill p-6 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
             open ? 'translate-y-0' : 'translate-y-full'
           }`}
         >
-          <LiquidGlass cornerRadius={20} padding="24px" displacementScale={50} blurAmount={0.1} saturation={170} aberrationIntensity={2} elasticity={0.2} overLight className="block">
           <div className="flex items-center justify-between mb-6">
             <span className="text-[13px] text-[#3C3C43]/60">{time} Bern</span>
             <button
@@ -467,7 +453,6 @@ function FloatingNav() {
               <Lock size={13} /> Private access
             </Link>
           )}
-          </LiquidGlass>
         </div>
       </div>
     </>
@@ -562,22 +547,22 @@ function ProjectCard({ project, index }: { project: ProjectData; index: number }
   const reverse = index % 2 === 1
   return (
     <FadeIn delay={index * 0.06} y={40}>
-      <article className="mb-6 sm:mb-8">
+      <article className="mb-8 sm:mb-12 flex justify-center">
         <LiquidGlass
           cornerRadius={32}
-          padding="24px"
-          displacementScale={70}
+          padding="0"
+          displacementScale={64}
           blurAmount={0.08}
           saturation={160}
           aberrationIntensity={2}
-          elasticity={0.15}
+          elasticity={0}
           overLight
-          className="block"
         >
         <div
-          className={`grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-6 lg:gap-10 items-center ${
+          className={`grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-6 lg:gap-10 items-center p-6 sm:p-8 ${
             reverse ? 'lg:[&>:first-child]:order-2' : ''
           }`}
+          style={{ width: 'min(1100px, calc(100vw - 40px))' }}
         >
           {/* Image collage */}
           <div className="grid grid-cols-3 grid-rows-2 gap-2.5 sm:gap-3 h-[260px] sm:h-[340px] lg:h-[380px]">
@@ -759,8 +744,8 @@ function HomePage() {
           <FadeIn delay={0.3} y={20}>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
               <GlassButton to="/projects">View my work</GlassButton>
-              <LiquidGlass cornerRadius={18} padding="10px 16px" displacementScale={42} blurAmount={0.06} saturation={150} aberrationIntensity={2} elasticity={0.3} overLight>
-                <span className="inline-flex items-center gap-2.5">
+              <LiquidGlass cornerRadius={18} padding="10px 16px" displacementScale={42} blurAmount={0.06} saturation={150} aberrationIntensity={2} elasticity={0} overLight>
+                <span className="inline-flex items-center gap-2.5 whitespace-nowrap">
                   <StarburstIcon className="w-5 h-5 sm:w-6 sm:h-6 fill-[#007AFF]/70 flex-shrink-0" />
                   <span className="text-[13px] sm:text-[14px] font-medium text-[#1C1C1E]">Seeking Apprenticeship</span>
                   <span className="text-[10px] sm:text-[11px] bg-[#007AFF]/75 border border-[#007AFF]/30 text-white px-1.5 sm:px-2 py-0.5 rounded-full font-medium">2026</span>
@@ -821,11 +806,11 @@ function HomePage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {traits.map(({ Icon, title, desc }, i) => (
                   <FadeIn key={title} delay={i * 0.1} y={20}>
-                    <LiquidGlass cornerRadius={20} padding="20px" displacementScale={56} blurAmount={0.08} saturation={155} aberrationIntensity={2} elasticity={0.18} overLight className="block h-full">
+                    <div className="glass-card rounded-2xl p-5 h-full">
                       <Icon size={20} className="text-[#007AFF]/75 mb-3" />
                       <p className="text-[14px] font-semibold text-[#1C1C1E] mb-1.5 syne">{title}</p>
                       <p className="text-[13px] leading-[1.65] text-[#3C3C43]/65">{desc}</p>
-                    </LiquidGlass>
+                    </div>
                   </FadeIn>
                 ))}
               </div>
@@ -859,7 +844,7 @@ function ProjectsPage() {
               My projects
             </h1>
           </FadeIn>
-          <div className="px-5 sm:px-8 lg:px-12">
+          <div>
             {projects.map((project, i) => (
               <ProjectCard key={project.num} project={project} index={i} />
             ))}
@@ -949,23 +934,21 @@ function AboutPage() {
                         { Icon: User, label: 'Salary expectation', value: 'CHF 800–1 000 / month' },
                         { Icon: GitBranch, label: 'Reference', value: 'Available on request' },
                       ].map(({ Icon, label, value }) => (
-                        <LiquidGlass key={label} cornerRadius={20} padding="20px" displacementScale={52} blurAmount={0.07} saturation={150} aberrationIntensity={2} elasticity={0.15} overLight className="block h-full">
+                        <div key={label} className="glass-card rounded-2xl p-5 h-full">
                           <div className="flex items-center gap-2 mb-2">
                             <Icon size={14} className="text-[#007AFF]/65" />
                             <span className="text-[11px] text-[#007AFF]/60 tracking-widest uppercase font-medium">{label}</span>
                           </div>
                           <p className="text-[14px] text-[#1C1C1E] font-medium">{value}</p>
-                        </LiquidGlass>
+                        </div>
                       ))}
                     </div>
 
-                    <div className="mt-6">
-                      <LiquidGlass cornerRadius={20} padding="20px" displacementScale={58} blurAmount={0.08} saturation={155} aberrationIntensity={2} elasticity={0.15} overLight className="block">
-                        <p className="text-[11px] text-[#007AFF]/60 tracking-widest uppercase font-medium mb-3">Additional notes</p>
-                        <p className="text-[14px] text-[#3C3C43] leading-relaxed">
-                          Available to start an apprenticeship from August 2026. Prefer companies working with modern web stacks — React, Next.js, TypeScript, Go. Comfortable in German and English. Based in Bern; open to Bern and greater Bern region.
-                        </p>
-                      </LiquidGlass>
+                    <div className="mt-6 glass-card rounded-2xl p-5">
+                      <p className="text-[11px] text-[#007AFF]/60 tracking-widest uppercase font-medium mb-3">Additional notes</p>
+                      <p className="text-[14px] text-[#3C3C43] leading-relaxed">
+                        Available to start an apprenticeship from August 2026. Prefer companies working with modern web stacks — React, Next.js, TypeScript, Go. Comfortable in German and English. Based in Bern; open to Bern and greater Bern region.
+                      </p>
                     </div>
                   </div>
                 </FadeIn>
@@ -1036,7 +1019,7 @@ function ContactPage() {
                 { Icon: GitBranch, label: 'GitHub', value: 'github.com/Fallka0', href: 'https://github.com/Fallka0' },
                 { Icon: MapPin, label: 'Location', value: 'Bern, Switzerland', href: undefined },
               ].map(({ Icon, label, value, href }) => (
-                <LiquidGlass key={label} cornerRadius={20} padding="20px" displacementScale={56} blurAmount={0.08} saturation={155} aberrationIntensity={2} elasticity={0.18} overLight className="block group h-full">
+                <div key={label} className="glass-card rounded-2xl p-5 group h-full">
                   <Icon size={16} className="text-[#007AFF]/65 mb-3" />
                   <p className="text-[11px] text-[#007AFF]/60 tracking-widest uppercase font-medium mb-1">{label}</p>
                   {href ? (
@@ -1046,7 +1029,7 @@ function ContactPage() {
                   ) : (
                     <p className="text-[14px] text-[#3C3C43]">{value}</p>
                   )}
-                </LiquidGlass>
+                </div>
               ))}
             </div>
           </FadeIn>
@@ -1107,10 +1090,11 @@ function LoginPage() {
         <motion.div
           animate={shake ? { x: [-8, 8, -8, 8, 0] } : { x: 0 }}
           transition={{ duration: 0.4 }}
-          className="relative z-10 w-full max-w-sm"
+          className="relative z-10 flex justify-center"
         >
           <FadeIn delay={0} y={24}>
-            <LiquidGlass cornerRadius={24} padding="32px" displacementScale={66} blurAmount={0.1} saturation={170} aberrationIntensity={2} elasticity={0.18} overLight className="block">
+            <LiquidGlass cornerRadius={24} padding="0" displacementScale={66} blurAmount={0.1} saturation={170} aberrationIntensity={2} elasticity={0} overLight>
+              <div className="p-8" style={{ width: 'min(380px, calc(100vw - 32px))' }}>
               <div className="flex justify-center mb-7">
                 <div className="w-12 h-12 rounded-full bg-[#007AFF]/75 border border-[#007AFF]/30 flex items-center justify-center" style={{ boxShadow: '0 0 22px rgba(0,122,255,0.30)' }}>
                   <Lock size={20} className="text-white" />
@@ -1160,6 +1144,7 @@ function LoginPage() {
                 <Link to="/about" className="text-[12px] text-[#3C3C43]/45 hover:text-[#3C3C43]/65 transition-colors duration-200">
                   Continue without signing in
                 </Link>
+              </div>
               </div>
             </LiquidGlass>
           </FadeIn>
