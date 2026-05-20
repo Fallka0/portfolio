@@ -302,9 +302,9 @@ function SectionBadge({ num, label }: { num: string; label: string }) {
 }
 
 /* ══════════════════════════════════════
-   SHARED NAVBAR (secondary pages)
+   FLOATING NAV (all pages)
 ══════════════════════════════════════ */
-function SharedNavbar() {
+function FloatingNav() {
   const time = useClock()
   const { isAuth, logout } = useAuth()
   const location = useLocation()
@@ -318,68 +318,73 @@ function SharedNavbar() {
   ]
 
   const isActive = (to: string) => location.pathname === to
+  const isHome = location.pathname === '/'
 
   return (
     <>
-      <nav className="sticky top-0 z-40 px-4 sm:px-6 py-3 navbar-glass border-b border-white/40">
-        <div className="max-w-[1440px] mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-5">
-            <Link to="/" className="flex items-center">
-              <div
-                className="w-9 h-9 rounded-full bg-[#007AFF] border border-[#007AFF]/40 flex items-center justify-center"
-                style={{ boxShadow: '0 0 14px rgba(0,122,255,0.30)' }}
-              >
-                <span className="text-white text-[11px] font-bold tracking-tight syne">MP</span>
-              </div>
-            </Link>
-            <div className="hidden md:flex items-center gap-5">
-              {links.map(({ label, to }) => (
-                <Link
-                  key={to}
-                  to={to}
-                  className={`text-[14px] transition-colors duration-300 ${
-                    isActive(to)
-                      ? 'text-[#1C1C1E]'
-                      : 'text-[#3C3C43]/55 hover:text-[#1C1C1E]'
-                  }`}
+      <nav className="fixed top-0 left-0 right-0 z-40 px-4 sm:px-6 pt-4">
+        <div className="max-w-[1440px] mx-auto">
+          <div className="navbar-glass rounded-full px-2 py-1.5 flex items-center justify-between">
+            <div className="flex items-center gap-5">
+              <Link to="/" className="flex items-center">
+                <div
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#007AFF] border border-[#007AFF]/40 flex items-center justify-center flex-shrink-0"
+                  style={{ boxShadow: '0 0 16px rgba(0,122,255,0.35)' }}
                 >
-                  {label}
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <div className="hidden md:flex items-center gap-4">
-            <span className="flex items-center gap-1.5 text-[13px] text-[#3C3C43]/55">
-              <Clock size={12} />
-              {time}
-            </span>
-            {isAuth ? (
-              <button
-                onClick={logout}
-                className="flex items-center gap-1.5 text-[12px] text-[#007AFF]/70 hover:text-[#007AFF] transition-colors duration-200"
-              >
-                <LogOut size={13} />
-                Sign out
-              </button>
-            ) : (
-              <Link
-                to="/login"
-                className="flex items-center gap-1.5 text-[12px] text-[#007AFF]/70 hover:text-[#007AFF] transition-colors duration-200"
-              >
-                <Lock size={12} />
-                Private
+                  <span className="text-white text-[11px] font-bold tracking-tight syne">MP</span>
+                </div>
               </Link>
-            )}
+              <div className="hidden md:flex items-center gap-6">
+                {links.map(({ label, to }) => (
+                  <Link
+                    key={to}
+                    to={to}
+                    className={`text-[14px] transition-colors duration-300 ${
+                      isActive(to)
+                        ? 'text-[#1C1C1E]'
+                        : 'text-[#3C3C43]/60 hover:text-[#1C1C1E]'
+                    }`}
+                  >
+                    {label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+            <div className="hidden md:flex items-center gap-4">
+              {isHome && (
+                <span className="hidden lg:block text-[13px] text-[#3C3C43]/55">Open to apprenticeships</span>
+              )}
+              <span className="flex items-center gap-1.5 text-[13px] text-[#3C3C43]/55">
+                <Clock size={13} />{time} Bern
+              </span>
+              {isAuth ? (
+                <button
+                  onClick={logout}
+                  className="flex items-center gap-1.5 text-[12px] text-[#007AFF]/70 hover:text-[#007AFF] transition-colors duration-200"
+                >
+                  <LogOut size={13} />
+                  Sign out
+                </button>
+              ) : isHome ? (
+                <GlassButton to="/contact">Get in touch</GlassButton>
+              ) : (
+                <Link
+                  to="/login"
+                  className="flex items-center gap-1.5 text-[12px] text-[#007AFF]/70 hover:text-[#007AFF] transition-colors duration-200"
+                >
+                  <Lock size={12} />
+                  Private
+                </Link>
+              )}
+            </div>
+            <button
+              onClick={() => setOpen(true)}
+              className="md:hidden liquid-glass-btn rounded-full p-2 text-[#1C1C1E]"
+              aria-label="Open menu"
+            >
+              <Menu size={18} />
+            </button>
           </div>
-
-          <button
-            onClick={() => setOpen(true)}
-            className="md:hidden liquid-glass-btn rounded-full p-2 text-[#1C1C1E]"
-            aria-label="Open menu"
-          >
-            <Menu size={18} />
-          </button>
         </div>
       </nav>
 
@@ -535,10 +540,10 @@ function ProjectCard({ project, index, total }: { project: ProjectData; index: n
   const scale = useTransform(scrollYProgress, [0, 1], [1, targetScale])
 
   return (
-    <div ref={containerRef} className="h-[60vh]">
+    <div ref={containerRef} className="h-[35vh]">
       <motion.div
-        style={{ scale, position: 'sticky', top: 80 + index * 24, transformOrigin: 'top center' }}
-        className="w-full rounded-[24px] sm:rounded-[32px] border border-[#3C3C43]/10 bg-white p-4 sm:p-5 glass-card"
+        style={{ scale, position: 'sticky', top: 70 + index * 18, transformOrigin: 'top center' }}
+        className="w-full rounded-[24px] sm:rounded-[32px] border border-[#3C3C43]/10 p-4 sm:p-5 glass-card"
       >
         {/* Top row */}
         <div className="flex items-center justify-between mb-4">
@@ -642,7 +647,7 @@ function TechMarquee() {
   }
 
   return (
-    <section ref={sectionRef} className="bg-[#F2F2F7] pt-16 pb-8 overflow-hidden">
+    <section ref={sectionRef} className="pt-16 pb-8 overflow-hidden">
       <FadeIn y={16} delay={0}>
         <p className="text-[11px] text-[#007AFF]/55 font-medium tracking-widest uppercase text-center mb-7">
           Technologies I work with
@@ -660,24 +665,19 @@ function TechMarquee() {
    PAGE: HOME
 ══════════════════════════════════════ */
 function HomePage() {
-  const time = useClock()
-  const { isAuth } = useAuth()
   const [spotlight, setSpotlight] = useState({ x: '50%', y: '40%' })
   const handleHeroMove = (e: React.MouseEvent<HTMLElement>) => {
     const r = e.currentTarget.getBoundingClientRect()
     setSpotlight({ x: `${e.clientX - r.left}px`, y: `${e.clientY - r.top}px` })
   }
-  const navLinks = [
-    { label: 'Projects', to: '/projects' },
-    { label: 'About', to: '/about' },
-    { label: 'Contact', to: '/contact' },
-  ]
 
   return (
     <>
+      <FloatingNav />
+
       {/* ── Hero ── */}
       <section
-        className="relative min-h-screen flex flex-col bg-[#F2F2F7] overflow-hidden"
+        className="relative min-h-screen flex flex-col overflow-hidden pt-24 sm:pt-28"
         onMouseMove={handleHeroMove}
       >
         {/* Mouse spotlight */}
@@ -694,46 +694,6 @@ function HomePage() {
           <div className="absolute top-[45%] right-[3%] w-[420px] h-[420px] rounded-full bg-[#007AFF]/4 blur-[95px]" />
           <div className="absolute bottom-[8%] left-[38%] w-[360px] h-[360px] rounded-full bg-[#007AFF]/5 blur-[85px]" />
         </div>
-
-        <FadeIn delay={0} y={-20} className="relative z-20">
-          <nav className="px-4 sm:px-6 pt-4 sm:pt-5">
-            <div className="max-w-[1440px] mx-auto">
-              <div className="navbar-glass rounded-full px-2 py-1.5 flex items-center justify-between">
-                <div className="flex items-center gap-5">
-                  <div
-                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#007AFF] border border-[#007AFF]/40 flex items-center justify-center flex-shrink-0"
-                    style={{ boxShadow: '0 0 16px rgba(0,122,255,0.35)' }}
-                  >
-                    <span className="text-white text-[11px] font-bold tracking-tight syne">MP</span>
-                  </div>
-                  <div className="hidden md:flex items-center gap-6">
-                    {navLinks.map(({ label, to }) => (
-                      <Link key={to} to={to} className="text-[14px] text-[#3C3C43]/60 hover:text-[#1C1C1E] transition-colors duration-300">
-                        {label}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-                <div className="hidden md:flex items-center gap-4">
-                  <span className="hidden lg:block text-[13px] text-[#3C3C43]/55">Open to apprenticeships</span>
-                  <span className="flex items-center gap-1.5 text-[13px] text-[#3C3C43]/55">
-                    <Clock size={13} />{time} Bern
-                  </span>
-                  {isAuth ? (
-                    <Link to="/about" className="flex items-center gap-1.5 text-[12px] text-[#007AFF] liquid-glass-btn rounded-full px-4 py-2">
-                      <Lock size={11} /> Private view
-                    </Link>
-                  ) : (
-                    <GlassButton to="/contact">Get in touch</GlassButton>
-                  )}
-                </div>
-                <Link to="/projects" className="md:hidden liquid-glass-btn rounded-full px-3 py-2 text-[12px] text-[#3C3C43]/70 font-medium">
-                  Projects
-                </Link>
-              </div>
-            </div>
-          </nav>
-        </FadeIn>
 
         <div className="relative z-20 flex-1 flex flex-col justify-end max-w-[1440px] mx-auto w-full px-5 sm:px-8 lg:px-12 pb-14 sm:pb-16 lg:pb-20">
           <FadeIn delay={0.05} y={20}>
@@ -761,15 +721,13 @@ function HomePage() {
             </div>
           </FadeIn>
         </div>
-
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#F2F2F7] to-transparent pointer-events-none z-10" />
       </section>
 
       {/* ── Tech Marquee ── */}
       <TechMarquee />
 
       {/* ── Skills overview ── */}
-      <section id="skills" className="bg-white pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28 relative overflow-hidden">
+      <section id="skills" className="pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute bottom-0 left-1/3 w-[500px] h-[300px] bg-[#007AFF]/4 blur-[110px]" />
         </div>
@@ -841,8 +799,8 @@ function HomePage() {
 function ProjectsPage() {
   return (
     <>
-      <SharedNavbar />
-      <section className="bg-[#F2F2F7] pt-12 pb-8 relative overflow-hidden min-h-screen">
+      <FloatingNav />
+      <section className="pt-24 pb-8 relative overflow-hidden min-h-screen">
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#007AFF]/5 blur-[120px] pointer-events-none" />
         <div className="max-w-[1440px] mx-auto">
           <FadeIn delay={0} x={-20} y={0}>
@@ -876,8 +834,8 @@ function AboutPage() {
 
   return (
     <>
-      <SharedNavbar />
-      <section className="bg-[#F2F2F7] pt-12 pb-24 relative overflow-hidden min-h-screen">
+      <FloatingNav />
+      <section className="pt-24 pb-24 relative overflow-hidden min-h-screen">
         <div className="absolute top-0 right-0 w-[600px] h-[400px] bg-[#007AFF]/4 blur-[130px] pointer-events-none" />
         <div className="max-w-[1440px] mx-auto">
           <FadeIn delay={0} x={-20} y={0}>
@@ -989,8 +947,8 @@ function AboutPage() {
 function ContactPage() {
   return (
     <>
-      <SharedNavbar />
-      <section className="bg-[#F2F2F7] pt-12 pb-20 sm:pb-28 lg:pb-36 relative overflow-hidden min-h-screen">
+      <FloatingNav />
+      <section className="pt-24 pb-20 sm:pb-28 lg:pb-36 relative overflow-hidden min-h-screen">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-[#007AFF]/5 blur-[140px]" />
         </div>
@@ -1090,8 +1048,8 @@ function LoginPage() {
 
   return (
     <>
-      <SharedNavbar />
-      <section className="bg-[#F2F2F7] min-h-[calc(100vh-64px)] flex items-center justify-center px-4 relative overflow-hidden">
+      <FloatingNav />
+      <section className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-[#007AFF]/5 blur-[130px]" />
         </div>

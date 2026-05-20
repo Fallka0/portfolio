@@ -4,9 +4,6 @@
 
 :root {
   --ios-blue: #007AFF;
-  --ios-blue-soft: rgba(0, 122, 255, 0.10);
-  --bg-primary: #F2F2F7;
-  --bg-elevated: #FFFFFF;
   --label: #1C1C1E;
   --label-secondary: rgba(60, 60, 67, 0.60);
   --label-tertiary: rgba(60, 60, 67, 0.30);
@@ -17,9 +14,23 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
-  background: var(--bg-primary);
   color: var(--label);
   overflow-x: hidden;
+  min-height: 100vh;
+  /*
+   * Ambient mesh gradient — this is what the glass refracts.
+   * Without an interesting background, glassmorphism looks flat.
+   * background-attachment: fixed keeps it stationary as content scrolls,
+   * making glass elements continuously reveal different parts of the gradient.
+   */
+  background:
+    radial-gradient(ellipse at 8%  18%, rgba(0,   122, 255, 0.18) 0%, transparent 42%),
+    radial-gradient(ellipse at 92% 12%, rgba(255, 149,   0, 0.09) 0%, transparent 38%),
+    radial-gradient(ellipse at 88% 82%, rgba(88,   86, 214, 0.13) 0%, transparent 44%),
+    radial-gradient(ellipse at 12% 88%, rgba(52,  199,  89, 0.08) 0%, transparent 38%),
+    radial-gradient(ellipse at 52% 52%, rgba(0,   199, 190, 0.06) 0%, transparent 35%),
+    #EEF0F7;
+  background-attachment: fixed;
 }
 
 h1, h2, h3, .syne {
@@ -27,54 +38,93 @@ h1, h2, h3, .syne {
   letter-spacing: -0.02em;
 }
 
-/* ── Liquid Glass Button ── */
+/*
+ * ── Liquid Glass Material ──
+ *
+ * Three-layer system (matching Apple's documentation):
+ *   1. Specular gradient  — diagonal light catch via CSS linear-gradient
+ *   2. Illumination base  — very low-opacity white (8–10%)
+ *   3. Lens               — backdrop-filter blur + saturate + brightness
+ *
+ * Inset shadows add the edge highlights that define the glass boundary:
+ *   top:    bright white line (primary specular)
+ *   bottom: soft white line (secondary refraction)
+ *   sides:  quarter-opacity whites (side edge catch)
+ */
+
 .liquid-glass-btn {
-  background: rgba(255, 255, 255, 0.38);
-  backdrop-filter: blur(28px) saturate(200%) brightness(1.04);
-  -webkit-backdrop-filter: blur(28px) saturate(200%) brightness(1.04);
-  border: 0.5px solid rgba(255, 255, 255, 0.82);
+  background:
+    linear-gradient(145deg,
+      rgba(255, 255, 255, 0.40)  0%,
+      rgba(255, 255, 255, 0.12) 40%,
+      rgba(255, 255, 255, 0.02) 100%),
+    rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(40px) saturate(200%) brightness(1.10);
+  -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(1.10);
+  border: 1px solid rgba(255, 255, 255, 0.65);
   box-shadow:
-    0 2px 16px rgba(0, 0, 0, 0.08),
-    0 1px 4px rgba(0, 0, 0, 0.05),
-    inset 0 1.5px 0 rgba(255, 255, 255, 1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.05);
-  transition: all 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+    0 4px 24px rgba(0, 0, 0, 0.08),
+    0 1px 4px  rgba(0, 0, 0, 0.04),
+    inset 0  2px  0    rgba(255, 255, 255, 1.00),
+    inset 0 -1px  0    rgba(255, 255, 255, 0.30),
+    inset  1.5px 0 0   rgba(255, 255, 255, 0.40),
+    inset -1.5px 0 0   rgba(255, 255, 255, 0.40);
+  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .liquid-glass-btn:hover {
-  background: rgba(255, 255, 255, 0.58);
+  background:
+    linear-gradient(145deg,
+      rgba(255, 255, 255, 0.55)  0%,
+      rgba(255, 255, 255, 0.20) 40%,
+      rgba(255, 255, 255, 0.05) 100%),
+    rgba(255, 255, 255, 0.14);
   box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.10),
-    0 1px 4px rgba(0, 0, 0, 0.05),
-    inset 0 1.5px 0 rgba(255, 255, 255, 1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+    0 6px 32px rgba(0, 0, 0, 0.10),
+    0 2px 6px  rgba(0, 0, 0, 0.05),
+    inset 0  2px  0    rgba(255, 255, 255, 1.00),
+    inset 0 -1px  0    rgba(255, 255, 255, 0.30),
+    inset  1.5px 0 0   rgba(255, 255, 255, 0.40),
+    inset -1.5px 0 0   rgba(255, 255, 255, 0.40);
   transform: translateY(-1px);
 }
 
-/* ── Glass Card ── */
 .glass-card {
-  background: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(28px) saturate(200%) brightness(1.02);
-  -webkit-backdrop-filter: blur(28px) saturate(200%) brightness(1.02);
-  border: 0.5px solid rgba(255, 255, 255, 0.82);
+  background:
+    linear-gradient(145deg,
+      rgba(255, 255, 255, 0.30)  0%,
+      rgba(255, 255, 255, 0.08) 50%,
+      rgba(255, 255, 255, 0.02) 100%),
+    rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(32px) saturate(180%) brightness(1.06);
+  -webkit-backdrop-filter: blur(32px) saturate(180%) brightness(1.06);
+  border: 1px solid rgba(255, 255, 255, 0.60);
   box-shadow:
     0 4px 24px rgba(0, 0, 0, 0.06),
-    0 1px 4px rgba(0, 0, 0, 0.04),
-    inset 0 1.5px 0 rgba(255, 255, 255, 1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+    0 1px 4px  rgba(0, 0, 0, 0.04),
+    inset 0  2px  0    rgba(255, 255, 255, 0.95),
+    inset 0 -1px  0    rgba(255, 255, 255, 0.20),
+    inset  1.5px 0 0   rgba(255, 255, 255, 0.30),
+    inset -1.5px 0 0   rgba(255, 255, 255, 0.30);
 }
 
-/* ── Navbar Glass ── */
 .navbar-glass {
-  background: rgba(255, 255, 255, 0.45);
-  backdrop-filter: blur(40px) saturate(220%) brightness(1.05);
-  -webkit-backdrop-filter: blur(40px) saturate(220%) brightness(1.05);
-  border: 0.5px solid rgba(255, 255, 255, 0.88);
+  background:
+    linear-gradient(145deg,
+      rgba(255, 255, 255, 0.50)  0%,
+      rgba(255, 255, 255, 0.14) 40%,
+      rgba(255, 255, 255, 0.04) 100%),
+    rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(60px) saturate(220%) brightness(1.12);
+  -webkit-backdrop-filter: blur(60px) saturate(220%) brightness(1.12);
+  border: 1px solid rgba(255, 255, 255, 0.70);
   box-shadow:
-    0 8px 40px rgba(0, 0, 0, 0.10),
-    0 2px 8px rgba(0, 0, 0, 0.06),
-    inset 0 1.5px 0 rgba(255, 255, 255, 1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+    0 8px 40px rgba(0, 0, 0, 0.08),
+    0 2px 8px  rgba(0, 0, 0, 0.05),
+    inset 0  2px  0    rgba(255, 255, 255, 1.00),
+    inset 0 -1px  0    rgba(255, 255, 255, 0.35),
+    inset  1.5px 0 0   rgba(255, 255, 255, 0.45),
+    inset -1.5px 0 0   rgba(255, 255, 255, 0.45);
 }
 
 /* ── Text Roll Animation ── */
@@ -103,7 +153,7 @@ h1, h2, h3, .syne {
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: #F2F2F7; }
-::-webkit-scrollbar-thumb { background: rgba(0, 122, 255, 0.30); border-radius: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0, 122, 255, 0.22); border-radius: 3px; }
 
 html { scroll-behavior: smooth; }
