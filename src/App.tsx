@@ -38,8 +38,6 @@ import {
   motion,
   useScroll,
   useTransform,
-  useMotionValue,
-  useSpring,
   useInView,
   type MotionValue,
 } from 'framer-motion'
