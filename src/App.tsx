@@ -321,7 +321,7 @@ function SharedNavbar() {
 
   return (
     <>
-      <nav className="sticky top-0 z-40 px-4 sm:px-6 py-3 bg-white/90 backdrop-blur-md border-b border-[#3C3C43]/8">
+      <nav className="sticky top-0 z-40 px-4 sm:px-6 py-3 navbar-glass border-b border-white/40">
         <div className="max-w-[1440px] mx-auto flex items-center justify-between">
           <div className="flex items-center gap-5">
             <Link to="/" className="flex items-center">
