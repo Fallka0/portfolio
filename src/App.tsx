@@ -216,6 +216,49 @@ function AnimatedText({
 /* ══════════════════════════════════════
    SHARED UI
 ══════════════════════════════════════ */
+/* ══════════════════════════════════════
+   SVG FILTER DEFINITIONS
+   Hidden SVG that defines the liquid-glass lens distortion filter.
+   The ::after pseudo-elements on glass classes reference #lg-distort
+   via CSS filter: url(#lg-distort) to create real refraction.
+══════════════════════════════════════ */
+function GlassFilters() {
+  return (
+    <svg
+      aria-hidden="true"
+      style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden', pointerEvents: 'none' }}
+    >
+      <defs>
+        <filter
+          id="lg-distort"
+          x="-20%" y="-20%" width="140%" height="140%"
+          colorInterpolationFilters="sRGB"
+        >
+          {/* Organic fractal noise drives the displacement map */}
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.012 0.018"
+            numOctaves="2"
+            seed="5"
+            result="noise"
+          />
+          {/* Displace the captured backdrop to simulate glass refraction */}
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="noise"
+            scale="18"
+            xChannelSelector="R"
+            yChannelSelector="G"
+            result="displaced"
+          />
+          {/* Clip displaced result back to the original element shape */}
+          <feComposite in="displaced" in2="SourceGraphic" operator="in" />
+        </filter>
+      </defs>
+    </svg>
+  )
+}
+
 function StarburstIcon({ className = '' }: { className?: string }) {
   return (
     <svg
@@ -1126,6 +1169,7 @@ export default function App() {
   return (
     <HashRouter>
       <AuthProvider>
+        <GlassFilters />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/projects" element={<ProjectsPage />} />
