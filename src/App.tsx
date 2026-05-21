@@ -669,35 +669,12 @@ function TechMarquee() {
    PAGE: HOME
 ══════════════════════════════════════ */
 function HomePage() {
-  const [spotlight, setSpotlight] = useState({ x: '50%', y: '40%' })
-  const handleHeroMove = (e: React.MouseEvent<HTMLElement>) => {
-    const r = e.currentTarget.getBoundingClientRect()
-    setSpotlight({ x: `${e.clientX - r.left}px`, y: `${e.clientY - r.top}px` })
-  }
-
   return (
     <>
       <FloatingNav />
 
       {/* ── Hero ── */}
-      <section
-        className="relative min-h-screen flex flex-col overflow-hidden pt-24 sm:pt-28"
-        onMouseMove={handleHeroMove}
-      >
-        {/* Mouse spotlight */}
-        <div
-          className="absolute inset-0 pointer-events-none z-10 transition-all duration-75"
-          style={{
-            background: `radial-gradient(480px circle at ${spotlight.x} ${spotlight.y}, rgba(0,122,255,0.08) 0%, transparent 65%)`,
-          }}
-        />
-
-        {/* Background glow orbs */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-[12%] left-[8%] w-[500px] h-[500px] rounded-full bg-[#007AFF]/8 blur-[110px]" />
-          <div className="absolute top-[45%] right-[3%] w-[420px] h-[420px] rounded-full bg-pink-400/8 blur-[95px]" />
-          <div className="absolute bottom-[8%] left-[38%] w-[360px] h-[360px] rounded-full bg-[#5856D6]/8 blur-[85px]" />
-        </div>
+      <section className="relative min-h-screen flex flex-col overflow-hidden pt-24 sm:pt-28">
 
         <div className="relative z-20 flex-1 flex flex-col justify-end max-w-[1280px] mx-auto w-full px-5 sm:px-8 lg:px-12 pb-14 sm:pb-16 lg:pb-20">
           <FadeIn delay={0.05} y={20}>
@@ -732,9 +709,6 @@ function HomePage() {
 
       {/* ── Skills overview ── */}
       <section id="skills" className="pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28 relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute bottom-0 left-1/3 w-[500px] h-[300px] bg-[#007AFF]/5 blur-[110px]" />
-        </div>
         <div className="max-w-[1280px] mx-auto">
           <FadeIn delay={0} x={-20} y={0}>
             <SectionBadge num="01" label="What I bring" />
@@ -805,7 +779,6 @@ function ProjectsPage() {
     <>
       <FloatingNav />
       <section className="pt-28 pb-8 relative overflow-hidden min-h-screen">
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#007AFF]/5 blur-[120px] pointer-events-none" />
         <div className="max-w-[1280px] mx-auto">
           <FadeIn delay={0} x={-20} y={0}>
             <SectionBadge num="02" label="Selected work" />
@@ -840,7 +813,6 @@ function AboutPage() {
     <>
       <FloatingNav />
       <section className="pt-28 pb-24 relative overflow-hidden min-h-screen">
-        <div className="absolute top-0 right-0 w-[600px] h-[400px] bg-[#007AFF]/5 blur-[130px] pointer-events-none" />
         <div className="max-w-[1280px] mx-auto">
           <FadeIn delay={0} x={-20} y={0}>
             <SectionBadge num="03" label="About me" />
@@ -953,9 +925,6 @@ function ContactPage() {
     <>
       <FloatingNav />
       <section className="pt-28 pb-20 sm:pb-28 lg:pb-36 relative overflow-hidden min-h-screen">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-[#007AFF]/6 blur-[140px]" />
-        </div>
 
         <div className="max-w-[1280px] mx-auto relative z-10">
           <FadeIn delay={0} x={-20} y={0}>
@@ -1054,9 +1023,6 @@ function LoginPage() {
     <>
       <FloatingNav />
       <section className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-[#007AFF]/6 blur-[130px]" />
-        </div>
 
         <motion.div
           animate={shake ? { x: [-8, 8, -8, 8, 0] } : { x: 0 }}
