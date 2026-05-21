@@ -40,7 +40,6 @@ import {
   useInView,
   type MotionValue,
 } from 'framer-motion'
-import LiquidGlass from 'liquid-glass-react'
 import './index.css'
 
 /* ══════════════════════════════════════
@@ -175,7 +174,7 @@ function AnimatedChar({
   const opacity = useTransform(scrollYProgress, [start, end], [0.18, 1])
   return (
     <motion.span style={{ opacity }} className="inline-block">
-      {char === ' ' ? ' ' : char}
+      {char === ' ' ? ' ' : char}
     </motion.span>
   )
 }
@@ -259,17 +258,13 @@ function GlassButton({
     }
   }
 
-  const glass = (
-    <LiquidGlass
-      cornerRadius={100}
-      padding={arrow ? '6px 6px 6px 18px' : '10px 22px'}
-      displacementScale={48}
-      blurAmount={0.06}
-      saturation={150}
-      aberrationIntensity={2}
-      elasticity={0}
-      overLight
+  const padding = arrow ? 'pl-[18px] pr-[6px] py-[6px]' : 'px-5 py-2.5'
+
+  return (
+    <button
+      type={type ?? 'button'}
       onClick={type === 'submit' ? undefined : handleClick}
+      className={`glass-button ${padding} ${className}`}
     >
       {arrow ? (
         <span className={`group inline-flex items-center gap-2 ${textColor}`}>
@@ -279,35 +274,24 @@ function GlassButton({
               <span>{children}</span>
             </span>
           </span>
-          <span className="w-7 h-7 rounded-full bg-[#007AFF]/85 border border-[#007AFF]/40 flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-rotate-45 flex-shrink-0">
+          <span className="w-7 h-7 rounded-full bg-[#007AFF] border border-[#007AFF]/40 flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-rotate-45 flex-shrink-0">
             <ArrowRight size={13} className="text-white" />
           </span>
         </span>
       ) : (
         <span className={`text-[13px] font-medium whitespace-nowrap ${textColor}`}>{children}</span>
       )}
-    </LiquidGlass>
+    </button>
   )
-
-  // type="submit" needs a real <button> so the form fires.
-  if (type === 'submit') {
-    return (
-      <button type="submit" className={`inline-block bg-transparent border-0 p-0 ${className}`}>
-        {glass}
-      </button>
-    )
-  }
-
-  return <span className={`inline-block ${className}`}>{glass}</span>
 }
 
 function SectionBadge({ num, label }: { num: string; label: string }) {
   return (
     <div className="flex items-center gap-3 mb-6 sm:mb-8 px-5 sm:px-8 lg:px-12">
-      <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#007AFF]/80 border border-[#007AFF]/30 text-white text-[11px] font-semibold flex items-center justify-center flex-shrink-0">
+      <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#007AFF] border border-[#007AFF]/30 text-white text-[11px] font-semibold flex items-center justify-center flex-shrink-0">
         {num}
       </span>
-      <span className="text-[12px] sm:text-[13px] font-medium border border-[#3C3C43]/15 rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-[#3C3C43]/60 liquid-glass-pill">
+      <span className="glass-subtle text-[12px] sm:text-[13px] font-medium rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-[#3C3C43]/65">
         {label}
       </span>
     </div>
@@ -336,26 +320,26 @@ function FloatingNav() {
   return (
     <>
       <nav className="fixed top-0 left-0 right-0 z-40 px-4 sm:px-6 pt-4">
-        <div className="max-w-[1440px] mx-auto">
-          <div className="nav-pill rounded-full px-2 py-1.5 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-5">
+        <div className="max-w-[1100px] mx-auto">
+          <div className="glass-strong rounded-full pl-2 pr-2 py-1.5 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-1 sm:gap-2">
               <Link to="/" className="flex items-center">
                 <div
-                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#007AFF] border border-[#007AFF]/40 flex items-center justify-center flex-shrink-0"
+                  className="w-9 h-9 rounded-full bg-[#007AFF] border border-[#007AFF]/40 flex items-center justify-center flex-shrink-0"
                   style={{ boxShadow: '0 0 16px rgba(0,122,255,0.35)' }}
                 >
                   <span className="text-white text-[11px] font-bold tracking-tight syne">MP</span>
                 </div>
               </Link>
-              <div className="hidden md:flex items-center gap-6">
+              <div className="hidden md:flex items-center gap-1 ml-2">
                 {links.map(({ label, to }) => (
                   <Link
                     key={to}
                     to={to}
-                    className={`text-[14px] transition-colors duration-300 ${
+                    className={`relative text-[13px] px-3 py-1.5 rounded-full transition-colors duration-300 ${
                       isActive(to)
-                        ? 'text-[#1C1C1E]'
-                        : 'text-[#3C3C43]/60 hover:text-[#1C1C1E]'
+                        ? 'text-[#1C1C1E] bg-white/45'
+                        : 'text-[#3C3C43]/65 hover:text-[#1C1C1E]'
                     }`}
                   >
                     {label}
@@ -363,12 +347,12 @@ function FloatingNav() {
                 ))}
               </div>
             </div>
-            <div className="hidden md:flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-3 pr-1">
               {isHome && (
-                <span className="hidden lg:block text-[13px] text-[#3C3C43]/55">Open to apprenticeships</span>
+                <span className="hidden lg:block text-[12px] text-[#3C3C43]/55">Open to apprenticeships</span>
               )}
-              <span className="flex items-center gap-1.5 text-[13px] text-[#3C3C43]/55">
-                <Clock size={13} />{time} Bern
+              <span className="hidden sm:flex items-center gap-1.5 text-[12px] text-[#3C3C43]/55">
+                <Clock size={12} />{time} Bern
               </span>
               {isAuth ? (
                 <button
@@ -383,7 +367,7 @@ function FloatingNav() {
               ) : (
                 <Link
                   to="/login"
-                  className="flex items-center gap-1.5 text-[12px] text-[#007AFF]/70 hover:text-[#007AFF] transition-colors duration-200"
+                  className="flex items-center gap-1.5 text-[12px] text-[#007AFF]/75 hover:text-[#007AFF] transition-colors duration-200"
                 >
                   <Lock size={12} />
                   Private
@@ -392,7 +376,7 @@ function FloatingNav() {
             </div>
             <button
               onClick={() => setOpen(true)}
-              className="md:hidden liquid-glass-pill rounded-full p-2 text-[#1C1C1E]"
+              className="md:hidden glass-subtle rounded-full p-2 text-[#1C1C1E]"
               aria-label="Open menu"
             >
               <Menu size={18} />
@@ -412,7 +396,7 @@ function FloatingNav() {
           onClick={() => setOpen(false)}
         />
         <div
-          className={`absolute bottom-0 left-3 right-3 mb-3 rounded-2xl nav-pill p-6 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+          className={`absolute bottom-0 left-3 right-3 mb-3 rounded-2xl glass-strong p-6 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
             open ? 'translate-y-0' : 'translate-y-full'
           }`}
         >
@@ -420,7 +404,7 @@ function FloatingNav() {
             <span className="text-[13px] text-[#3C3C43]/60">{time} Bern</span>
             <button
               onClick={() => setOpen(false)}
-              className="w-8 h-8 rounded-full liquid-glass-pill flex items-center justify-center text-[#3C3C43]/65"
+              className="w-8 h-8 rounded-full glass-subtle flex items-center justify-center text-[#3C3C43]/65"
             >
               <X size={16} />
             </button>
@@ -548,18 +532,8 @@ function ProjectCard({ project, index }: { project: ProjectData; index: number }
   return (
     <FadeIn delay={index * 0.06} y={40}>
       <article className="mb-8 sm:mb-12 flex justify-center">
-        <LiquidGlass
-          cornerRadius={32}
-          padding="0"
-          displacementScale={64}
-          blurAmount={0.08}
-          saturation={160}
-          aberrationIntensity={2}
-          elasticity={0}
-          overLight
-        >
         <div
-          className={`grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-6 lg:gap-10 items-center p-6 sm:p-8 ${
+          className={`glass-strong glass-hover rounded-[32px] grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-6 lg:gap-10 items-center p-6 sm:p-8 ${
             reverse ? 'lg:[&>:first-child]:order-2' : ''
           }`}
           style={{ width: 'min(1100px, calc(100vw - 40px))' }}
@@ -600,12 +574,12 @@ function ProjectCard({ project, index }: { project: ProjectData; index: number }
                 style={{
                   fontSize: 'clamp(2.4rem, 5vw, 3.6rem)',
                   backgroundImage:
-                    'linear-gradient(135deg, rgba(0,122,255,0.55) 0%, rgba(88,86,214,0.35) 100%)',
+                    'linear-gradient(135deg, rgba(0,122,255,0.65) 0%, rgba(88,86,214,0.40) 100%)',
                 }}
               >
                 {project.num}
               </span>
-              <span className="text-[11px] text-[#007AFF]/75 tracking-[0.18em] uppercase font-semibold">
+              <span className="text-[11px] text-[#007AFF]/80 tracking-[0.18em] uppercase font-semibold">
                 {project.category}
               </span>
             </div>
@@ -617,7 +591,7 @@ function ProjectCard({ project, index }: { project: ProjectData; index: number }
               {project.title}
             </h3>
 
-            <p className="text-[14px] sm:text-[15px] leading-[1.7] text-[#3C3C43]/70 mb-6">
+            <p className="text-[14px] sm:text-[15px] leading-[1.7] text-[#3C3C43]/72 mb-6">
               {project.desc}
             </p>
 
@@ -625,7 +599,7 @@ function ProjectCard({ project, index }: { project: ProjectData; index: number }
               {project.tags.map((t) => (
                 <span
                   key={t}
-                  className="liquid-glass-pill text-[11px] px-3 py-1 rounded-full text-[#007AFF]/85 font-medium"
+                  className="glass-subtle text-[11px] px-3 py-1 rounded-full text-[#007AFF] font-medium"
                 >
                   {t}
                 </span>
@@ -637,7 +611,6 @@ function ProjectCard({ project, index }: { project: ProjectData; index: number }
             </div>
           </div>
         </div>
-        </LiquidGlass>
       </article>
     </FadeIn>
   )
@@ -669,7 +642,7 @@ function TechMarquee() {
         style={{ transform: `translateX(${tx}px)`, willChange: 'transform' }}
       >
         {[...items, ...items, ...items].map((item, i) => (
-          <div key={i} className="flex-shrink-0 liquid-glass-pill rounded-full px-5 py-2.5 text-[13px] font-medium text-[#3C3C43]/70 whitespace-nowrap">
+          <div key={i} className="flex-shrink-0 glass-subtle rounded-full px-5 py-2.5 text-[13px] font-medium text-[#3C3C43]/75 whitespace-nowrap">
             {item}
           </div>
         ))}
@@ -680,7 +653,7 @@ function TechMarquee() {
   return (
     <section ref={sectionRef} className="pt-16 pb-8 overflow-hidden">
       <FadeIn y={16} delay={0}>
-        <p className="text-[11px] text-[#007AFF]/55 font-medium tracking-widest uppercase text-center mb-7">
+        <p className="text-[11px] text-[#007AFF]/65 font-medium tracking-widest uppercase text-center mb-7">
           Technologies I work with
         </p>
       </FadeIn>
@@ -715,20 +688,20 @@ function HomePage() {
         <div
           className="absolute inset-0 pointer-events-none z-10 transition-all duration-75"
           style={{
-            background: `radial-gradient(480px circle at ${spotlight.x} ${spotlight.y}, rgba(0,122,255,0.06) 0%, transparent 65%)`,
+            background: `radial-gradient(480px circle at ${spotlight.x} ${spotlight.y}, rgba(0,122,255,0.08) 0%, transparent 65%)`,
           }}
         />
 
-        {/* Subtle background glow orbs */}
+        {/* Background glow orbs */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-[12%] left-[8%] w-[500px] h-[500px] rounded-full bg-[#007AFF]/6 blur-[110px]" />
-          <div className="absolute top-[45%] right-[3%] w-[420px] h-[420px] rounded-full bg-[#007AFF]/4 blur-[95px]" />
-          <div className="absolute bottom-[8%] left-[38%] w-[360px] h-[360px] rounded-full bg-[#007AFF]/5 blur-[85px]" />
+          <div className="absolute top-[12%] left-[8%] w-[500px] h-[500px] rounded-full bg-[#007AFF]/8 blur-[110px]" />
+          <div className="absolute top-[45%] right-[3%] w-[420px] h-[420px] rounded-full bg-pink-400/8 blur-[95px]" />
+          <div className="absolute bottom-[8%] left-[38%] w-[360px] h-[360px] rounded-full bg-[#5856D6]/8 blur-[85px]" />
         </div>
 
-        <div className="relative z-20 flex-1 flex flex-col justify-end max-w-[1440px] mx-auto w-full px-5 sm:px-8 lg:px-12 pb-14 sm:pb-16 lg:pb-20">
+        <div className="relative z-20 flex-1 flex flex-col justify-end max-w-[1280px] mx-auto w-full px-5 sm:px-8 lg:px-12 pb-14 sm:pb-16 lg:pb-20">
           <FadeIn delay={0.05} y={20}>
-            <p className="text-[13px] sm:text-[14px] text-[#007AFF]/80 tracking-[0.18em] uppercase mb-5 sm:mb-8 syne">
+            <p className="text-[12px] sm:text-[13px] text-[#007AFF]/85 tracking-[0.18em] uppercase mb-5 sm:mb-8 syne font-medium">
               Mykyta · Developer · Bern, CH
             </p>
           </FadeIn>
@@ -742,15 +715,13 @@ function HomePage() {
             </h1>
           </FadeIn>
           <FadeIn delay={0.3} y={20}>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-4">
               <GlassButton to="/projects">View my work</GlassButton>
-              <LiquidGlass cornerRadius={18} padding="10px 16px" displacementScale={42} blurAmount={0.06} saturation={150} aberrationIntensity={2} elasticity={0} overLight>
-                <span className="inline-flex items-center gap-2.5 whitespace-nowrap">
-                  <StarburstIcon className="w-5 h-5 sm:w-6 sm:h-6 fill-[#007AFF]/70 flex-shrink-0" />
-                  <span className="text-[13px] sm:text-[14px] font-medium text-[#1C1C1E]">Seeking Apprenticeship</span>
-                  <span className="text-[10px] sm:text-[11px] bg-[#007AFF]/75 border border-[#007AFF]/30 text-white px-1.5 sm:px-2 py-0.5 rounded-full font-medium">2026</span>
-                </span>
-              </LiquidGlass>
+              <div className="glass rounded-full pl-3 pr-2 py-1.5 inline-flex items-center gap-2.5">
+                <StarburstIcon className="w-4 h-4 sm:w-5 sm:h-5 fill-[#007AFF]/75 flex-shrink-0" />
+                <span className="text-[12px] sm:text-[13px] font-medium text-[#1C1C1E] whitespace-nowrap">Seeking Apprenticeship</span>
+                <span className="text-[10px] bg-[#007AFF] text-white px-2 py-0.5 rounded-full font-semibold">2026</span>
+              </div>
             </div>
           </FadeIn>
         </div>
@@ -762,9 +733,9 @@ function HomePage() {
       {/* ── Skills overview ── */}
       <section id="skills" className="pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute bottom-0 left-1/3 w-[500px] h-[300px] bg-[#007AFF]/4 blur-[110px]" />
+          <div className="absolute bottom-0 left-1/3 w-[500px] h-[300px] bg-[#007AFF]/5 blur-[110px]" />
         </div>
-        <div className="max-w-[1440px] mx-auto">
+        <div className="max-w-[1280px] mx-auto">
           <FadeIn delay={0} x={-20} y={0}>
             <SectionBadge num="01" label="What I bring" />
           </FadeIn>
@@ -775,15 +746,15 @@ function HomePage() {
           </FadeIn>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 px-5 sm:px-8 lg:px-12">
-            <div>
-              <p className="text-[12px] text-[#007AFF]/65 font-medium tracking-widest uppercase mb-6">Technical</p>
+            <div className="glass rounded-3xl p-7 sm:p-8">
+              <p className="text-[11px] text-[#007AFF]/75 font-medium tracking-widest uppercase mb-6">Technical</p>
               <div className="space-y-5">
                 {skills.map(({ label, level }, i) => (
                   <FadeIn key={label} delay={i * 0.08} y={16}>
                     <div>
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-[14px] text-[#1C1C1E] font-medium">{label}</span>
-                        <span className="text-[12px] text-[#007AFF]/65"><CountUp to={level} />%</span>
+                        <span className="text-[12px] text-[#007AFF]/75 font-medium"><CountUp to={level} />%</span>
                       </div>
                       <div className="h-1.5 rounded-full bg-[#3C3C43]/8 overflow-hidden">
                         <motion.div
@@ -802,14 +773,14 @@ function HomePage() {
             </div>
 
             <div>
-              <p className="text-[12px] text-[#007AFF]/65 font-medium tracking-widest uppercase mb-6">Character</p>
+              <p className="text-[11px] text-[#007AFF]/75 font-medium tracking-widest uppercase mb-6">Character</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {traits.map(({ Icon, title, desc }, i) => (
                   <FadeIn key={title} delay={i * 0.1} y={20}>
-                    <div className="glass-card rounded-2xl p-5 h-full">
-                      <Icon size={20} className="text-[#007AFF]/75 mb-3" />
+                    <div className="glass glass-hover rounded-2xl p-5 h-full">
+                      <Icon size={20} className="text-[#007AFF] mb-3" />
                       <p className="text-[14px] font-semibold text-[#1C1C1E] mb-1.5 syne">{title}</p>
-                      <p className="text-[13px] leading-[1.65] text-[#3C3C43]/65">{desc}</p>
+                      <p className="text-[13px] leading-[1.65] text-[#3C3C43]/70">{desc}</p>
                     </div>
                   </FadeIn>
                 ))}
@@ -833,9 +804,9 @@ function ProjectsPage() {
   return (
     <>
       <FloatingNav />
-      <section className="pt-24 pb-8 relative overflow-hidden min-h-screen">
+      <section className="pt-28 pb-8 relative overflow-hidden min-h-screen">
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#007AFF]/5 blur-[120px] pointer-events-none" />
-        <div className="max-w-[1440px] mx-auto">
+        <div className="max-w-[1280px] mx-auto">
           <FadeIn delay={0} x={-20} y={0}>
             <SectionBadge num="02" label="Selected work" />
           </FadeIn>
@@ -868,9 +839,9 @@ function AboutPage() {
   return (
     <>
       <FloatingNav />
-      <section className="pt-24 pb-24 relative overflow-hidden min-h-screen">
-        <div className="absolute top-0 right-0 w-[600px] h-[400px] bg-[#007AFF]/4 blur-[130px] pointer-events-none" />
-        <div className="max-w-[1440px] mx-auto">
+      <section className="pt-28 pb-24 relative overflow-hidden min-h-screen">
+        <div className="absolute top-0 right-0 w-[600px] h-[400px] bg-[#007AFF]/5 blur-[130px] pointer-events-none" />
+        <div className="max-w-[1280px] mx-auto">
           <FadeIn delay={0} x={-20} y={0}>
             <SectionBadge num="03" label="About me" />
           </FadeIn>
@@ -890,7 +861,7 @@ function AboutPage() {
             <div className="lg:grid lg:grid-cols-[26%_1fr_46%] lg:gap-8 lg:items-end">
               <FadeIn delay={0.15} x={-40} y={0} className="hidden lg:block">
                 <div className="aspect-[438/346] rounded-2xl overflow-hidden ring-1 ring-white/45">
-                  <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&q=80" alt="Developer at work" className="w-full h-full object-cover opacity-85" />
+                  <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&q=80" alt="Developer at work" className="w-full h-full object-cover opacity-90" />
                 </div>
               </FadeIn>
               <FadeIn delay={0.2} y={20}>
@@ -901,7 +872,7 @@ function AboutPage() {
               </FadeIn>
               <FadeIn delay={0.25} x={40} y={0} className="hidden lg:block">
                 <div className="aspect-[3/2] rounded-2xl overflow-hidden ring-1 ring-white/45">
-                  <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80" alt="Code on screen" className="w-full h-full object-cover opacity-85" />
+                  <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80" alt="Code on screen" className="w-full h-full object-cover opacity-90" />
                 </div>
               </FadeIn>
             </div>
@@ -915,10 +886,10 @@ function AboutPage() {
                   <div>
                     <div className="flex items-center justify-between mb-8">
                       <div className="flex items-center gap-3">
-                        <div className="w-7 h-7 rounded-full bg-[#007AFF]/60 border border-[#007AFF]/30 flex items-center justify-center">
+                        <div className="w-7 h-7 rounded-full bg-[#007AFF] border border-[#007AFF]/30 flex items-center justify-center">
                           <Lock size={12} className="text-white" />
                         </div>
-                        <span className="text-[13px] text-[#007AFF]/70 font-medium tracking-widest uppercase">Private information</span>
+                        <span className="text-[12px] text-[#007AFF]/80 font-medium tracking-widest uppercase">Private information</span>
                       </div>
                       <button onClick={logout} className="flex items-center gap-1.5 text-[12px] text-[#3C3C43]/50 hover:text-[#3C3C43]/80 transition-colors">
                         <LogOut size={12} /> Sign out
@@ -934,18 +905,18 @@ function AboutPage() {
                         { Icon: User, label: 'Salary expectation', value: 'CHF 800–1 000 / month' },
                         { Icon: GitBranch, label: 'Reference', value: 'Available on request' },
                       ].map(({ Icon, label, value }) => (
-                        <div key={label} className="glass-card rounded-2xl p-5 h-full">
+                        <div key={label} className="glass glass-hover rounded-2xl p-5 h-full">
                           <div className="flex items-center gap-2 mb-2">
-                            <Icon size={14} className="text-[#007AFF]/65" />
-                            <span className="text-[11px] text-[#007AFF]/60 tracking-widest uppercase font-medium">{label}</span>
+                            <Icon size={14} className="text-[#007AFF]" />
+                            <span className="text-[11px] text-[#007AFF]/75 tracking-widest uppercase font-medium">{label}</span>
                           </div>
                           <p className="text-[14px] text-[#1C1C1E] font-medium">{value}</p>
                         </div>
                       ))}
                     </div>
 
-                    <div className="mt-6 glass-card rounded-2xl p-5">
-                      <p className="text-[11px] text-[#007AFF]/60 tracking-widest uppercase font-medium mb-3">Additional notes</p>
+                    <div className="mt-6 glass rounded-2xl p-5">
+                      <p className="text-[11px] text-[#007AFF]/75 tracking-widest uppercase font-medium mb-3">Additional notes</p>
                       <p className="text-[14px] text-[#3C3C43] leading-relaxed">
                         Available to start an apprenticeship from August 2026. Prefer companies working with modern web stacks — React, Next.js, TypeScript, Go. Comfortable in German and English. Based in Bern; open to Bern and greater Bern region.
                       </p>
@@ -955,11 +926,11 @@ function AboutPage() {
               ) : (
                 <FadeIn delay={0} y={20}>
                   <div className="flex flex-col items-center text-center py-16">
-                    <div className="w-14 h-14 rounded-full liquid-glass-pill border border-[#007AFF]/20 flex items-center justify-center mb-6">
-                      <Lock size={22} className="text-[#007AFF]/65" />
+                    <div className="w-14 h-14 rounded-full glass-subtle border border-[#007AFF]/25 flex items-center justify-center mb-6">
+                      <Lock size={22} className="text-[#007AFF]" />
                     </div>
                     <h3 className="syne text-[1.3rem] font-semibold text-[#1C1C1E] mb-3">Private section</h3>
-                    <p className="text-[14px] text-[#3C3C43]/60 leading-relaxed max-w-sm mb-8">
+                    <p className="text-[14px] text-[#3C3C43]/65 leading-relaxed max-w-sm mb-8">
                       Contact details, salary expectations, and school information are protected. Sign in to view them.
                     </p>
                     <GlassButton to="/login">Sign in</GlassButton>
@@ -981,12 +952,12 @@ function ContactPage() {
   return (
     <>
       <FloatingNav />
-      <section className="pt-24 pb-20 sm:pb-28 lg:pb-36 relative overflow-hidden min-h-screen">
+      <section className="pt-28 pb-20 sm:pb-28 lg:pb-36 relative overflow-hidden min-h-screen">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-[#007AFF]/5 blur-[140px]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-[#007AFF]/6 blur-[140px]" />
         </div>
 
-        <div className="max-w-[1440px] mx-auto relative z-10">
+        <div className="max-w-[1280px] mx-auto relative z-10">
           <FadeIn delay={0} x={-20} y={0}>
             <SectionBadge num="04" label="Get in touch" />
           </FadeIn>
@@ -996,7 +967,7 @@ function ContactPage() {
             </h1>
           </FadeIn>
           <FadeIn delay={0.2} y={20}>
-            <p className="text-[15px] sm:text-[17px] leading-[1.7] text-[#3C3C43]/65 mb-10 max-w-lg font-light px-5 sm:px-8 lg:px-12">
+            <p className="text-[15px] sm:text-[17px] leading-[1.7] text-[#3C3C43]/70 mb-10 max-w-lg font-light px-5 sm:px-8 lg:px-12">
               I'm actively seeking apprenticeship opportunities where I can grow, contribute, and build real things. If you think I'd be a good fit, I'd love to hear from you.
             </p>
           </FadeIn>
@@ -1019,9 +990,9 @@ function ContactPage() {
                 { Icon: GitBranch, label: 'GitHub', value: 'github.com/Fallka0', href: 'https://github.com/Fallka0' },
                 { Icon: MapPin, label: 'Location', value: 'Bern, Switzerland', href: undefined },
               ].map(({ Icon, label, value, href }) => (
-                <div key={label} className="glass-card rounded-2xl p-5 group h-full">
-                  <Icon size={16} className="text-[#007AFF]/65 mb-3" />
-                  <p className="text-[11px] text-[#007AFF]/60 tracking-widest uppercase font-medium mb-1">{label}</p>
+                <div key={label} className="glass glass-hover rounded-2xl p-5 group h-full">
+                  <Icon size={16} className="text-[#007AFF] mb-3" />
+                  <p className="text-[11px] text-[#007AFF]/75 tracking-widest uppercase font-medium mb-1">{label}</p>
                   {href ? (
                     <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" className="text-[14px] text-[#3C3C43] group-hover:text-[#1C1C1E] transition-colors duration-200">
                       {value}
@@ -1035,14 +1006,14 @@ function ContactPage() {
           </FadeIn>
 
           {/* Footer */}
-          <div className="border-t border-[#3C3C43]/10 pt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-5 sm:px-8 lg:px-12">
+          <div className="border-t border-[#3C3C43]/12 pt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-5 sm:px-8 lg:px-12">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-[#007AFF]/75 border border-[#007AFF]/30 flex items-center justify-center" style={{ boxShadow: '0 0 12px rgba(0,122,255,0.25)' }}>
+              <div className="w-8 h-8 rounded-full bg-[#007AFF] border border-[#007AFF]/30 flex items-center justify-center" style={{ boxShadow: '0 0 12px rgba(0,122,255,0.25)' }}>
                 <span className="text-white text-[10px] font-bold syne">MP</span>
               </div>
-              <span className="text-[13px] text-[#3C3C43]/55">Mykyta Pantelei · 2026</span>
+              <span className="text-[13px] text-[#3C3C43]/60">Mykyta Pantelei · 2026</span>
             </div>
-            <Link to="/" className="text-[13px] text-[#3C3C43]/40 hover:text-[#3C3C43]/65 transition-colors duration-200">
+            <Link to="/" className="text-[13px] text-[#3C3C43]/45 hover:text-[#3C3C43]/70 transition-colors duration-200">
               Back to home
             </Link>
           </div>
@@ -1084,7 +1055,7 @@ function LoginPage() {
       <FloatingNav />
       <section className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-[#007AFF]/5 blur-[130px]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-[#007AFF]/6 blur-[130px]" />
         </div>
 
         <motion.div
@@ -1093,16 +1064,18 @@ function LoginPage() {
           className="relative z-10 flex justify-center"
         >
           <FadeIn delay={0} y={24}>
-            <LiquidGlass cornerRadius={24} padding="0" displacementScale={66} blurAmount={0.1} saturation={170} aberrationIntensity={2} elasticity={0} overLight>
-              <div className="p-8" style={{ width: 'min(380px, calc(100vw - 32px))' }}>
+            <div
+              className="glass-strong rounded-[28px] p-8"
+              style={{ width: 'min(380px, calc(100vw - 32px))' }}
+            >
               <div className="flex justify-center mb-7">
-                <div className="w-12 h-12 rounded-full bg-[#007AFF]/75 border border-[#007AFF]/30 flex items-center justify-center" style={{ boxShadow: '0 0 22px rgba(0,122,255,0.30)' }}>
+                <div className="w-12 h-12 rounded-full bg-[#007AFF] border border-[#007AFF]/30 flex items-center justify-center" style={{ boxShadow: '0 0 22px rgba(0,122,255,0.30)' }}>
                   <Lock size={20} className="text-white" />
                 </div>
               </div>
 
               <h1 className="syne text-[1.5rem] font-semibold text-[#1C1C1E] text-center mb-1.5">Private access</h1>
-              <p className="text-[13px] text-[#3C3C43]/60 text-center mb-8 leading-relaxed">
+              <p className="text-[13px] text-[#3C3C43]/65 text-center mb-8 leading-relaxed">
                 Enter the password to view contact details and personal information.
               </p>
 
@@ -1114,12 +1087,12 @@ function LoginPage() {
                     onChange={(e) => { setPw(e.target.value); setError('') }}
                     placeholder="Password"
                     autoComplete="current-password"
-                    className="w-full bg-[#3C3C43]/5 border border-[#3C3C43]/15 rounded-xl px-4 py-3 text-[14px] text-[#1C1C1E] placeholder-[#3C3C43]/35 focus:outline-none focus:border-[#007AFF]/60 transition-colors duration-200 pr-10"
+                    className="w-full bg-white/40 border border-white/55 rounded-xl px-4 py-3 text-[14px] text-[#1C1C1E] placeholder-[#3C3C43]/35 focus:outline-none focus:border-[#007AFF]/60 focus:bg-white/60 transition-all duration-200 pr-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPw(!showPw)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#3C3C43]/40 hover:text-[#3C3C43]/65 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#3C3C43]/45 hover:text-[#3C3C43]/70 transition-colors"
                   >
                     {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
@@ -1141,12 +1114,11 @@ function LoginPage() {
               </form>
 
               <div className="mt-6 pt-5 border-t border-[#3C3C43]/12 text-center">
-                <Link to="/about" className="text-[12px] text-[#3C3C43]/45 hover:text-[#3C3C43]/65 transition-colors duration-200">
+                <Link to="/about" className="text-[12px] text-[#3C3C43]/50 hover:text-[#3C3C43]/70 transition-colors duration-200">
                   Continue without signing in
                 </Link>
               </div>
-              </div>
-            </LiquidGlass>
+            </div>
           </FadeIn>
         </motion.div>
       </section>

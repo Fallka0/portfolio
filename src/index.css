@@ -18,12 +18,12 @@ body {
   overflow-x: hidden;
   min-height: 100vh;
   background:
-    radial-gradient(circle at 12% 18%,  rgba(0,   122, 255, 0.42) 0%, transparent 38%),
-    radial-gradient(circle at 88% 8%,   rgba(255, 105, 180, 0.32) 0%, transparent 36%),
-    radial-gradient(circle at 92% 76%,  rgba(88,   86, 214, 0.36) 0%, transparent 42%),
-    radial-gradient(circle at 8%  88%,  rgba(52,  199,  89, 0.26) 0%, transparent 38%),
-    radial-gradient(circle at 50% 50%,  rgba(0,   199, 190, 0.20) 0%, transparent 44%),
-    radial-gradient(circle at 70% 42%,  rgba(255, 149,   0, 0.22) 0%, transparent 36%),
+    radial-gradient(circle at 12% 18%,  rgba(0,   122, 255, 0.38) 0%, transparent 38%),
+    radial-gradient(circle at 88% 8%,   rgba(255, 105, 180, 0.28) 0%, transparent 36%),
+    radial-gradient(circle at 92% 76%,  rgba(88,   86, 214, 0.32) 0%, transparent 42%),
+    radial-gradient(circle at 8%  88%,  rgba(52,  199,  89, 0.22) 0%, transparent 38%),
+    radial-gradient(circle at 50% 50%,  rgba(0,   199, 190, 0.18) 0%, transparent 44%),
+    radial-gradient(circle at 70% 42%,  rgba(255, 149,   0, 0.18) 0%, transparent 36%),
     #F5F6FA;
   background-attachment: fixed;
 }
@@ -34,47 +34,78 @@ h1, h2, h3, .syne {
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   Hand-rolled glass surfaces.
+   Glass system — pure CSS. No JS, no SVG displacement, no inline-flex
+   constraints. Each surface stacks the same three optical effects you
+   see in iOS 26 / visionOS:
 
-   liquid-glass-react can't be used on every element — its inner container
-   has display: inline-flex hard-coded as an inline style, so it always
-   sizes to its content. That's correct for buttons and isolated cards,
-   but breaks grid layouts and full-width navbars. Those use these
-   CSS classes instead:
+     1. Translucent diagonal gradient base (frosted refraction)
+     2. backdrop-filter blur + saturate (depth from background)
+     3. Inset highlights on top edge, soft shadow underneath (lift)
 
-     .nav-pill          → full-width fixed navbar pill (no inline-flex)
-     .glass-card        → grid card that stretches to its grid cell
-     .liquid-glass-pill → tiny inline tag (badge, chip)
-
-   The React library is reserved for hero surfaces:
-     - GlassButton, the project cards, the login card,
-       and the "Seeking Apprenticeship" badge.
+   Three intensities:
+     .glass        → default surface (cards, badges)
+     .glass-strong → navbar, hero CTAs, hero modal-like surfaces
+     .glass-subtle → small inline pills, chips
    ════════════════════════════════════════════════════════════════════ */
 
-.nav-pill,
-.glass-card,
-.liquid-glass-pill {
+.glass,
+.glass-strong,
+.glass-subtle,
+.glass-button {
   position: relative;
   isolation: isolate;
-  background:
-    linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.55) 0%,
-      rgba(255, 255, 255, 0.22) 50%,
-      rgba(255, 255, 255, 0.38) 100%
-    );
-  backdrop-filter: blur(22px) saturate(190%) brightness(1.06);
-  -webkit-backdrop-filter: blur(22px) saturate(190%) brightness(1.06);
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  box-shadow:
-    0 10px 36px -8px  rgba(15, 30, 80, 0.14),
-    0 3px  10px -3px  rgba(15, 30, 80, 0.08),
-    inset 0  1px 1px  rgba(255, 255, 255, 0.95),
-    inset 0 -1px 1px  rgba(255, 255, 255, 0.30);
 }
 
-.nav-pill::before,
-.glass-card::before {
+.glass {
+  background:
+    linear-gradient(135deg,
+      rgba(255, 255, 255, 0.55) 0%,
+      rgba(255, 255, 255, 0.22) 50%,
+      rgba(255, 255, 255, 0.40) 100%);
+  backdrop-filter: blur(22px) saturate(190%) brightness(1.04);
+  -webkit-backdrop-filter: blur(22px) saturate(190%) brightness(1.04);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    0 10px 32px -8px rgba(15, 30, 80, 0.14),
+    0 3px  10px -3px rgba(15, 30, 80, 0.08),
+    inset 0  1px 1px rgba(255, 255, 255, 0.95),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.30);
+}
+
+.glass-strong {
+  background:
+    linear-gradient(135deg,
+      rgba(255, 255, 255, 0.62) 0%,
+      rgba(255, 255, 255, 0.28) 50%,
+      rgba(255, 255, 255, 0.48) 100%);
+  backdrop-filter: blur(28px) saturate(210%) brightness(1.06);
+  -webkit-backdrop-filter: blur(28px) saturate(210%) brightness(1.06);
+  border: 1px solid rgba(255, 255, 255, 0.60);
+  box-shadow:
+    0 14px 40px -10px rgba(15, 30, 80, 0.18),
+    0 4px  14px -4px  rgba(15, 30, 80, 0.10),
+    inset 0  1px 1px  rgba(255, 255, 255, 1.00),
+    inset 0 -1px 1px  rgba(255, 255, 255, 0.36);
+}
+
+.glass-subtle {
+  background:
+    linear-gradient(135deg,
+      rgba(255, 255, 255, 0.45) 0%,
+      rgba(255, 255, 255, 0.20) 100%);
+  backdrop-filter: blur(14px) saturate(170%) brightness(1.03);
+  -webkit-backdrop-filter: blur(14px) saturate(170%) brightness(1.03);
+  border: 1px solid rgba(255, 255, 255, 0.50);
+  box-shadow:
+    0 2px 8px -2px rgba(15, 30, 80, 0.10),
+    inset 0  1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.22);
+}
+
+/* Highlight overlay — adds a top-left spec for that "wet" iOS feel.
+   Sized as a pseudo-element so it scales with border-radius automatically. */
+.glass::before,
+.glass-strong::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -83,11 +114,12 @@ h1, h2, h3, .syne {
   z-index: 0;
   background:
     radial-gradient(120% 80% at 18% -8%, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 55%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.20) 0%, rgba(255, 255, 255, 0) 40%);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 38%);
 }
 
-.nav-pill::after,
-.glass-card::after {
+/* Soft inset rim — bottom shadow, side highlights. */
+.glass::after,
+.glass-strong::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -95,45 +127,54 @@ h1, h2, h3, .syne {
   pointer-events: none;
   z-index: 0;
   box-shadow:
-    inset 0  -14px 22px -18px rgba(10, 30, 80, 0.30),
-    inset  12px 0   22px -18px rgba(255, 255, 255, 0.40),
-    inset -12px 0   22px -18px rgba(255, 255, 255, 0.40),
-    inset 0   12px 22px -18px rgba(255, 255, 255, 0.50);
+    inset 0  -14px 22px -18px rgba(10, 30, 80, 0.28),
+    inset  12px 0  22px -18px rgba(255, 255, 255, 0.36),
+    inset -12px 0  22px -18px rgba(255, 255, 255, 0.36),
+    inset 0   12px 22px -18px rgba(255, 255, 255, 0.48);
 }
 
-.nav-pill > *,
-.glass-card > * {
+.glass > *,
+.glass-strong > * {
   position: relative;
   z-index: 1;
 }
 
-.nav-pill {
-  backdrop-filter: blur(28px) saturate(210%) brightness(1.08);
-  -webkit-backdrop-filter: blur(28px) saturate(210%) brightness(1.08);
+/* Lift on hover — subtle pop without re-rendering the glass. */
+.glass-hover {
+  transition:
+    transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1),
+    box-shadow 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+.glass-hover:hover {
+  transform: translateY(-2px);
+}
+
+/* Glass button — pill, blue arrow, text roll on hover. */
+.glass-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  cursor: pointer;
+  color: #1C1C1E;
   background:
-    linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.62) 0%,
-      rgba(255, 255, 255, 0.28) 50%,
-      rgba(255, 255, 255, 0.42) 100%
-    );
+    linear-gradient(135deg,
+      rgba(255, 255, 255, 0.68) 0%,
+      rgba(255, 255, 255, 0.32) 100%);
+  backdrop-filter: blur(20px) saturate(190%) brightness(1.05);
+  -webkit-backdrop-filter: blur(20px) saturate(190%) brightness(1.05);
+  border: 1px solid rgba(255, 255, 255, 0.62);
   box-shadow:
-    0 14px 44px -10px rgba(15, 30, 80, 0.18),
-    0 4px  14px -4px  rgba(15, 30, 80, 0.10),
-    inset 0  1px 1px  rgba(255, 255, 255, 1.00),
-    inset 0 -1px 1px  rgba(255, 255, 255, 0.35);
+    0 8px 24px -6px rgba(15, 30, 80, 0.16),
+    0 2px  6px -2px rgba(15, 30, 80, 0.08),
+    inset 0  1px 1px rgba(255, 255, 255, 1.00),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.32);
+  transition: transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
+.glass-button:hover { transform: translateY(-1px); }
+.glass-button:active { transform: translateY(0); }
 
-.liquid-glass-pill {
-  backdrop-filter: blur(14px) saturate(170%) brightness(1.04);
-  -webkit-backdrop-filter: blur(14px) saturate(170%) brightness(1.04);
-  box-shadow:
-    0 2px 8px -2px rgba(15, 30, 80, 0.10),
-    inset 0  1px 0 rgba(255, 255, 255, 0.90),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.25);
-}
-
-/* ── Text Roll Animation (button hover) ── */
+/* ── Text Roll Animation on glass buttons ───────────────── */
 .text-roll-wrap {
   overflow: hidden;
   height: 20px;
@@ -147,7 +188,7 @@ h1, h2, h3, .syne {
 }
 .group:hover .text-roll-inner { transform: translateY(-50%); }
 
-/* ── Scrollbar ── */
+/* ── Scrollbar ─────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(0, 122, 255, 0.22); border-radius: 3px; }
