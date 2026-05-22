@@ -482,47 +482,36 @@ interface ProjectData {
 const projects: ProjectData[] = [
   {
     num: '01',
-    title: 'Verdant Realty',
-    category: 'Full-Stack App',
-    desc: 'Property portal for the Torrevieja region. Public listings with search and filtering, individual property pages with inquiry forms, and a private admin panel for managing inventory, pricing, and availability.',
-    tags: ['Next.js', 'TypeScript', 'Supabase'],
-    href: 'https://verdant-realty.vercel.app',
-    img1: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600&q=80',
-    img2: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
-    img3: 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?w=900&q=80',
-  },
-  {
-    num: '02',
-    title: 'Tournamount',
-    category: 'Platform',
-    desc: 'Tournament management for gaming communities. Organizers create brackets and manage rosters across group stage, knockout, and hybrid formats. Players track standings in real time.',
-    tags: ['Next.js', 'TypeScript', 'Supabase', 'Framer Motion'],
-    href: 'https://m294-d5ns.vercel.app',
-    img1: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&q=80',
-    img2: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&q=80',
-    img3: 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=900&q=80',
-  },
-  {
-    num: '03',
     title: 'Planary',
     category: 'Full-Stack App',
     desc: 'Wishlist sharing platform with a React + Vite frontend, Go backend deployed as Vercel functions, and PostgreSQL for persistent storage. Secure auth via HTTP-only cookies with a standalone dashboard.',
     tags: ['React', 'Go', 'PostgreSQL', 'Vite'],
-    href: 'https://planary-wishlist.vercel.app',
+    href: 'https://planary.ch',
     img1: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=600&q=80',
     img2: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=600&q=80',
     img3: 'https://images.unsplash.com/photo-1557838923-2985c318be48?w=900&q=80',
   },
   {
-    num: '04',
-    title: 'AutoBot Dashboard',
-    category: 'Dashboard',
-    desc: 'Live monitoring UI for a paper trading bot. Displays portfolio positions, broker order lifecycle, decision feed, and market context. Vercel-ready Next.js shell designed to wire into a real backend.',
-    tags: ['Next.js', 'TypeScript', 'Vercel'],
-    href: 'https://autobot-dashboard.vercel.app',
-    img1: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&q=80',
-    img2: 'https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=600&q=80',
-    img3: 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=900&q=80',
+    num: '02',
+    title: 'Milla Homes',
+    category: 'Full-Stack App',
+    desc: 'Boutique real estate portal with public listings, search and filtering, individual property pages with inquiry forms, and a private admin panel for managing inventory, pricing, and availability.',
+    tags: ['Next.js', 'TypeScript', 'Supabase'],
+    href: 'https://milla-homes.com',
+    img1: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600&q=80',
+    img2: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
+    img3: 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?w=900&q=80',
+  },
+  {
+    num: '03',
+    title: 'FreakDeck',
+    category: 'Hardware + Desktop',
+    desc: 'Custom hardware macro pad with a desktop companion app. Map physical buttons to apps, URLs, and folders, control and sync system volume, and push the current "now playing" track back to the device — Arduino firmware paired with a packaged Python desktop client.',
+    tags: ['Python', 'Arduino', 'C++'],
+    href: 'https://github.com/Fallka0/FreakDeck',
+    img1: 'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=600&q=80',
+    img2: 'https://images.unsplash.com/photo-1531492746076-161ca9bcad58?w=600&q=80',
+    img3: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=900&q=80',
   },
 ]
 
@@ -612,7 +601,9 @@ function ProjectCard({ project, index }: { project: ProjectData; index: number }
             </div>
 
             <div>
-              <GlassButton href={project.href}>Visit live site</GlassButton>
+              <GlassButton href={project.href}>
+                {project.href.includes('github.com') ? 'View on GitHub' : 'Visit live site'}
+              </GlassButton>
             </div>
           </div>
         </div>
