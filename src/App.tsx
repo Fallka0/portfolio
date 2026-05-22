@@ -42,6 +42,7 @@ import {
   useInView,
   type MotionValue,
 } from 'framer-motion'
+import Lenis from 'lenis'
 import './index.css'
 
 const MacBookShowcase = lazy(() => import('./MacBookShowcase'))
@@ -1113,6 +1114,20 @@ function LoginPage() {
    APP ROOT
 ══════════════════════════════════════ */
 export default function App() {
+  useEffect(() => {
+    const lenis = new Lenis({ lerp: 0.1, smoothWheel: true })
+    let raf = 0
+    const loop = (time: number) => {
+      lenis.raf(time)
+      raf = requestAnimationFrame(loop)
+    }
+    raf = requestAnimationFrame(loop)
+    return () => {
+      cancelAnimationFrame(raf)
+      lenis.destroy()
+    }
+  }, [])
+
   return (
     <HashRouter>
       <AuthProvider>

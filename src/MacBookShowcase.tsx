@@ -1,89 +1,94 @@
 import { Suspense, useMemo, useRef } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import { useGLTF, Center, ContactShadows } from '@react-three/drei'
-import { motion, useTransform, type MotionValue } from 'framer-motion'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { useGLTF, Center } from '@react-three/drei'
+import { type MotionValue } from 'framer-motion'
 import * as THREE from 'three'
 
 const MODEL_URL = '/models/macbook.glb'
 
-/* The model — normalized to a consistent size, centered, and rotated on
-   its Y axis according to scroll progress (0 → 1). */
+/* The model lives in 3D world space. Its position, scale and rotation are
+   all driven by scroll `progress` (0 → 1) and damped every frame so the
+   motion stays smooth regardless of frame rate. Sizing/positioning use
+   viewport units, so nothing crops when the window resizes. */
 function MacBook({ progress }: { progress: MotionValue<number> }) {
   const { scene } = useGLTF(MODEL_URL)
   const cloned = useMemo(() => scene.clone(true), [scene])
 
-  // Normalize: scale so the largest dimension fits a fixed target size,
-  // regardless of the model's native units.
-  const scale = useMemo(() => {
+  // Normalize the model to ~1 world unit tall so the responsive sizing below
+  // works no matter what units the GLB was authored in.
+  const baseScale = useMemo(() => {
     const box = new THREE.Box3().setFromObject(cloned)
     const size = new THREE.Vector3()
     box.getSize(size)
     const maxDim = Math.max(size.x, size.y, size.z) || 1
-    return 3.2 / maxDim
+    return 1 / maxDim
   }, [cloned])
 
   const group = useRef<THREE.Group>(null)
+  const initialized = useRef(false)
+  const { viewport } = useThree()
 
   useFrame((_, delta) => {
-    if (!group.current) return
-    const p = progress.get()
-    // Start slightly angled, complete a full turn across the scroll range.
-    const targetY = -0.5 + p * Math.PI * 2
-    group.current.rotation.y = THREE.MathUtils.damp(
-      group.current.rotation.y,
-      targetY,
-      6,
-      delta
-    )
+    const g = group.current
+    if (!g) return
+    const p = THREE.MathUtils.clamp(progress.get(), 0, 1)
+
+    // Responsive targets (all in world units derived from the viewport).
+    const targetScale =
+      baseScale * THREE.MathUtils.lerp(viewport.height * 0.5, viewport.height * 0.22, p)
+    const targetX = viewport.width * 0.24
+    const targetY = THREE.MathUtils.lerp(viewport.height * 0.08, -viewport.height * 0.62, p)
+    const targetRotY = -0.5 + p * Math.PI * 2
+
+    if (!initialized.current) {
+      // Snap on the first frame so there's no grow-in pop.
+      g.position.set(targetX, targetY, 0)
+      g.scale.setScalar(targetScale)
+      g.rotation.set(0.12, targetRotY, 0)
+      initialized.current = true
+      return
+    }
+
+    // Frame-rate independent damping → smooth follow.
+    g.position.x = THREE.MathUtils.damp(g.position.x, targetX, 7, delta)
+    g.position.y = THREE.MathUtils.damp(g.position.y, targetY, 7, delta)
+    const s = THREE.MathUtils.damp(g.scale.x, targetScale, 7, delta)
+    g.scale.setScalar(s)
+    g.rotation.y = THREE.MathUtils.damp(g.rotation.y, targetRotY, 7, delta)
   })
 
   return (
-    <group ref={group} rotation={[0.12, -0.5, 0]}>
+    <group ref={group}>
       <Center>
-        <primitive object={cloned} scale={scale} />
+        <primitive object={cloned} />
       </Center>
     </group>
   )
 }
 
-/* Floating overlay: fixed to the viewport, starts at the right of the hero
-   and drifts down + shrinks as the user scrolls toward the skills section. */
+/* Full-screen fixed canvas — transparent, click-through. The model never
+   crops because it's positioned in 3D space relative to the live viewport. */
 export default function MacBookFloating({
   progress,
 }: {
   progress: MotionValue<number>
 }) {
-  // CSS transforms are % of the element's own box, so they scale with viewport.
-  const y = useTransform(progress, [0, 1], ['0%', '58%'])
-  const x = useTransform(progress, [0, 1], ['0%', '-8%'])
-  const scale = useTransform(progress, [0, 1], [1, 0.42])
-
   return (
-    <motion.div
-      style={{ x, y, scale, transformOrigin: 'center center' }}
-      className="hidden md:block fixed right-[1%] top-[12%] z-[8] w-[44vw] max-w-[600px] h-[64vh] pointer-events-none"
-    >
+    <div className="hidden md:block fixed inset-0 z-[8] pointer-events-none">
       <Canvas
-        camera={{ position: [0, 0, 6.5], fov: 35 }}
-        dpr={[1, 2]}
+        camera={{ position: [0, 0, 8], fov: 35 }}
+        dpr={[1, 1.5]}
         gl={{ antialias: true, alpha: true }}
       >
-        <ambientLight intensity={0.75} />
+        <ambientLight intensity={0.85} />
         <directionalLight position={[5, 8, 5]} intensity={2.4} />
         <directionalLight position={[-6, 3, -4]} intensity={0.9} />
-        <spotLight position={[0, 7, 3]} angle={0.5} penumbra={1} intensity={1.4} />
+        <spotLight position={[0, 7, 4]} angle={0.5} penumbra={1} intensity={1.4} />
         <Suspense fallback={null}>
           <MacBook progress={progress} />
-          <ContactShadows
-            position={[0, -1.7, 0]}
-            opacity={0.3}
-            scale={12}
-            blur={2.6}
-            far={4}
-          />
         </Suspense>
       </Canvas>
-    </motion.div>
+    </div>
   )
 }
 
