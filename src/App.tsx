@@ -673,10 +673,22 @@ function TechMarquee() {
    PAGE: HOME
 ══════════════════════════════════════ */
 function HomePage() {
+  const preSkillsRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: preSkillsRef,
+    offset: ['start start', 'end center'],
+  })
+
   return (
     <>
       <FloatingNav />
 
+      {/* ── Floating 3D MacBook (right of hero → drifts down to skills) ── */}
+      <Suspense fallback={null}>
+        <MacBookShowcase progress={scrollYProgress} />
+      </Suspense>
+
+      <div ref={preSkillsRef}>
       {/* ── Hero ── */}
       <section className="relative min-h-screen flex flex-col overflow-hidden pt-24 sm:pt-28">
 
@@ -708,13 +720,9 @@ function HomePage() {
         </div>
       </section>
 
-      {/* ── 3D MacBook scroll showcase ── */}
-      <Suspense fallback={<div className="h-[60vh]" />}>
-        <MacBookShowcase />
-      </Suspense>
-
       {/* ── Tech Marquee ── */}
       <TechMarquee />
+      </div>
 
       {/* ── Skills overview ── */}
       <section id="skills" className="pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28 relative overflow-hidden">
