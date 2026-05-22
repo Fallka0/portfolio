@@ -4,6 +4,8 @@ import {
   useRef,
   createContext,
   useContext,
+  lazy,
+  Suspense,
 } from 'react'
 import {
   HashRouter,
@@ -19,7 +21,6 @@ import {
   Menu,
   X,
   GitBranch,
-  ExternalLink,
   Mail,
   Target,
   Zap,
@@ -38,17 +39,17 @@ import {
   motion,
   useScroll,
   useTransform,
-  useMotionValue,
-  useSpring,
   useInView,
   type MotionValue,
 } from 'framer-motion'
+import Lenis from 'lenis'
 import './index.css'
+
+const MacBookShowcase = lazy(() => import('./MacBookShowcase'))
 
 /* ══════════════════════════════════════
    AUTH
 ══════════════════════════════════════ */
-// Change this to your preferred password.
 const PRIVATE_PASSWORD = 'portfolio2025'
 
 interface AuthCtx {
@@ -86,72 +87,6 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider value={{ isAuth, login, logout }}>
       {children}
     </AuthContext.Provider>
-  )
-}
-
-/* ══════════════════════════════════════
-   CURSOR (desktop only)
-══════════════════════════════════════ */
-function CustomCursor() {
-  const x = useMotionValue(-120)
-  const y = useMotionValue(-120)
-  const ringX = useSpring(x, { damping: 22, stiffness: 280, mass: 0.6 })
-  const ringY = useSpring(y, { damping: 22, stiffness: 280, mass: 0.6 })
-  const [isTouch, setIsTouch] = useState(false)
-  const [isHover, setIsHover] = useState(false)
-
-  useEffect(() => {
-    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-      setIsTouch(true)
-      return
-    }
-    const move = (e: MouseEvent) => { x.set(e.clientX); y.set(e.clientY) }
-    const over = (e: MouseEvent) => {
-      const el = e.target as HTMLElement
-      setIsHover(
-        el.closest('a, button, [role="button"]') !== null ||
-        el.tagName === 'A' || el.tagName === 'BUTTON'
-      )
-    }
-    window.addEventListener('mousemove', move)
-    window.addEventListener('mouseover', over)
-    return () => {
-      window.removeEventListener('mousemove', move)
-      window.removeEventListener('mouseover', over)
-    }
-  }, [x, y])
-
-  if (isTouch) return null
-
-  return (
-    <>
-      {/* Dot — precise */}
-      <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-[9999]"
-        style={{ x, y, translateX: '-50%', translateY: '-50%' }}
-      >
-        <motion.div
-          animate={{ scale: isHover ? 0 : 1 }}
-          transition={{ duration: 0.15 }}
-          className="w-[6px] h-[6px] rounded-full bg-violet-300"
-        />
-      </motion.div>
-      {/* Ring — lagging */}
-      <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-[9998]"
-        style={{ x: ringX, y: ringY, translateX: '-50%', translateY: '-50%' }}
-      >
-        <motion.div
-          animate={{
-            width: isHover ? 44 : 28,
-            height: isHover ? 44 : 28,
-            borderColor: isHover ? 'rgba(167,139,250,0.55)' : 'rgba(255,255,255,0.2)',
-          }}
-          transition={{ duration: 0.2 }}
-          className="rounded-full border"
-        />
-      </motion.div>
-    </>
   )
 }
 
@@ -244,7 +179,7 @@ function AnimatedChar({
   const opacity = useTransform(scrollYProgress, [start, end], [0.18, 1])
   return (
     <motion.span style={{ opacity }} className="inline-block">
-      {char === ' ' ? ' ' : char}
+      {char === ' ' ? ' ' : char}
     </motion.span>
   )
 }
@@ -316,43 +251,41 @@ function GlassButton({
   dark?: boolean
   type?: 'button' | 'submit' | 'reset'
 }) {
-  const inner = (
-    <span
-      className={`group inline-flex items-center gap-2 rounded-full pl-5 pr-2 py-2 cursor-pointer ${
-        dark ? 'liquid-glass-btn text-white/80' : 'liquid-glass-btn text-white'
-      } ${className}`}
+  const navigate = useNavigate()
+  const textColor = dark ? 'text-[#3C3C43]/80' : 'text-[#1C1C1E]'
+
+  const handleClick = () => {
+    if (onClick) return onClick()
+    if (to) return navigate(to)
+    if (href) {
+      if (href.startsWith('http')) window.open(href, '_blank', 'noopener,noreferrer')
+      else window.location.href = href
+    }
+  }
+
+  const padding = arrow ? 'pl-[18px] pr-[6px] py-[6px]' : 'px-5 py-2.5'
+
+  return (
+    <button
+      type={type ?? 'button'}
+      onClick={type === 'submit' ? undefined : handleClick}
+      className={`glass-button ${padding} ${className}`}
     >
       {arrow ? (
-        <>
+        <span className={`group inline-flex items-center gap-2 ${textColor}`}>
           <span className="text-roll-wrap text-[13px] font-medium leading-[20px]">
             <span className="text-roll-inner">
               <span>{children}</span>
               <span>{children}</span>
             </span>
           </span>
-          <span className="w-7 h-7 rounded-full bg-violet-600/50 border border-violet-400/40 flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-rotate-45 flex-shrink-0 backdrop-blur-sm">
-            <ArrowRight size={13} className="text-white/90" />
+          <span className="w-7 h-7 rounded-full bg-[#007AFF] border border-[#007AFF]/40 flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-rotate-45 flex-shrink-0">
+            <ArrowRight size={13} className="text-white" />
           </span>
-        </>
+        </span>
       ) : (
-        <span className="text-[13px] font-medium px-1">{children}</span>
+        <span className={`text-[13px] font-medium whitespace-nowrap ${textColor}`}>{children}</span>
       )}
-    </span>
-  )
-  if (to) return <Link to={to}>{inner}</Link>
-  if (href)
-    return (
-      <a
-        href={href}
-        target={href.startsWith('http') ? '_blank' : undefined}
-        rel="noopener noreferrer"
-      >
-        {inner}
-      </a>
-    )
-  return (
-    <button type={type ?? 'button'} onClick={onClick}>
-      {inner}
     </button>
   )
 }
@@ -360,10 +293,10 @@ function GlassButton({
 function SectionBadge({ num, label }: { num: string; label: string }) {
   return (
     <div className="flex items-center gap-3 mb-6 sm:mb-8 px-5 sm:px-8 lg:px-12">
-      <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-violet-600/70 backdrop-blur-sm border border-violet-400/30 text-white text-[11px] font-semibold flex items-center justify-center flex-shrink-0">
+      <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#007AFF] border border-[#007AFF]/30 text-white text-[11px] font-semibold flex items-center justify-center flex-shrink-0">
         {num}
       </span>
-      <span className="text-[12px] sm:text-[13px] font-medium border border-white/12 rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-white/60 glass-card">
+      <span className="glass-subtle text-[12px] sm:text-[13px] font-medium rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-[#3C3C43]/65">
         {label}
       </span>
     </div>
@@ -371,9 +304,9 @@ function SectionBadge({ num, label }: { num: string; label: string }) {
 }
 
 /* ══════════════════════════════════════
-   SHARED NAVBAR (secondary pages)
+   FLOATING NAV (all pages)
 ══════════════════════════════════════ */
-function SharedNavbar() {
+function FloatingNav() {
   const time = useClock()
   const { isAuth, logout } = useAuth()
   const location = useLocation()
@@ -387,68 +320,73 @@ function SharedNavbar() {
   ]
 
   const isActive = (to: string) => location.pathname === to
+  const isHome = location.pathname === '/'
 
   return (
     <>
-      <nav className="sticky top-0 z-40 px-4 sm:px-6 py-3 bg-[#0c0718]/90 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-[1440px] mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-5">
-            <Link to="/" className="flex items-center">
-              <div
-                className="w-9 h-9 rounded-full bg-violet-600 border border-violet-400/40 flex items-center justify-center"
-                style={{ boxShadow: '0 0 18px rgba(124,58,237,0.5)' }}
-              >
-                <span className="text-white text-[11px] font-bold tracking-tight syne">MP</span>
-              </div>
-            </Link>
-            <div className="hidden md:flex items-center gap-5">
-              {links.map(({ label, to }) => (
-                <Link
-                  key={to}
-                  to={to}
-                  className={`text-[14px] transition-colors duration-300 ${
-                    isActive(to)
-                      ? 'text-white'
-                      : 'text-white/50 hover:text-white'
-                  }`}
+      <nav className="fixed top-0 left-0 right-0 z-40 px-4 sm:px-6 pt-4">
+        <div className="max-w-[1100px] mx-auto">
+          <div className="glass-strong rounded-full pl-2 pr-2 py-1.5 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Link to="/" className="flex items-center">
+                <div
+                  className="w-9 h-9 rounded-full bg-[#007AFF] border border-[#007AFF]/40 flex items-center justify-center flex-shrink-0"
+                  style={{ boxShadow: '0 0 16px rgba(0,122,255,0.35)' }}
                 >
-                  {label}
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <div className="hidden md:flex items-center gap-4">
-            <span className="flex items-center gap-1.5 text-[13px] text-white/45">
-              <Clock size={12} />
-              {time}
-            </span>
-            {isAuth ? (
-              <button
-                onClick={logout}
-                className="flex items-center gap-1.5 text-[12px] text-violet-300/60 hover:text-violet-300 transition-colors duration-200"
-              >
-                <LogOut size={13} />
-                Sign out
-              </button>
-            ) : (
-              <Link
-                to="/login"
-                className="flex items-center gap-1.5 text-[12px] text-violet-300/60 hover:text-violet-300 transition-colors duration-200"
-              >
-                <Lock size={12} />
-                Private
+                  <span className="text-white text-[11px] font-bold tracking-tight syne">MP</span>
+                </div>
               </Link>
-            )}
+              <div className="hidden md:flex items-center gap-1 ml-2">
+                {links.map(({ label, to }) => (
+                  <Link
+                    key={to}
+                    to={to}
+                    className={`relative text-[13px] px-3 py-1.5 rounded-full transition-colors duration-300 ${
+                      isActive(to)
+                        ? 'text-[#1C1C1E] bg-white/45'
+                        : 'text-[#3C3C43]/65 hover:text-[#1C1C1E]'
+                    }`}
+                  >
+                    {label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+            <div className="hidden md:flex items-center gap-3 pr-1">
+              {isHome && (
+                <span className="hidden lg:block text-[12px] text-[#3C3C43]/55">Open to apprenticeships</span>
+              )}
+              <span className="hidden sm:flex items-center gap-1.5 text-[12px] text-[#3C3C43]/55">
+                <Clock size={12} />{time} Bern
+              </span>
+              {isAuth ? (
+                <button
+                  onClick={logout}
+                  className="flex items-center gap-1.5 text-[12px] text-[#007AFF]/70 hover:text-[#007AFF] transition-colors duration-200"
+                >
+                  <LogOut size={13} />
+                  Sign out
+                </button>
+              ) : isHome ? (
+                <GlassButton to="/contact">Get in touch</GlassButton>
+              ) : (
+                <Link
+                  to="/login"
+                  className="flex items-center gap-1.5 text-[12px] text-[#007AFF]/75 hover:text-[#007AFF] transition-colors duration-200"
+                >
+                  <Lock size={12} />
+                  Private
+                </Link>
+              )}
+            </div>
+            <button
+              onClick={() => setOpen(true)}
+              className="md:hidden glass-subtle rounded-full p-2 text-[#1C1C1E]"
+              aria-label="Open menu"
+            >
+              <Menu size={18} />
+            </button>
           </div>
-
-          <button
-            onClick={() => setOpen(true)}
-            className="md:hidden liquid-glass-btn rounded-full p-2 text-white"
-            aria-label="Open menu"
-          >
-            <Menu size={18} />
-          </button>
         </div>
       </nav>
 
@@ -459,19 +397,19 @@ function SharedNavbar() {
         }`}
       >
         <div
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          className="absolute inset-0 bg-black/25 backdrop-blur-sm"
           onClick={() => setOpen(false)}
         />
         <div
-          className={`absolute bottom-0 left-3 right-3 mb-3 rounded-2xl navbar-glass p-6 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+          className={`absolute bottom-0 left-3 right-3 mb-3 rounded-2xl glass-strong p-6 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
             open ? 'translate-y-0' : 'translate-y-full'
           }`}
         >
           <div className="flex items-center justify-between mb-6">
-            <span className="text-[13px] text-white/50">{time} Bern</span>
+            <span className="text-[13px] text-[#3C3C43]/60">{time} Bern</span>
             <button
               onClick={() => setOpen(false)}
-              className="w-8 h-8 rounded-full glass-card flex items-center justify-center text-white/65"
+              className="w-8 h-8 rounded-full glass-subtle flex items-center justify-center text-[#3C3C43]/65"
             >
               <X size={16} />
             </button>
@@ -482,7 +420,7 @@ function SharedNavbar() {
                 key={to}
                 to={to}
                 onClick={() => setOpen(false)}
-                className="text-[26px] font-medium syne text-white/80 hover:text-white py-1 transition-colors"
+                className="text-[26px] font-medium syne text-[#1C1C1E]/80 hover:text-[#1C1C1E] py-1 transition-colors"
               >
                 {label}
               </Link>
@@ -491,7 +429,7 @@ function SharedNavbar() {
           {isAuth ? (
             <button
               onClick={() => { logout(); setOpen(false) }}
-              className="flex items-center gap-2 text-[13px] text-violet-300/60"
+              className="flex items-center gap-2 text-[13px] text-[#007AFF]/70"
             >
               <LogOut size={13} /> Sign out
             </button>
@@ -499,7 +437,7 @@ function SharedNavbar() {
             <Link
               to="/login"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2 text-[13px] text-violet-300/60"
+              className="flex items-center gap-2 text-[13px] text-[#007AFF]/70"
             >
               <Lock size={13} /> Private access
             </Link>
@@ -592,88 +530,94 @@ const row1Items = ['Next.js', 'TypeScript', 'React', 'Tailwind CSS', 'Supabase',
 const row2Items = ['Vercel', 'Git & GitHub', 'Docker', 'PHP', 'C#', 'Node.js', 'SQL', 'HTML & CSS', 'Responsive Design', 'Authentication', 'Chart.js']
 
 /* ══════════════════════════════════════
-   PROJECT CARD (stacking)
+   PROJECT CARD
 ══════════════════════════════════════ */
-function ProjectCard({ project, index, total }: { project: ProjectData; index: number; total: number }) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start start', 'end start'],
-  })
-  const targetScale = 1 - (total - 1 - index) * 0.03
-  const scale = useTransform(scrollYProgress, [0, 1], [1, targetScale])
-
+function ProjectCard({ project, index }: { project: ProjectData; index: number }) {
+  const reverse = index % 2 === 1
   return (
-    // Reduced from h-[85vh] → h-[60vh] for tighter spacing between cards
-    <div ref={containerRef} className="h-[60vh]">
-      <motion.div
-        style={{ scale, position: 'sticky', top: 80 + index * 24, transformOrigin: 'top center' }}
-        className="w-full rounded-[24px] sm:rounded-[32px] border border-white/8 bg-[#0d0b1e] p-4 sm:p-5 glass-card"
-      >
-        {/* Top row */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3 sm:gap-5">
-            <span
-              className="syne font-bold text-white/10 leading-none select-none"
-              style={{ fontSize: 'clamp(1.8rem, 5vw, 4rem)' }}
-            >
-              {project.num}
-            </span>
-            <div>
-              <p className="text-[10px] text-violet-300/50 tracking-widest uppercase mb-0.5">
+    <FadeIn delay={index * 0.06} y={40}>
+      <article className="mb-8 sm:mb-12 flex justify-center">
+        <div
+          className={`glass-strong glass-hover rounded-[32px] grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-6 lg:gap-10 items-center p-6 sm:p-8 ${
+            reverse ? 'lg:[&>:first-child]:order-2' : ''
+          }`}
+          style={{ width: 'min(1100px, calc(100vw - 40px))' }}
+        >
+          {/* Image collage */}
+          <div className="grid grid-cols-3 grid-rows-2 gap-2.5 sm:gap-3 h-[260px] sm:h-[340px] lg:h-[380px]">
+            <div className="col-span-2 row-span-2 rounded-2xl overflow-hidden ring-1 ring-white/40">
+              <img
+                src={project.img3}
+                alt={project.title}
+                className="w-full h-full object-cover transition-transform duration-700 hover:scale-[1.04]"
+                loading="lazy"
+              />
+            </div>
+            <div className="col-span-1 row-span-1 rounded-2xl overflow-hidden ring-1 ring-white/40">
+              <img
+                src={project.img1}
+                alt=""
+                className="w-full h-full object-cover transition-transform duration-700 hover:scale-[1.04]"
+                loading="lazy"
+              />
+            </div>
+            <div className="col-span-1 row-span-1 rounded-2xl overflow-hidden ring-1 ring-white/40">
+              <img
+                src={project.img2}
+                alt=""
+                className="w-full h-full object-cover transition-transform duration-700 hover:scale-[1.04]"
+                loading="lazy"
+              />
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="flex flex-col">
+            <div className="flex items-center gap-4 mb-4">
+              <span
+                className="syne font-bold leading-none select-none text-transparent bg-clip-text"
+                style={{
+                  fontSize: 'clamp(2.4rem, 5vw, 3.6rem)',
+                  backgroundImage:
+                    'linear-gradient(135deg, rgba(0,122,255,0.65) 0%, rgba(88,86,214,0.40) 100%)',
+                }}
+              >
+                {project.num}
+              </span>
+              <span className="text-[11px] text-[#007AFF]/80 tracking-[0.18em] uppercase font-semibold">
                 {project.category}
-              </p>
-              <p className="syne font-semibold text-white leading-tight" style={{ fontSize: 'clamp(0.95rem, 2vw, 1.45rem)' }}>
-                {project.title}
-              </p>
+              </span>
             </div>
-          </div>
-          <a
-            href={project.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden sm:flex items-center gap-1.5 liquid-glass-btn rounded-full px-3.5 py-1.5 text-[11px] text-white/60 font-medium tracking-widest uppercase hover:text-white transition-colors duration-300"
-          >
-            Live <ExternalLink size={10} className="ml-0.5" />
-          </a>
-        </div>
 
-        {/* Image grid */}
-        <div className="flex gap-2.5 sm:gap-3" style={{ height: 'clamp(180px, 30vh, 300px)' }}>
-          <div className="w-[36%] flex flex-col gap-2.5 sm:gap-3">
-            <div className="flex-1 rounded-xl overflow-hidden glass-card">
-              <img src={project.img1} alt="" className="w-full h-full object-cover opacity-65 hover:opacity-85 transition-opacity duration-500" loading="lazy" />
-            </div>
-            <div className="flex-[1.3] rounded-xl overflow-hidden glass-card">
-              <img src={project.img2} alt="" className="w-full h-full object-cover opacity-65 hover:opacity-85 transition-opacity duration-500" loading="lazy" />
-            </div>
-          </div>
-          <div className="flex-1 flex flex-col gap-2.5 sm:gap-3">
-            <div className="flex-1 rounded-xl overflow-hidden glass-card">
-              <img src={project.img3} alt={project.title} className="w-full h-full object-cover opacity-65 hover:opacity-85 transition-opacity duration-500" loading="lazy" />
-            </div>
-            <div className="hidden sm:block">
-              <p className="text-[12px] leading-relaxed text-white/40 mb-2 line-clamp-2">{project.desc}</p>
-              <div className="flex flex-wrap gap-1.5">
-                {project.tags.map((t) => (
-                  <span key={t} className="text-[10px] px-2.5 py-0.5 rounded-full glass-card text-violet-300/60">{t}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+            <h3
+              className="syne font-medium text-[#1C1C1E] mb-3 tracking-tight leading-[1.1]"
+              style={{ fontSize: 'clamp(1.5rem, 2.6vw, 2.1rem)' }}
+            >
+              {project.title}
+            </h3>
 
-        {/* Mobile meta */}
-        <div className="sm:hidden mt-2.5">
-          <p className="text-[11px] leading-relaxed text-white/40 mb-2 line-clamp-2">{project.desc}</p>
-          <div className="flex flex-wrap gap-1.5">
-            {project.tags.map((t) => (
-              <span key={t} className="text-[10px] px-2 py-0.5 rounded-full glass-card text-violet-300/60">{t}</span>
-            ))}
+            <p className="text-[14px] sm:text-[15px] leading-[1.7] text-[#3C3C43]/72 mb-6">
+              {project.desc}
+            </p>
+
+            <div className="flex flex-wrap gap-1.5 mb-7">
+              {project.tags.map((t) => (
+                <span
+                  key={t}
+                  className="glass-subtle text-[11px] px-3 py-1 rounded-full text-[#007AFF] font-medium"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+
+            <div>
+              <GlassButton href={project.href}>Visit live site</GlassButton>
+            </div>
           </div>
         </div>
-      </motion.div>
-    </div>
+      </article>
+    </FadeIn>
   )
 }
 
@@ -703,7 +647,7 @@ function TechMarquee() {
         style={{ transform: `translateX(${tx}px)`, willChange: 'transform' }}
       >
         {[...items, ...items, ...items].map((item, i) => (
-          <div key={i} className="flex-shrink-0 glass-card rounded-full px-5 py-2.5 text-[13px] font-medium text-white/50 whitespace-nowrap">
+          <div key={i} className="flex-shrink-0 glass-subtle rounded-full px-5 py-2.5 text-[13px] font-medium text-[#3C3C43]/75 whitespace-nowrap">
             {item}
           </div>
         ))}
@@ -712,9 +656,9 @@ function TechMarquee() {
   }
 
   return (
-    <section ref={sectionRef} className="bg-[#0c0718] pt-16 pb-8 overflow-hidden">
+    <section ref={sectionRef} className="pt-16 pb-8 overflow-hidden">
       <FadeIn y={16} delay={0}>
-        <p className="text-[11px] text-violet-300/35 font-medium tracking-widest uppercase text-center mb-7">
+        <p className="text-[11px] text-[#007AFF]/65 font-medium tracking-widest uppercase text-center mb-7">
           Technologies I work with
         </p>
       </FadeIn>
@@ -730,94 +674,34 @@ function TechMarquee() {
    PAGE: HOME
 ══════════════════════════════════════ */
 function HomePage() {
-  const time = useClock()
-  const { isAuth } = useAuth()
-  const [spotlight, setSpotlight] = useState({ x: '50%', y: '40%' })
-  const handleHeroMove = (e: React.MouseEvent<HTMLElement>) => {
-    const r = e.currentTarget.getBoundingClientRect()
-    setSpotlight({ x: `${e.clientX - r.left}px`, y: `${e.clientY - r.top}px` })
-  }
-  const navLinks = [
-    { label: 'Projects', to: '/projects' },
-    { label: 'About', to: '/about' },
-    { label: 'Contact', to: '/contact' },
-  ]
+  const preSkillsRef = useRef<HTMLDivElement>(null)
+  const skillsHeadingRef = useRef<HTMLHeadingElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: preSkillsRef,
+    offset: ['start start', 'end center'],
+  })
 
   return (
     <>
+      <FloatingNav />
+
+      {/* ── Floating 3D MacBook (right of hero → parks beside skills heading) ── */}
+      <Suspense fallback={null}>
+        <MacBookShowcase progress={scrollYProgress} anchorRef={skillsHeadingRef} />
+      </Suspense>
+
+      <div ref={preSkillsRef}>
       {/* ── Hero ── */}
-      <section
-        className="relative min-h-screen flex flex-col aurora-bg overflow-hidden"
-        onMouseMove={handleHeroMove}
-      >
-        {/* Mouse spotlight */}
-        <div
-          className="absolute inset-0 pointer-events-none z-10 transition-all duration-75"
-          style={{
-            background: `radial-gradient(480px circle at ${spotlight.x} ${spotlight.y}, rgba(139,92,246,0.11) 0%, transparent 65%)`,
-          }}
-        />
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="orb-1 absolute top-[12%] left-[8%] w-[500px] h-[500px] rounded-full bg-violet-700/20 blur-[110px]" />
-          <div className="orb-2 absolute top-[45%] right-[3%] w-[420px] h-[420px] rounded-full bg-purple-500/14 blur-[95px]" />
-          <div className="orb-3 absolute bottom-[8%] left-[38%] w-[360px] h-[360px] rounded-full bg-indigo-600/14 blur-[85px]" />
-          <div
-            className="absolute inset-0 opacity-[0.035]"
-            style={{
-              backgroundImage: 'linear-gradient(rgba(167,139,250,1) 1px, transparent 1px), linear-gradient(90deg, rgba(167,139,250,1) 1px, transparent 1px)',
-              backgroundSize: '80px 80px',
-            }}
-          />
-        </div>
+      <section className="relative min-h-screen flex flex-col overflow-hidden pt-24 sm:pt-28">
 
-        <FadeIn delay={0} y={-20} className="relative z-20">
-          <nav className="px-4 sm:px-6 pt-4 sm:pt-5">
-            <div className="max-w-[1440px] mx-auto">
-              <div className="navbar-glass rounded-full px-2 py-1.5 flex items-center justify-between">
-                <div className="flex items-center gap-5">
-                  <div
-                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-violet-600 border border-violet-400/40 flex items-center justify-center flex-shrink-0"
-                    style={{ boxShadow: '0 0 20px rgba(124,58,237,0.55)' }}
-                  >
-                    <span className="text-white text-[11px] font-bold tracking-tight syne">MP</span>
-                  </div>
-                  <div className="hidden md:flex items-center gap-6">
-                    {navLinks.map(({ label, to }) => (
-                      <Link key={to} to={to} className="text-[14px] text-white/65 hover:text-white transition-colors duration-300">
-                        {label}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-                <div className="hidden md:flex items-center gap-4">
-                  <span className="hidden lg:block text-[13px] text-white/40">Open to apprenticeships</span>
-                  <span className="flex items-center gap-1.5 text-[13px] text-white/50">
-                    <Clock size={13} />{time} Bern
-                  </span>
-                  {isAuth ? (
-                    <Link to="/about" className="flex items-center gap-1.5 text-[12px] text-violet-300 liquid-glass-btn rounded-full px-4 py-2">
-                      <Lock size={11} /> Private view
-                    </Link>
-                  ) : (
-                    <GlassButton to="/contact">Get in touch</GlassButton>
-                  )}
-                </div>
-                <Link to="/projects" className="md:hidden liquid-glass-btn rounded-full px-3 py-2 text-[12px] text-white/70 font-medium">
-                  Projects
-                </Link>
-              </div>
-            </div>
-          </nav>
-        </FadeIn>
-
-        <div className="relative z-20 flex-1 flex flex-col justify-end max-w-[1440px] mx-auto w-full px-5 sm:px-8 lg:px-12 pb-14 sm:pb-16 lg:pb-20">
+        <div className="relative z-20 flex-1 flex flex-col justify-end max-w-[1280px] mx-auto w-full px-5 sm:px-8 lg:px-12 pb-14 sm:pb-16 lg:pb-20">
           <FadeIn delay={0.05} y={20}>
-            <p className="text-[13px] sm:text-[14px] text-violet-300/75 tracking-[0.18em] uppercase mb-5 sm:mb-8 syne">
+            <p className="text-[12px] sm:text-[13px] text-[#007AFF]/85 tracking-[0.18em] uppercase mb-5 sm:mb-8 syne font-medium">
               Mykyta · Developer · Bern, CH
             </p>
           </FadeIn>
           <FadeIn delay={0.15} y={40}>
-            <h1 className="syne font-medium leading-[1.06] tracking-[-0.03em] text-white mb-8 sm:mb-10" style={{ fontSize: 'clamp(2.2rem, 7vw, 4.8rem)' }}>
+            <h1 className="syne font-medium leading-[1.06] tracking-[-0.03em] text-[#1C1C1E] mb-8 sm:mb-10" style={{ fontSize: 'clamp(2.2rem, 7vw, 4.8rem)' }}>
               Hi, I'm Mykyta —
               <br className="hidden sm:block" /><span className="sm:hidden"> </span>
               building things that
@@ -826,57 +710,53 @@ function HomePage() {
             </h1>
           </FadeIn>
           <FadeIn delay={0.3} y={20}>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-4">
               <GlassButton to="/projects">View my work</GlassButton>
-              <div className="group inline-flex items-center gap-2.5 glass-card rounded-2xl px-4 py-2.5 cursor-default hover:border-violet-400/28 transition-all duration-300">
-                <StarburstIcon className="w-5 h-5 sm:w-6 sm:h-6 fill-violet-400/75 flex-shrink-0" />
-                <span className="text-[13px] sm:text-[14px] font-medium text-white/75">Seeking Apprenticeship</span>
-                <span className="text-[10px] sm:text-[11px] bg-violet-600/70 backdrop-blur-sm border border-violet-400/30 text-white px-1.5 sm:px-2 py-0.5 rounded-full font-medium">2026</span>
+              <div className="glass rounded-full pl-3 pr-2 py-1.5 inline-flex items-center gap-2.5">
+                <StarburstIcon className="w-4 h-4 sm:w-5 sm:h-5 fill-[#007AFF]/75 flex-shrink-0" />
+                <span className="text-[12px] sm:text-[13px] font-medium text-[#1C1C1E] whitespace-nowrap">Seeking Apprenticeship</span>
+                <span className="text-[10px] bg-[#007AFF] text-white px-2 py-0.5 rounded-full font-semibold">2026</span>
               </div>
             </div>
           </FadeIn>
         </div>
-
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0c0718] to-transparent pointer-events-none z-10" />
       </section>
 
       {/* ── Tech Marquee ── */}
       <TechMarquee />
+      </div>
 
       {/* ── Skills overview ── */}
-      <section id="skills" className="bg-[#0e0a20] pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28 relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute bottom-0 left-1/3 w-[500px] h-[300px] bg-violet-800/10 blur-[110px]" />
-        </div>
-        <div className="max-w-[1440px] mx-auto">
+      <section id="skills" className="pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28 relative overflow-hidden">
+        <div className="max-w-[1280px] mx-auto">
           <FadeIn delay={0} x={-20} y={0}>
             <SectionBadge num="01" label="What I bring" />
           </FadeIn>
           <FadeIn delay={0.1} y={30}>
-            <h2 className="syne font-medium leading-[1.08] tracking-[-0.03em] text-white mb-12 sm:mb-16 px-5 sm:px-8 lg:px-12" style={{ fontSize: 'clamp(1.75rem, 5vw, 3.6rem)' }}>
+            <h2 ref={skillsHeadingRef} className="syne font-medium leading-[1.08] tracking-[-0.03em] text-[#1C1C1E] mb-12 sm:mb-16 px-5 sm:px-8 lg:px-12" style={{ fontSize: 'clamp(1.75rem, 5vw, 3.6rem)' }}>
               Skills &amp; strengths
             </h2>
           </FadeIn>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 px-5 sm:px-8 lg:px-12">
-            <div>
-              <p className="text-[12px] text-violet-300/55 font-medium tracking-widest uppercase mb-6">Technical</p>
+            <div className="glass rounded-3xl p-7 sm:p-8">
+              <p className="text-[11px] text-[#007AFF]/75 font-medium tracking-widest uppercase mb-6">Technical</p>
               <div className="space-y-5">
                 {skills.map(({ label, level }, i) => (
                   <FadeIn key={label} delay={i * 0.08} y={16}>
                     <div>
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-[14px] text-white/78 font-medium">{label}</span>
-                        <span className="text-[12px] text-violet-300/55"><CountUp to={level} />%</span>
+                        <span className="text-[14px] text-[#1C1C1E] font-medium">{label}</span>
+                        <span className="text-[12px] text-[#007AFF]/75 font-medium"><CountUp to={level} />%</span>
                       </div>
-                      <div className="h-1.5 rounded-full bg-white/6 overflow-hidden">
+                      <div className="h-1.5 rounded-full bg-[#3C3C43]/8 overflow-hidden">
                         <motion.div
                           className="h-full rounded-full"
                           initial={{ width: 0 }}
                           whileInView={{ width: `${level}%` }}
                           viewport={{ once: true }}
                           transition={{ duration: 1.1, ease: [0.25, 0.1, 0.25, 1], delay: 0.1 }}
-                          style={{ background: 'linear-gradient(90deg, #7c3aed, #a78bfa)', boxShadow: '0 0 10px rgba(124,58,237,0.6)' }}
+                          style={{ background: 'linear-gradient(90deg, #007AFF, #5AC8FA)', boxShadow: '0 0 8px rgba(0,122,255,0.40)' }}
                         />
                       </div>
                     </div>
@@ -886,14 +766,14 @@ function HomePage() {
             </div>
 
             <div>
-              <p className="text-[12px] text-violet-300/55 font-medium tracking-widest uppercase mb-6">Character</p>
+              <p className="text-[11px] text-[#007AFF]/75 font-medium tracking-widest uppercase mb-6">Character</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {traits.map(({ Icon, title, desc }, i) => (
                   <FadeIn key={title} delay={i * 0.1} y={20}>
-                    <div className="glass-card rounded-2xl p-5 hover:border-violet-400/22 transition-all duration-300">
-                      <Icon size={20} className="text-violet-400/75 mb-3" />
-                      <p className="text-[14px] font-semibold text-white mb-1.5 syne">{title}</p>
-                      <p className="text-[13px] leading-[1.65] text-white/50">{desc}</p>
+                    <div className="glass glass-hover rounded-2xl p-5 h-full">
+                      <Icon size={20} className="text-[#007AFF] mb-3" />
+                      <p className="text-[14px] font-semibold text-[#1C1C1E] mb-1.5 syne">{title}</p>
+                      <p className="text-[13px] leading-[1.65] text-[#3C3C43]/70">{desc}</p>
                     </div>
                   </FadeIn>
                 ))}
@@ -916,25 +796,23 @@ function HomePage() {
 function ProjectsPage() {
   return (
     <>
-      <SharedNavbar />
-      <section className="bg-[#0c0718] pt-12 pb-8 relative overflow-hidden min-h-screen">
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-violet-800/10 blur-[120px] pointer-events-none" />
-        <div className="max-w-[1440px] mx-auto">
+      <FloatingNav />
+      <section className="pt-28 pb-8 relative overflow-hidden min-h-screen">
+        <div className="max-w-[1280px] mx-auto">
           <FadeIn delay={0} x={-20} y={0}>
             <SectionBadge num="02" label="Selected work" />
           </FadeIn>
           <FadeIn delay={0.1} y={30}>
-            <h1 className="syne font-medium leading-[1.08] tracking-[-0.03em] text-white mb-10 sm:mb-12 px-5 sm:px-8 lg:px-12" style={{ fontSize: 'clamp(1.75rem, 7vw, 4.2rem)' }}>
+            <h1 className="syne font-medium leading-[1.08] tracking-[-0.03em] text-[#1C1C1E] mb-10 sm:mb-12 px-5 sm:px-8 lg:px-12" style={{ fontSize: 'clamp(1.75rem, 7vw, 4.2rem)' }}>
               My projects
             </h1>
           </FadeIn>
-          <div className="px-5 sm:px-8 lg:px-12">
+          <div>
             {projects.map((project, i) => (
-              <ProjectCard key={project.num} project={project} index={i} total={projects.length} />
+              <ProjectCard key={project.num} project={project} index={i} />
             ))}
           </div>
-          {/* Extra scroll room after last card */}
-          <div className="h-32" />
+          <div className="h-20" />
         </div>
       </section>
     </>
@@ -952,16 +830,15 @@ function AboutPage() {
 
   return (
     <>
-      <SharedNavbar />
-      <section className="bg-[#0c0718] pt-12 pb-24 relative overflow-hidden min-h-screen">
-        <div className="absolute top-0 right-0 w-[600px] h-[400px] bg-violet-900/10 blur-[130px] pointer-events-none" />
-        <div className="max-w-[1440px] mx-auto">
+      <FloatingNav />
+      <section className="pt-28 pb-24 relative overflow-hidden min-h-screen">
+        <div className="max-w-[1280px] mx-auto">
           <FadeIn delay={0} x={-20} y={0}>
             <SectionBadge num="03" label="About me" />
           </FadeIn>
 
           <FadeIn delay={0.1} y={30}>
-            <h1 className="syne font-medium leading-[1.12] tracking-[-0.02em] text-white mb-12 sm:mb-16 lg:mb-20 px-5 sm:px-8 lg:px-12" style={{ fontSize: 'clamp(1.6rem, 4vw, 3.4rem)' }}>
+            <h1 className="syne font-medium leading-[1.12] tracking-[-0.02em] text-[#1C1C1E] mb-12 sm:mb-16 lg:mb-20 px-5 sm:px-8 lg:px-12" style={{ fontSize: 'clamp(1.6rem, 4vw, 3.4rem)' }}>
               Motivated &amp; technical —
               <br className="hidden sm:block" />
               passionate about building things
@@ -974,19 +851,19 @@ function AboutPage() {
           <div className="px-5 sm:px-8 lg:px-12 mb-16 sm:mb-20">
             <div className="lg:grid lg:grid-cols-[26%_1fr_46%] lg:gap-8 lg:items-end">
               <FadeIn delay={0.15} x={-40} y={0} className="hidden lg:block">
-                <div className="aspect-[438/346] rounded-2xl overflow-hidden glass-card">
-                  <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&q=80" alt="Developer at work" className="w-full h-full object-cover opacity-75" />
+                <div className="aspect-[438/346] rounded-2xl overflow-hidden ring-1 ring-white/45">
+                  <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&q=80" alt="Developer at work" className="w-full h-full object-cover opacity-90" />
                 </div>
               </FadeIn>
               <FadeIn delay={0.2} y={20}>
                 <div className="flex flex-col items-start">
-                  <AnimatedText text={ABOUT_PUBLIC} className="text-[15px] sm:text-[17px] leading-[1.75] font-light text-white/65 mb-8 max-w-xl" />
+                  <AnimatedText text={ABOUT_PUBLIC} className="text-[15px] sm:text-[17px] leading-[1.75] font-light text-[#3C3C43] mb-8 max-w-xl" />
                   <GlassButton to="/contact">Let's connect</GlassButton>
                 </div>
               </FadeIn>
               <FadeIn delay={0.25} x={40} y={0} className="hidden lg:block">
-                <div className="aspect-[3/2] rounded-2xl overflow-hidden glass-card">
-                  <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80" alt="Code on screen" className="w-full h-full object-cover opacity-75" />
+                <div className="aspect-[3/2] rounded-2xl overflow-hidden ring-1 ring-white/45">
+                  <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80" alt="Code on screen" className="w-full h-full object-cover opacity-90" />
                 </div>
               </FadeIn>
             </div>
@@ -994,18 +871,18 @@ function AboutPage() {
 
           {/* Private section */}
           <div className="px-5 sm:px-8 lg:px-12">
-            <div className="border-t border-white/8 pt-12">
+            <div className="border-t border-[#3C3C43]/12 pt-12">
               {isAuth ? (
                 <FadeIn delay={0} y={20}>
                   <div>
                     <div className="flex items-center justify-between mb-8">
                       <div className="flex items-center gap-3">
-                        <div className="w-7 h-7 rounded-full bg-violet-600/60 border border-violet-400/30 flex items-center justify-center">
-                          <Lock size={12} className="text-violet-200" />
+                        <div className="w-7 h-7 rounded-full bg-[#007AFF] border border-[#007AFF]/30 flex items-center justify-center">
+                          <Lock size={12} className="text-white" />
                         </div>
-                        <span className="text-[13px] text-violet-300/70 font-medium tracking-widest uppercase">Private information</span>
+                        <span className="text-[12px] text-[#007AFF]/80 font-medium tracking-widest uppercase">Private information</span>
                       </div>
-                      <button onClick={logout} className="flex items-center gap-1.5 text-[12px] text-white/30 hover:text-white/60 transition-colors">
+                      <button onClick={logout} className="flex items-center gap-1.5 text-[12px] text-[#3C3C43]/50 hover:text-[#3C3C43]/80 transition-colors">
                         <LogOut size={12} /> Sign out
                       </button>
                     </div>
@@ -1019,19 +896,19 @@ function AboutPage() {
                         { Icon: User, label: 'Salary expectation', value: 'CHF 800–1 000 / month' },
                         { Icon: GitBranch, label: 'Reference', value: 'Available on request' },
                       ].map(({ Icon, label, value }) => (
-                        <div key={label} className="glass-card rounded-2xl p-5 border border-violet-400/10">
+                        <div key={label} className="glass glass-hover rounded-2xl p-5 h-full">
                           <div className="flex items-center gap-2 mb-2">
-                            <Icon size={14} className="text-violet-400/60" />
-                            <span className="text-[11px] text-violet-300/50 tracking-widest uppercase font-medium">{label}</span>
+                            <Icon size={14} className="text-[#007AFF]" />
+                            <span className="text-[11px] text-[#007AFF]/75 tracking-widest uppercase font-medium">{label}</span>
                           </div>
-                          <p className="text-[14px] text-white/80 font-medium">{value}</p>
+                          <p className="text-[14px] text-[#1C1C1E] font-medium">{value}</p>
                         </div>
                       ))}
                     </div>
 
-                    <div className="mt-6 glass-card rounded-2xl p-5 border border-violet-400/10">
-                      <p className="text-[11px] text-violet-300/50 tracking-widest uppercase font-medium mb-3">Additional notes</p>
-                      <p className="text-[14px] text-white/65 leading-relaxed">
+                    <div className="mt-6 glass rounded-2xl p-5">
+                      <p className="text-[11px] text-[#007AFF]/75 tracking-widest uppercase font-medium mb-3">Additional notes</p>
+                      <p className="text-[14px] text-[#3C3C43] leading-relaxed">
                         Available to start an apprenticeship from August 2026. Prefer companies working with modern web stacks — React, Next.js, TypeScript, Go. Comfortable in German and English. Based in Bern; open to Bern and greater Bern region.
                       </p>
                     </div>
@@ -1040,11 +917,11 @@ function AboutPage() {
               ) : (
                 <FadeIn delay={0} y={20}>
                   <div className="flex flex-col items-center text-center py-16">
-                    <div className="w-14 h-14 rounded-full glass-card border border-violet-400/20 flex items-center justify-center mb-6">
-                      <Lock size={22} className="text-violet-400/60" />
+                    <div className="w-14 h-14 rounded-full glass-subtle border border-[#007AFF]/25 flex items-center justify-center mb-6">
+                      <Lock size={22} className="text-[#007AFF]" />
                     </div>
-                    <h3 className="syne text-[1.3rem] font-semibold text-white mb-3">Private section</h3>
-                    <p className="text-[14px] text-white/45 leading-relaxed max-w-sm mb-8">
+                    <h3 className="syne text-[1.3rem] font-semibold text-[#1C1C1E] mb-3">Private section</h3>
+                    <p className="text-[14px] text-[#3C3C43]/65 leading-relaxed max-w-sm mb-8">
                       Contact details, salary expectations, and school information are protected. Sign in to view them.
                     </p>
                     <GlassButton to="/login">Sign in</GlassButton>
@@ -1065,23 +942,20 @@ function AboutPage() {
 function ContactPage() {
   return (
     <>
-      <SharedNavbar />
-      <section className="bg-[#0e0a20] pt-12 pb-20 sm:pb-28 lg:pb-36 relative overflow-hidden min-h-screen">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-violet-700/10 blur-[140px]" />
-        </div>
+      <FloatingNav />
+      <section className="pt-28 pb-20 sm:pb-28 lg:pb-36 relative overflow-hidden min-h-screen">
 
-        <div className="max-w-[1440px] mx-auto relative z-10">
+        <div className="max-w-[1280px] mx-auto relative z-10">
           <FadeIn delay={0} x={-20} y={0}>
             <SectionBadge num="04" label="Get in touch" />
           </FadeIn>
           <FadeIn delay={0.1} y={30}>
-            <h1 className="syne font-medium leading-[1.08] tracking-[-0.03em] text-white mb-6 sm:mb-8 px-5 sm:px-8 lg:px-12" style={{ fontSize: 'clamp(1.75rem, 7vw, 4.2rem)' }}>
+            <h1 className="syne font-medium leading-[1.08] tracking-[-0.03em] text-[#1C1C1E] mb-6 sm:mb-8 px-5 sm:px-8 lg:px-12" style={{ fontSize: 'clamp(1.75rem, 7vw, 4.2rem)' }}>
               Let's work together
             </h1>
           </FadeIn>
           <FadeIn delay={0.2} y={20}>
-            <p className="text-[15px] sm:text-[17px] leading-[1.7] text-white/50 mb-10 max-w-lg font-light px-5 sm:px-8 lg:px-12">
+            <p className="text-[15px] sm:text-[17px] leading-[1.7] text-[#3C3C43]/70 mb-10 max-w-lg font-light px-5 sm:px-8 lg:px-12">
               I'm actively seeking apprenticeship opportunities where I can grow, contribute, and build real things. If you think I'd be a good fit, I'd love to hear from you.
             </p>
           </FadeIn>
@@ -1104,15 +978,15 @@ function ContactPage() {
                 { Icon: GitBranch, label: 'GitHub', value: 'github.com/Fallka0', href: 'https://github.com/Fallka0' },
                 { Icon: MapPin, label: 'Location', value: 'Bern, Switzerland', href: undefined },
               ].map(({ Icon, label, value, href }) => (
-                <div key={label} className="glass-card rounded-2xl p-5 group hover:border-violet-400/22 transition-all duration-300">
-                  <Icon size={16} className="text-violet-400/60 mb-3" />
-                  <p className="text-[11px] text-violet-300/50 tracking-widest uppercase font-medium mb-1">{label}</p>
+                <div key={label} className="glass glass-hover rounded-2xl p-5 group h-full">
+                  <Icon size={16} className="text-[#007AFF] mb-3" />
+                  <p className="text-[11px] text-[#007AFF]/75 tracking-widest uppercase font-medium mb-1">{label}</p>
                   {href ? (
-                    <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" className="text-[14px] text-white/70 group-hover:text-white transition-colors duration-200">
+                    <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" className="text-[14px] text-[#3C3C43] group-hover:text-[#1C1C1E] transition-colors duration-200">
                       {value}
                     </a>
                   ) : (
-                    <p className="text-[14px] text-white/70">{value}</p>
+                    <p className="text-[14px] text-[#3C3C43]">{value}</p>
                   )}
                 </div>
               ))}
@@ -1120,14 +994,14 @@ function ContactPage() {
           </FadeIn>
 
           {/* Footer */}
-          <div className="border-t border-white/7 pt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-5 sm:px-8 lg:px-12">
+          <div className="border-t border-[#3C3C43]/12 pt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-5 sm:px-8 lg:px-12">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-violet-600/75 border border-violet-400/30 flex items-center justify-center" style={{ boxShadow: '0 0 16px rgba(124,58,237,0.4)' }}>
+              <div className="w-8 h-8 rounded-full bg-[#007AFF] border border-[#007AFF]/30 flex items-center justify-center" style={{ boxShadow: '0 0 12px rgba(0,122,255,0.25)' }}>
                 <span className="text-white text-[10px] font-bold syne">MP</span>
               </div>
-              <span className="text-[13px] text-white/35">Mykyta Pantelei · 2026</span>
+              <span className="text-[13px] text-[#3C3C43]/60">Mykyta Pantelei · 2026</span>
             </div>
-            <Link to="/" className="text-[13px] text-white/25 hover:text-white/50 transition-colors duration-200">
+            <Link to="/" className="text-[13px] text-[#3C3C43]/45 hover:text-[#3C3C43]/70 transition-colors duration-200">
               Back to home
             </Link>
           </div>
@@ -1166,27 +1040,27 @@ function LoginPage() {
 
   return (
     <>
-      <SharedNavbar />
-      <section className="bg-[#0c0718] min-h-[calc(100vh-64px)] flex items-center justify-center px-4 relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-violet-700/12 blur-[130px]" />
-        </div>
+      <FloatingNav />
+      <section className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
 
         <motion.div
           animate={shake ? { x: [-8, 8, -8, 8, 0] } : { x: 0 }}
           transition={{ duration: 0.4 }}
-          className="relative z-10 w-full max-w-sm"
+          className="relative z-10 flex justify-center"
         >
           <FadeIn delay={0} y={24}>
-            <div className="glass-card rounded-3xl p-8 border border-white/10">
+            <div
+              className="glass-strong rounded-[28px] p-8"
+              style={{ width: 'min(380px, calc(100vw - 32px))' }}
+            >
               <div className="flex justify-center mb-7">
-                <div className="w-12 h-12 rounded-full bg-violet-600/70 border border-violet-400/30 flex items-center justify-center" style={{ boxShadow: '0 0 28px rgba(124,58,237,0.45)' }}>
+                <div className="w-12 h-12 rounded-full bg-[#007AFF] border border-[#007AFF]/30 flex items-center justify-center" style={{ boxShadow: '0 0 22px rgba(0,122,255,0.30)' }}>
                   <Lock size={20} className="text-white" />
                 </div>
               </div>
 
-              <h1 className="syne text-[1.5rem] font-semibold text-white text-center mb-1.5">Private access</h1>
-              <p className="text-[13px] text-white/40 text-center mb-8 leading-relaxed">
+              <h1 className="syne text-[1.5rem] font-semibold text-[#1C1C1E] text-center mb-1.5">Private access</h1>
+              <p className="text-[13px] text-[#3C3C43]/65 text-center mb-8 leading-relaxed">
                 Enter the password to view contact details and personal information.
               </p>
 
@@ -1198,12 +1072,12 @@ function LoginPage() {
                     onChange={(e) => { setPw(e.target.value); setError('') }}
                     placeholder="Password"
                     autoComplete="current-password"
-                    className="w-full bg-white/5 border border-white/12 rounded-xl px-4 py-3 text-[14px] text-white placeholder-white/30 focus:outline-none focus:border-violet-400/50 transition-colors duration-200 pr-10"
+                    className="w-full bg-white/40 border border-white/55 rounded-xl px-4 py-3 text-[14px] text-[#1C1C1E] placeholder-[#3C3C43]/35 focus:outline-none focus:border-[#007AFF]/60 focus:bg-white/60 transition-all duration-200 pr-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPw(!showPw)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#3C3C43]/45 hover:text-[#3C3C43]/70 transition-colors"
                   >
                     {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
@@ -1213,7 +1087,7 @@ function LoginPage() {
                   <motion.p
                     initial={{ opacity: 0, y: -4 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-[12px] text-red-400/80 text-center"
+                    className="text-[12px] text-[#FF3B30]/90 text-center"
                   >
                     {error}
                   </motion.p>
@@ -1224,8 +1098,8 @@ function LoginPage() {
                 </GlassButton>
               </form>
 
-              <div className="mt-6 pt-5 border-t border-white/8 text-center">
-                <Link to="/about" className="text-[12px] text-white/30 hover:text-white/55 transition-colors duration-200">
+              <div className="mt-6 pt-5 border-t border-[#3C3C43]/12 text-center">
+                <Link to="/about" className="text-[12px] text-[#3C3C43]/50 hover:text-[#3C3C43]/70 transition-colors duration-200">
                   Continue without signing in
                 </Link>
               </div>
@@ -1241,13 +1115,23 @@ function LoginPage() {
    APP ROOT
 ══════════════════════════════════════ */
 export default function App() {
+  useEffect(() => {
+    const lenis = new Lenis({ lerp: 0.1, smoothWheel: true })
+    let raf = 0
+    const loop = (time: number) => {
+      lenis.raf(time)
+      raf = requestAnimationFrame(loop)
+    }
+    raf = requestAnimationFrame(loop)
+    return () => {
+      cancelAnimationFrame(raf)
+      lenis.destroy()
+    }
+  }, [])
+
   return (
     <HashRouter>
       <AuthProvider>
-        {/* Film-grain overlay — subtle texture across all pages */}
-        <div className="grain-overlay" aria-hidden="true" />
-        {/* Custom cursor — desktop only */}
-        <CustomCursor />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/projects" element={<ProjectsPage />} />
