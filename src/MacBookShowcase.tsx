@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useRef } from 'react'
+import { Suspense, useMemo, useRef, type RefObject } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useGLTF, Center } from '@react-three/drei'
 import { type MotionValue } from 'framer-motion'
@@ -10,7 +10,13 @@ const MODEL_URL = '/models/macbook.glb'
    all driven by scroll `progress` (0 → 1) and damped every frame so the
    motion stays smooth regardless of frame rate. Sizing/positioning use
    viewport units, so nothing crops when the window resizes. */
-function MacBook({ progress }: { progress: MotionValue<number> }) {
+function MacBook({
+  progress,
+  anchorRef,
+}: {
+  progress: MotionValue<number>
+  anchorRef: RefObject<HTMLElement | null>
+}) {
   const { scene } = useGLTF(MODEL_URL)
   const cloned = useMemo(() => scene.clone(true), [scene])
 
@@ -35,9 +41,22 @@ function MacBook({ progress }: { progress: MotionValue<number> }) {
 
     // Responsive targets (all in world units derived from the viewport).
     const targetScale =
-      baseScale * THREE.MathUtils.lerp(viewport.height * 0.5, viewport.height * 0.22, p)
+      baseScale * THREE.MathUtils.lerp(viewport.height * 0.5, viewport.height * 0.26, p)
     const targetX = viewport.width * 0.24
-    const targetY = THREE.MathUtils.lerp(viewport.height * 0.08, -viewport.height * 0.62, p)
+
+    // Vertical target blends from the hero (top) toward the live on-screen
+    // position of the "Skills & strengths" heading, so the model parks beside
+    // it and rides along as that section scrolls.
+    const heroY = viewport.height * 0.06
+    let headingY = -viewport.height * 0.6
+    const el = anchorRef.current
+    if (el) {
+      const rect = el.getBoundingClientRect()
+      const screenCenter = rect.top + rect.height / 2
+      const ndcY = 1 - (screenCenter / window.innerHeight) * 2
+      headingY = ndcY * (viewport.height / 2)
+    }
+    const targetY = THREE.MathUtils.lerp(heroY, headingY, p)
     const targetRotY = -0.5 + p * Math.PI * 2
 
     if (!initialized.current) {
@@ -70,8 +89,10 @@ function MacBook({ progress }: { progress: MotionValue<number> }) {
    crops because it's positioned in 3D space relative to the live viewport. */
 export default function MacBookFloating({
   progress,
+  anchorRef,
 }: {
   progress: MotionValue<number>
+  anchorRef: RefObject<HTMLElement | null>
 }) {
   return (
     <div className="hidden md:block fixed inset-0 z-[8] pointer-events-none">
@@ -85,7 +106,7 @@ export default function MacBookFloating({
         <directionalLight position={[-6, 3, -4]} intensity={0.9} />
         <spotLight position={[0, 7, 4]} angle={0.5} penumbra={1} intensity={1.4} />
         <Suspense fallback={null}>
-          <MacBook progress={progress} />
+          <MacBook progress={progress} anchorRef={anchorRef} />
         </Suspense>
       </Canvas>
     </div>

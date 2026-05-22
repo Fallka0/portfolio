@@ -675,6 +675,7 @@ function TechMarquee() {
 ══════════════════════════════════════ */
 function HomePage() {
   const preSkillsRef = useRef<HTMLDivElement>(null)
+  const skillsHeadingRef = useRef<HTMLHeadingElement>(null)
   const { scrollYProgress } = useScroll({
     target: preSkillsRef,
     offset: ['start start', 'end center'],
@@ -684,9 +685,9 @@ function HomePage() {
     <>
       <FloatingNav />
 
-      {/* ── Floating 3D MacBook (right of hero → drifts down to skills) ── */}
+      {/* ── Floating 3D MacBook (right of hero → parks beside skills heading) ── */}
       <Suspense fallback={null}>
-        <MacBookShowcase progress={scrollYProgress} />
+        <MacBookShowcase progress={scrollYProgress} anchorRef={skillsHeadingRef} />
       </Suspense>
 
       <div ref={preSkillsRef}>
@@ -732,7 +733,7 @@ function HomePage() {
             <SectionBadge num="01" label="What I bring" />
           </FadeIn>
           <FadeIn delay={0.1} y={30}>
-            <h2 className="syne font-medium leading-[1.08] tracking-[-0.03em] text-[#1C1C1E] mb-12 sm:mb-16 px-5 sm:px-8 lg:px-12" style={{ fontSize: 'clamp(1.75rem, 5vw, 3.6rem)' }}>
+            <h2 ref={skillsHeadingRef} className="syne font-medium leading-[1.08] tracking-[-0.03em] text-[#1C1C1E] mb-12 sm:mb-16 px-5 sm:px-8 lg:px-12" style={{ fontSize: 'clamp(1.75rem, 5vw, 3.6rem)' }}>
               Skills &amp; strengths
             </h2>
           </FadeIn>
