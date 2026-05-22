@@ -4,6 +4,8 @@ import {
   useRef,
   createContext,
   useContext,
+  lazy,
+  Suspense,
 } from 'react'
 import {
   HashRouter,
@@ -41,6 +43,8 @@ import {
   type MotionValue,
 } from 'framer-motion'
 import './index.css'
+
+const MacBookShowcase = lazy(() => import('./MacBookShowcase'))
 
 /* ══════════════════════════════════════
    AUTH
@@ -703,6 +707,11 @@ function HomePage() {
           </FadeIn>
         </div>
       </section>
+
+      {/* ── 3D MacBook scroll showcase ── */}
+      <Suspense fallback={<div className="h-[60vh]" />}>
+        <MacBookShowcase />
+      </Suspense>
 
       {/* ── Tech Marquee ── */}
       <TechMarquee />
