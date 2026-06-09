@@ -23,22 +23,21 @@ export default function AnimatedTitle({ lead, rest, className = '', mode = 'fade
 
   const step = STEP[mode] || 60
   let idx = 0
-  const words = (txt: string, dim: boolean) =>
-    txt.trim().split(/\s+/).filter(Boolean).map((w, i) => {
-      const d = (idx++ * step) + 'ms'
-      return (
-        <Fragment key={(dim ? 'r' : 'l') + i}>
-          <span className={'aword' + (dim ? ' aword--dim' : '')}>
-            <span className="aword__in" style={{ '--wd': d } as React.CSSProperties}>{w}</span>
-          </span>
-          {' '}
-        </Fragment>
-      )
-    })
+  const allWords = `${lead} ${rest}`.trim().split(/\s+/).filter(Boolean).map((w, i) => {
+    const d = (idx++ * step) + 'ms'
+    return (
+      <Fragment key={i}>
+        <span className="aword">
+          <span className="aword__in" style={{ '--wd': d } as React.CSSProperties}>{w}</span>
+        </span>
+        {' '}
+      </Fragment>
+    )
+  })
 
   return (
     <span ref={ref} className={`atitle${shown ? ' in' : ''}${className ? ' ' + className : ''}`} data-anim={mode}>
-      {words(lead, false)}{' '}{words(rest, true)}
+      {allWords}
     </span>
   )
 }
