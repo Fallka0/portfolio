@@ -1,5 +1,5 @@
 'use client'
-import { useRef, useState, useEffect } from 'react'
+import { Fragment, useRef, useState, useEffect } from 'react'
 
 const STEP: Record<string, number> = { rise: 55, fade: 60, blur: 75, wipe: 70 }
 
@@ -27,9 +27,12 @@ export default function AnimatedTitle({ lead, rest, className = '', mode = 'fade
     txt.trim().split(/\s+/).filter(Boolean).map((w, i) => {
       const d = (idx++ * step) + 'ms'
       return (
-        <span key={(dim ? 'r' : 'l') + i} className={'aword' + (dim ? ' aword--dim' : '')}>
-          <span className="aword__in" style={{ '--wd': d } as React.CSSProperties}>{w}</span>
-        </span>
+        <Fragment key={(dim ? 'r' : 'l') + i}>
+          <span className={'aword' + (dim ? ' aword--dim' : '')}>
+            <span className="aword__in" style={{ '--wd': d } as React.CSSProperties}>{w}</span>
+          </span>
+          {' '}
+        </Fragment>
       )
     })
 
