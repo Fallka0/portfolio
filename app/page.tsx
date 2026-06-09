@@ -26,31 +26,29 @@ export default function Page() {
           heroLede={DATA.heroLede}
           heroMeta={DATA.heroMeta}
         />
-        <main>
-          <TechStack
-            techLead={DATA.techLead}
-            techRest={DATA.techRest}
-            techNote={DATA.techNote}
-            techStack={DATA.techStack}
-          />
-          <Showcase
-            workLead={DATA.workLead}
-            workRest={DATA.workRest}
-            showcase={DATA.showcase}
-          />
-          <About
-            aboutLead={DATA.aboutLead}
-            aboutRest={DATA.aboutRest}
-            aboutBody={DATA.aboutBody}
-            stats={DATA.stats}
-            languages={DATA.languages}
-          />
-          <HowIWork
-            howLead={DATA.howLead}
-            howRest={DATA.howRest}
-            principles={DATA.principles}
-          />
-        </main>
+        <TechStack
+          techLead={DATA.techLead}
+          techRest={DATA.techRest}
+          techNote={DATA.techNote}
+          techStack={DATA.techStack}
+        />
+        <Showcase
+          workLead={DATA.workLead}
+          workRest={DATA.workRest}
+          showcase={DATA.showcase}
+        />
+        <About
+          aboutLead={DATA.aboutLead}
+          aboutRest={DATA.aboutRest}
+          aboutBody={DATA.aboutBody}
+          stats={DATA.stats}
+          languages={DATA.languages}
+        />
+        <HowIWork
+          howLead={DATA.howLead}
+          howRest={DATA.howRest}
+          principles={DATA.principles}
+        />
         <Contact
           name={DATA.name}
           email={DATA.email}

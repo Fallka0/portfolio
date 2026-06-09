@@ -31,6 +31,11 @@ export default function HowIWork({ howLead, howRest, principles }: Props) {
 
     const measure = () => {
       if (reduce || window.innerWidth < 760) { reset(); return }
+      // Cache natural document top before sticky can distort offsetTop
+      const bcrTop = how.getBoundingClientRect().top
+      if (bcrTop > 0 || window.scrollY < 50) {
+        how.dataset.doctop = String(Math.round(bcrTop + window.scrollY))
+      }
       const maxX = Math.max(0, track.scrollWidth - wrap.clientWidth)
       how.dataset.maxx      = String(maxX)
       how.dataset.scrolllen = String(maxX)
