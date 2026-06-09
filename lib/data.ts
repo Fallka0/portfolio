@@ -8,7 +8,7 @@ export const DATA = {
   githubUrl: 'https://github.com/Fallka0',
 
   heroLead: "I'm Mykyta — a developer from Ukraine,",
-  heroRest: ' *building* my future in Bern.',
+  heroRest: ' *building my future* in Bern.',
   heroLede: "I solve real problems and genuinely enjoy the build. I came to Switzerland as a refugee — now I want to help shape where it's going.",
   heroMeta: [
     { k: 'Currently', v: 'Student @ bwd Bern' },
@@ -16,7 +16,7 @@ export const DATA = {
   ],
 
   workLead: 'Two projects',
-  workRest: ' I *learned* the most from.',
+  workRest: ' I *learned the most from.*',
 
   showcase: {
     duration: 5200,
@@ -63,8 +63,8 @@ export const DATA = {
     { name: 'French',    level: 'B1' },
   ],
 
-  howLead: 'How I',
-  howRest: ' *work.*',
+  howLead: 'How *I*',
+  howRest: ' work.',
   principles: [
     { t: 'Trust goes both ways',  d: 'I give everyone trust and respect from the start. The people I click with give it right back.' },
     { t: "I build what I'd use",  d: 'I care most about problems I actually relate to — like the real-estate site I built because the space genuinely interests me.' },
@@ -73,7 +73,7 @@ export const DATA = {
   ],
 
   techLead: 'I can read, debug',
-  techRest: ' and reason about the code I *ship.*',
+  techRest: ' and reason about the *code I ship.*',
   techNote: 'I use AI as a thinking partner, not a shortcut. Every pattern I reach for, I understand — architecture, trade-offs, and all.',
   techStack: [
     { cat: 'Frontend',  items: ['React', 'Next.js', 'TypeScript', 'Vercel'] },
