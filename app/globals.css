@@ -38,7 +38,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 #how     { position: sticky; top: 0; z-index: 5; background: #090909; border-radius: 0; }
 #contact { position: sticky; top: 0; z-index: 6; background: #1c000d; border-radius: 32px 32px 0 0; overflow: hidden; }
 .wrap { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gut); }
-.sec-inner { will-change: transform; }
+.sec-inner { will-change: transform, clip-path, filter; }
 
 .pill { display: inline-flex; align-items: center; gap: 8px; width: fit-content; max-width: 100%; white-space: nowrap; font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; padding: 8px 15px; border-radius: 100px; border: 1px solid currentColor; opacity: 0.92; }
 .section--dark  .pill { border-color: var(--ink-far);  color: var(--ink-dim); }

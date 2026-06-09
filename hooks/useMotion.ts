@@ -13,12 +13,13 @@ function c01(v: number): number { return v < 0 ? 0 : v > 1 ? 1 : v }
 function lerp(a: number, b: number, t: number): number { return a + (b - a) * t }
 function easeOut(t: number): number { return Math.pow(t, 0.38) }
 
-// Returns a clamped+eased [0,1] progress as a section's top enters from below
+// LINEAR clamped [0,1] progress as a section's top enters from below.
+// Linear keeps the traveling clip-path edge visible across the whole entry.
 function entryP(bcrTop: number, vh: number, compress: number): number {
-  return easeOut(c01(1 - bcrTop / (vh * compress)))
+  return c01(1 - bcrTop / (vh * compress))
 }
 
-// Returns a clamped+eased [0,1] progress for the section being covered by the next
+// Eased [0,1] progress for the section being covered by the next (recede/depth).
 function recedeP(nextBcrTop: number, vh: number, compress: number): number {
   return easeOut(c01(1 - nextBcrTop / (vh * compress)))
 }
@@ -57,59 +58,80 @@ export function useMotion() {
       const secHow     = document.getElementById('how')
       const secContact = document.getElementById('contact')
 
-      // ── Hero: scale + blur as TechStack slides in from the right ────
+      // ── Hero: depth-recede (scale down + blur) as TechStack masks in ─
       if (secTop && secTech) {
-        const p = recedeP(secTech.getBoundingClientRect().top, vh, 0.70)
+        const p = recedeP(secTech.getBoundingClientRect().top, vh, 0.85)
         const el = inner(secTop)
         if (el) {
-          el.style.transform = `scale(${lerp(1, 0.82, p).toFixed(4)})`
-          el.style.filter    = `blur(${(p * 10).toFixed(2)}px)`
+          el.style.transform = `scale(${lerp(1, 0.86, p).toFixed(4)}) translateY(${lerp(0, -6, p).toFixed(1)}vh)`
+          el.style.filter    = `blur(${(p * 9).toFixed(2)}px)`
         }
       }
 
-      // ── TechStack: SLIDE IN FROM THE RIGHT (horizontal) ─────────────
+      // ── TechStack: IRIS / circle aperture grows from a point ────────
       if (secTech) {
         const el = inner(secTech)
         if (el) {
-          const p = entryP(secTech.getBoundingClientRect().top, vh, 0.62)
-          if (p >= 1) { el.style.transform = ''; el.style.filter = '' }
-          else        { el.style.transform = `translateX(${lerp(110, 0, p).toFixed(2)}vw)` }
-        }
-      }
-
-      // ── Showcase: RISE FROM BELOW (vertical + slight scale) ─────────
-      if (secWork) {
-        const el = inner(secWork)
-        if (el) {
-          const p = entryP(secWork.getBoundingClientRect().top, vh, 0.65)
-          if (p >= 1) { el.style.transform = ''; el.style.filter = '' }
-          else        { el.style.transform = `translateY(${lerp(70, 0, p).toFixed(1)}vh) scale(${lerp(0.92, 1, p).toFixed(4)})` }
-        }
-      }
-
-      // ── About: SLIDE IN FROM THE LEFT; recede with blur ──────────────
-      if (secAbout) {
-        const el = inner(secAbout)
-        if (el) {
-          const rp = secHow ? recedeP(secHow.getBoundingClientRect().top, vh, 0.70) : 0
-          if (rp > 0) {
-            el.style.transform = `scale(${lerp(1, 0.82, rp).toFixed(4)})`
-            el.style.filter    = `blur(${(rp * 10).toFixed(2)}px)`
-          } else {
-            const p = entryP(secAbout.getBoundingClientRect().top, vh, 0.62)
-            if (p >= 1) { el.style.transform = ''; el.style.filter = '' }
-            else        { el.style.transform = `translateX(${lerp(-110, 0, p).toFixed(2)}vw)`; el.style.filter = '' }
+          const p = entryP(secTech.getBoundingClientRect().top, vh, 0.92)
+          if (p >= 1) { el.style.clipPath = ''; el.style.transform = ''; el.style.filter = '' }
+          else {
+            el.style.clipPath  = `circle(${(p * p * 75).toFixed(2)}vmax at 50% 44%)`
+            el.style.transform = `scale(${lerp(1.12, 1, easeOut(p)).toFixed(4)})`
+            el.style.filter    = ''
           }
         }
       }
 
-      // ── Contact: CRASH ZOOM from center (scale 2.2 → 1) ────────────
+      // ── Showcase: CENTER CURTAIN — splits open from the middle line ──
+      if (secWork) {
+        const el = inner(secWork)
+        if (el) {
+          const p = entryP(secWork.getBoundingClientRect().top, vh, 0.92)
+          if (p >= 1) { el.style.clipPath = ''; el.style.transform = ''; el.style.filter = '' }
+          else {
+            const inset = lerp(50, 0, p)
+            const round = lerp(60, 0, p)
+            el.style.clipPath  = `inset(0% ${inset.toFixed(2)}% 0% ${inset.toFixed(2)}% round ${round.toFixed(1)}px)`
+            el.style.transform = `scale(${lerp(1.06, 1, easeOut(p)).toFixed(4)})`
+            el.style.filter    = ''
+          }
+        }
+      }
+
+      // ── About: DIAGONAL SWEEP reveal; depth-recede as HowIWork masks in
+      if (secAbout) {
+        const el = inner(secAbout)
+        if (el) {
+          const rp = secHow ? recedeP(secHow.getBoundingClientRect().top, vh, 0.85) : 0
+          if (rp > 0) {
+            el.style.clipPath  = ''
+            el.style.transform = `scale(${lerp(1, 0.86, rp).toFixed(4)}) translateY(${lerp(0, -6, rp).toFixed(1)}vh)`
+            el.style.filter    = `blur(${(rp * 9).toFixed(2)}px)`
+          } else {
+            const p = entryP(secAbout.getBoundingClientRect().top, vh, 0.92)
+            if (p >= 1) { el.style.clipPath = ''; el.style.transform = ''; el.style.filter = '' }
+            else {
+              // slanted edge travels across from top-left to bottom-right
+              const q = lerp(-60, 170, p)
+              el.style.clipPath  = `polygon(0% 0%, ${q.toFixed(2)}% 0%, ${(q - 60).toFixed(2)}% 100%, 0% 100%)`
+              el.style.transform = `scale(${lerp(1.05, 1, easeOut(p)).toFixed(4)})`
+              el.style.filter    = ''
+            }
+          }
+        }
+      }
+
+      // ── Contact: RISING BLIND — wipes up from the bottom edge ────────
       if (secContact) {
         const el = inner(secContact)
         if (el) {
-          const p = entryP(secContact.getBoundingClientRect().top, vh, 0.55)
-          if (p >= 1) { el.style.transform = ''; el.style.filter = '' }
-          else        { el.style.transform = `scale(${lerp(2.2, 1, p).toFixed(4)})`; el.style.filter = '' }
+          const p = entryP(secContact.getBoundingClientRect().top, vh, 0.92)
+          if (p >= 1) { el.style.clipPath = ''; el.style.transform = ''; el.style.filter = '' }
+          else {
+            el.style.clipPath  = `inset(${lerp(100, 0, p).toFixed(2)}% 0% 0% 0%)`
+            el.style.transform = `translateY(${lerp(10, 0, easeOut(p)).toFixed(2)}vh)`
+            el.style.filter    = ''
+          }
         }
       }
 
