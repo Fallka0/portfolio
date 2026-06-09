@@ -38,7 +38,7 @@ export default function Showcase({ workLead, workRest, showcase }: Props) {
 
   return (
     <section className="section section--dark sec sec-cover" data-theme="dark" id="work">
-      <div className="wrap">
+      <div className="wrap sec-inner">
         <div className="work__head">
           <h2 className="h-section sec__title">
             <AnimatedTitle mode="fade" lead={workLead} rest={workRest} />

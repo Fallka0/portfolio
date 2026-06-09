@@ -13,19 +13,19 @@ function c01(v: number): number { return v < 0 ? 0 : v > 1 ? 1 : v }
 function lerp(a: number, b: number, t: number): number { return a + (b - a) * t }
 function easeOut(t: number): number { return Math.pow(t, 0.38) }
 
-// Crash-zoom: section enters from below, inner scales fromScale→1 in last `compress` of entry
-function crashZoom(section: HTMLElement, bcrTop: number, vh: number, fromScale: number, compress = 0.55): void {
-  const inner = section.firstElementChild as HTMLElement
-  if (!inner) return
-  const rawP = c01(1 - bcrTop / (vh * compress))
-  if (rawP >= 1) {
-    inner.style.transform = ''
-    inner.style.filter = ''
-  } else {
-    const p = easeOut(rawP)
-    inner.style.transform = `scale(${lerp(fromScale, 1, p).toFixed(4)})`
-    inner.style.filter = ''
-  }
+// Returns a clamped+eased [0,1] progress as a section's top enters from below
+function entryP(bcrTop: number, vh: number, compress: number): number {
+  return easeOut(c01(1 - bcrTop / (vh * compress)))
+}
+
+// Returns a clamped+eased [0,1] progress for the section being covered by the next
+function recedeP(nextBcrTop: number, vh: number, compress: number): number {
+  return easeOut(c01(1 - nextBcrTop / (vh * compress)))
+}
+
+// Helper: get the .sec-inner child (single animation target per section)
+function inner(section: HTMLElement): HTMLElement | null {
+  return section.querySelector(':scope > .sec-inner') as HTMLElement | null
 }
 
 export function useMotion() {
@@ -50,7 +50,6 @@ export function useMotion() {
       if (nav) nav.classList.toggle('is-light', lightAt(48))
       if (fab) fab.classList.toggle('is-light', lightAt(vh - 48))
 
-      // ── Grab sections ───────────────────────────────────────────────
       const secTop     = document.getElementById('top')
       const secTech    = document.getElementById('tech')
       const secWork    = document.getElementById('work')
@@ -58,53 +57,60 @@ export function useMotion() {
       const secHow     = document.getElementById('how')
       const secContact = document.getElementById('contact')
 
-      // ── Hero: recede with scale + blur as TechStack crashes in ──────
+      // ── Hero: scale + blur as TechStack slides in from the right ────
       if (secTop && secTech) {
-        const techBcr = secTech.getBoundingClientRect().top
-        const p = c01(easeOut(c01(1 - techBcr / (vh * 0.7))))
-        const inner = secTop.firstElementChild as HTMLElement
-        if (inner) {
-          inner.style.transform = `scale(${lerp(1, 0.78, p).toFixed(4)})`
-          inner.style.filter    = `blur(${(p * 12).toFixed(2)}px)`
+        const p = recedeP(secTech.getBoundingClientRect().top, vh, 0.70)
+        const el = inner(secTop)
+        if (el) {
+          el.style.transform = `scale(${lerp(1, 0.82, p).toFixed(4)})`
+          el.style.filter    = `blur(${(p * 10).toFixed(2)}px)`
         }
       }
 
-      // ── TechStack: crash zoom 2.2 → 1 ───────────────────────────────
+      // ── TechStack: SLIDE IN FROM THE RIGHT (horizontal) ─────────────
       if (secTech) {
-        const bcrTop = secTech.getBoundingClientRect().top
-        crashZoom(secTech, bcrTop, vh, 2.2)
+        const el = inner(secTech)
+        if (el) {
+          const p = entryP(secTech.getBoundingClientRect().top, vh, 0.62)
+          if (p >= 1) { el.style.transform = ''; el.style.filter = '' }
+          else        { el.style.transform = `translateX(${lerp(110, 0, p).toFixed(2)}vw)` }
+        }
       }
 
-      // ── Showcase: crash zoom 2.6 → 1 (bigger impact) ────────────────
+      // ── Showcase: RISE FROM BELOW (vertical + slight scale) ─────────
       if (secWork) {
-        const bcrTop = secWork.getBoundingClientRect().top
-        crashZoom(secWork, bcrTop, vh, 2.6)
+        const el = inner(secWork)
+        if (el) {
+          const p = entryP(secWork.getBoundingClientRect().top, vh, 0.65)
+          if (p >= 1) { el.style.transform = ''; el.style.filter = '' }
+          else        { el.style.transform = `translateY(${lerp(70, 0, p).toFixed(1)}vh) scale(${lerp(0.92, 1, p).toFixed(4)})` }
+        }
       }
 
-      // ── About: crash zoom in; recede with blur as HowIWork slides over
+      // ── About: SLIDE IN FROM THE LEFT; recede with blur ──────────────
       if (secAbout) {
-        const bcrTop = secAbout.getBoundingClientRect().top
-        const inner  = secAbout.firstElementChild as HTMLElement
-        if (inner) {
-          if (secHow) {
-            const howBcr = secHow.getBoundingClientRect().top
-            const rp = c01(easeOut(c01(1 - howBcr / (vh * 0.7))))
-            if (rp > 0) {
-              inner.style.transform = `scale(${lerp(1, 0.80, rp).toFixed(4)})`
-              inner.style.filter    = `blur(${(rp * 10).toFixed(2)}px)`
-            } else {
-              crashZoom(secAbout, bcrTop, vh, 2.2)
-            }
+        const el = inner(secAbout)
+        if (el) {
+          const rp = secHow ? recedeP(secHow.getBoundingClientRect().top, vh, 0.70) : 0
+          if (rp > 0) {
+            el.style.transform = `scale(${lerp(1, 0.82, rp).toFixed(4)})`
+            el.style.filter    = `blur(${(rp * 10).toFixed(2)}px)`
           } else {
-            crashZoom(secAbout, bcrTop, vh, 2.2)
+            const p = entryP(secAbout.getBoundingClientRect().top, vh, 0.62)
+            if (p >= 1) { el.style.transform = ''; el.style.filter = '' }
+            else        { el.style.transform = `translateX(${lerp(-110, 0, p).toFixed(2)}vw)`; el.style.filter = '' }
           }
         }
       }
 
-      // ── Contact: crash zoom 2.2 → 1 ─────────────────────────────────
+      // ── Contact: CRASH ZOOM from center (scale 2.2 → 1) ────────────
       if (secContact) {
-        const bcrTop = secContact.getBoundingClientRect().top
-        crashZoom(secContact, bcrTop, vh, 2.2)
+        const el = inner(secContact)
+        if (el) {
+          const p = entryP(secContact.getBoundingClientRect().top, vh, 0.55)
+          if (p >= 1) { el.style.transform = ''; el.style.filter = '' }
+          else        { el.style.transform = `scale(${lerp(2.2, 1, p).toFixed(4)})`; el.style.filter = '' }
+        }
       }
 
       // ── HowIWork: horizontal scroll driven by vertical scroll ───────

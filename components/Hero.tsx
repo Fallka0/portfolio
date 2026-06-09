@@ -8,7 +8,7 @@ interface Props {
 export default function Hero({ heroLead, heroRest, heroLede, heroMeta }: Props) {
   return (
     <header className="section section--dark" data-theme="dark" id="top">
-      <div className="hero wrap">
+      <div className="hero wrap sec-inner">
         <h1 className="h-display hero__title">
           <AnimatedTitle mode="fade" lead={heroLead} rest={heroRest} />
         </h1>

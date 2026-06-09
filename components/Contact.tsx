@@ -10,7 +10,7 @@ export default function Contact({ name, email, github, githubUrl, contactLead, c
 
   return (
     <section className="section section--dark contact sec-cover" data-theme="dark" id="contact">
-      <div className="wrap">
+      <div className="wrap sec-inner">
         <a href={`mailto:${email}`} className="h-display contact__big" style={{ marginTop: '22px', display: 'block' }}>
           <AnimatedTitle mode="fade" lead={contactLead} rest={contactRest} />
         </a>

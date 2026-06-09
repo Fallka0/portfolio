@@ -46,6 +46,7 @@ interface Props {
 export default function TechStack({ techLead, techRest, techNote, techStack }: Props) {
   return (
     <section className="section section--dark sec sec-cover" data-theme="dark" id="tech">
+      <div className="sec-inner">
       <div className="wrap tech__head">
         <h2 className="h-section tech__headline">
           <AnimatedTitle mode="fade" lead={techLead} rest={techRest} />
@@ -63,6 +64,7 @@ export default function TechStack({ techLead, techRest, techNote, techStack }: P
             </div>
           </div>
         ))}
+      </div>
       </div>
     </section>
   )

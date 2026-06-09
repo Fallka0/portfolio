@@ -11,7 +11,7 @@ export default function About({ aboutLead, aboutRest, aboutBody, stats, language
   const statement = (aboutLead + aboutRest).replace(/\s+/g, ' ').trim()
   return (
     <section className="section section--light sec sec-cover" data-theme="light" id="about">
-      <div className="wrap">
+      <div className="wrap sec-inner">
         <h2 className="h-section about__statement">
           <ScrollStatement text={statement} mode="rise" />
         </h2>
