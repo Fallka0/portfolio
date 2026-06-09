@@ -11,14 +11,6 @@ import About from '@/components/About'
 import HowIWork from '@/components/HowIWork'
 import Contact from '@/components/Contact'
 
-const Fade = ({ from, to }: { from: string; to: string }) => (
-  <div style={{
-    height: 'clamp(80px, 10vw, 160px)',
-    background: `linear-gradient(to bottom, ${from}, ${to})`,
-    pointerEvents: 'none',
-  }} />
-)
-
 export default function Page() {
   useReveal()
   useMotion()
@@ -46,7 +38,6 @@ export default function Page() {
             workRest={DATA.workRest}
             showcase={DATA.showcase}
           />
-          <Fade from="var(--black)" to="var(--paper)" />
           <About
             aboutLead={DATA.aboutLead}
             aboutRest={DATA.aboutRest}
@@ -54,7 +45,6 @@ export default function Page() {
             stats={DATA.stats}
             languages={DATA.languages}
           />
-          <Fade from="var(--paper)" to="var(--black)" />
           <HowIWork
             howLead={DATA.howLead}
             howRest={DATA.howRest}

@@ -10,7 +10,7 @@ interface Props {
 export default function About({ aboutLead, aboutRest, aboutBody, stats, languages }: Props) {
   const statement = (aboutLead + aboutRest).replace(/\s+/g, ' ').trim()
   return (
-    <section className="section section--light sec" data-theme="light" id="about">
+    <section className="section section--light sec sec-cover" data-theme="light" id="about">
       <div className="wrap">
         <h2 className="h-section about__statement">
           <ScrollStatement text={statement} mode="rise" />

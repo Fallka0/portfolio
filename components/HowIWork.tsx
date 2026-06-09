@@ -47,7 +47,7 @@ export default function HowIWork({ howLead, howRest, principles }: Props) {
   }, [n])
 
   return (
-    <section className="section section--dark how" data-theme="dark" id="how">
+    <section className="section section--dark how sec-cover" data-theme="dark" id="how">
       <div className="how__pin">
         <div className="how__head">
           <div className="how__head-l">

@@ -37,7 +37,7 @@ export default function Showcase({ workLead, workRest, showcase }: Props) {
   const proj = projects[cur.p]
 
   return (
-    <section className="section section--dark sec" data-theme="dark" id="work">
+    <section className="section section--dark sec sec-cover" data-theme="dark" id="work">
       <div className="wrap">
         <div className="work__head">
           <h2 className="h-section sec__title">

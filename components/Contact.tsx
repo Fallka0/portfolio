@@ -9,7 +9,7 @@ interface Props {
 export default function Contact({ name, email, github, githubUrl, contactLead, contactRest, contactNote }: Props) {
 
   return (
-    <section className="section section--dark contact" data-theme="dark" id="contact">
+    <section className="section section--dark contact sec-cover" data-theme="dark" id="contact">
       <div className="wrap">
         <a href={`mailto:${email}`} className="h-display contact__big" style={{ marginTop: '22px', display: 'block' }}>
           <AnimatedTitle mode="fade" lead={contactLead} rest={contactRest} />

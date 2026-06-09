@@ -20,16 +20,25 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; background: var(--black); }
-body { background: var(--black); color: var(--ink); font-family: var(--font); font-weight: 400; line-height: 1.5; overflow-x: hidden; }
+body { background: var(--black); color: var(--ink); font-family: var(--font); font-weight: 400; line-height: 1.5; overflow-x: clip; }
 ::selection { background: var(--ink); color: var(--black); }
 a { color: inherit; text-decoration: none; }
 img { display: block; max-width: 100%; }
 button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
 
 #smooth { width: 100%; }
-.section { position: relative; }
+.section { position: relative; min-height: 100svh; }
 .section--dark  { background: var(--black); color: var(--ink); }
 .section--light { background: var(--paper); color: var(--on-pap); }
+.sec-cover { border-radius: 20px 20px 0 0; }
+
+/* Sticky stacking — each section covers the one above */
+#top     { position: sticky; top: 0; z-index: 1; }
+#tech    { position: sticky; top: 0; z-index: 2; background: #0a1020; }
+#work    { position: sticky; top: 0; z-index: 3; background: #1a0a10; }
+#about   { position: sticky; top: 0; z-index: 4; }
+#how     { position: sticky; top: 0; z-index: 5; background: #0a1a10; }
+#contact { position: sticky; top: 0; z-index: 6; background: #100a1a; }
 .wrap { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gut); }
 
 .pill { display: inline-flex; align-items: center; gap: 8px; width: fit-content; max-width: 100%; white-space: nowrap; font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; padding: 8px 15px; border-radius: 100px; border: 1px solid currentColor; opacity: 0.92; }

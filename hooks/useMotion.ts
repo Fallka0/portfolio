@@ -1,23 +1,29 @@
 'use client'
 import { useEffect } from 'react'
 
+const SECTION_IDS = ['top', 'tech', 'work', 'about', 'how', 'contact']
+
+function getDocTop(el: HTMLElement): number {
+  let top = 0; let node: HTMLElement | null = el
+  while (node) { top += node.offsetTop; node = node.offsetParent as HTMLElement | null }
+  return top
+}
+
 export function useMotion() {
   useEffect(() => {
-    const nav     = document.querySelector('.nav')     as HTMLElement | null
-    const fab     = document.querySelector('.cta-fab') as HTMLElement | null
-    const content = document.getElementById('smooth')
-    if (!content) return
-
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
-    const smooth = !reduce && matchMedia('(min-width: 720px)').matches
+    const nav = document.querySelector('.nav')     as HTMLElement | null
+    const fab = document.querySelector('.cta-fab') as HTMLElement | null
     let stPrev: number | null = null
-    let running = true
     let raf = 0
-    let cur = window.scrollY
 
-    const lightAt = (y: number) => {
-      const secs = document.querySelectorAll('[data-theme="light"]')
-      for (const s of secs) { const r = s.getBoundingClientRect(); if (r.top <= y && r.bottom >= y) return true }
+    // Return whether the topmost section at viewport-y is light-themed
+    const lightAt = (y: number): boolean => {
+      for (let i = SECTION_IDS.length - 1; i >= 0; i--) {
+        const s = document.getElementById(SECTION_IDS[i])
+        if (!s) continue
+        const r = s.getBoundingClientRect()
+        if (r.top <= y && r.bottom >= y) return s.dataset.theme === 'light'
+      }
       return false
     }
 
@@ -26,18 +32,15 @@ export function useMotion() {
       if (nav) nav.classList.toggle('is-light', lightAt(48))
       if (fab) fab.classList.toggle('is-light', lightAt(vh - 48))
 
-      // horizontal pinned "How I work"
+      // Horizontal "How I work" — CSS sticky pins the section; drive the track via scrollY
       const how = document.getElementById('how')
       if (how && parseFloat(how.dataset.maxx ?? '0') > 0) {
         const maxX      = parseFloat(how.dataset.maxx!)
         const scrollLen = parseFloat(how.dataset.scrolllen ?? '0') || maxX
-        const pin   = how.querySelector('.how__pin')      as HTMLElement
         const track = how.querySelector('.how__track')    as HTMLElement
         const fill  = how.querySelector('.how__bar-fill') as HTMLElement
-        const r   = how.getBoundingClientRect()
-        const ty  = Math.min(Math.max(-r.top, 0), scrollLen)
-        const prog = scrollLen ? Math.min(Math.max(-r.top / scrollLen, 0), 1) : 0
-        if (pin)   pin.style.transform   = `translate3d(0,${ty.toFixed(2)}px,0)`
+        const sectionDocTop = getDocTop(how)
+        const prog = Math.min(Math.max((window.scrollY - sectionDocTop) / scrollLen, 0), 1)
         if (track) track.style.transform = `translate3d(${(-prog * maxX).toFixed(2)}px,0,0)`
         if (fill)  fill.style.width      = (prog * 100).toFixed(2) + '%'
         const cards = track ? track.children : []
@@ -52,7 +55,7 @@ export function useMotion() {
         }
       }
 
-      // scroll-driven typography (About)
+      // Scroll-driven typography
       const stEl = document.querySelector('[data-scrolltype]') as HTMLElement
       if (stEl) {
         const mode  = stEl.getAttribute('data-scrolltype')
@@ -76,37 +79,14 @@ export function useMotion() {
       }
     }
 
-    if (smooth) {
-      const setH = () => { document.body.style.height = content.scrollHeight + 'px' }
-      setH()
-      const ro = new ResizeObserver(setH)
-      ro.observe(content)
-      Object.assign(content.style, { position: 'fixed', top: '0', left: '0', width: '100%', willChange: 'transform' })
-
-      const loop = () => {
-        if (!running) return
-        const t = window.scrollY
-        cur += (t - cur) * 0.085
-        if (Math.abs(t - cur) < 0.08) cur = t
-        content.style.transform = `translate3d(0,${-cur.toFixed(2)}px,0)`
-        fx()
-        raf = requestAnimationFrame(loop)
-      }
-      raf = requestAnimationFrame(loop)
-
-      return () => {
-        running = false
-        cancelAnimationFrame(raf)
-        ro.disconnect()
-        document.body.style.height = ''
-        Object.assign(content.style, { position: '', top: '', left: '', width: '', transform: '', willChange: '' })
-      }
-    } else {
-      const onScroll = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; fx() }) }
-      fx()
-      window.addEventListener('scroll', onScroll, { passive: true })
-      window.addEventListener('resize', onScroll)
-      return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); cancelAnimationFrame(raf) }
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; fx() }) }
+    fx()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
     }
   }, [])
 }
