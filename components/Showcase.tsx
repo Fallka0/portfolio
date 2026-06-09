@@ -1,0 +1,115 @@
+'use client'
+import { useState, useRef, useEffect } from 'react'
+import AnimatedTitle from './AnimatedTitle'
+
+interface Slide { p: string; screen: string; url: string; safari: string; phone: string | null }
+interface Project { name: string; site: string; line: string; tags: string[] }
+interface Props {
+  workLead: string; workRest: string
+  showcase: {
+    duration: number
+    projects: Record<string, Project>
+    slides: Slide[]
+  }
+}
+
+export default function Showcase({ workLead, workRest, showcase }: Props) {
+  const { slides, projects, duration } = showcase
+  const n = slides.length
+  const [index, setIndex]   = useState(0)
+  const [cycle, setCycle]   = useState(0)
+  const [inView, setInView] = useState(false)
+  const stageRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = stageRef.current
+    if (!el) return
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.12 })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
+  const advance = () => { setIndex(i => (i + 1) % n); setCycle(c => c + 1) }
+  const jump = (i: number) => { if (i === index) return; setIndex(i); setCycle(c => c + 1) }
+
+  const cur  = slides[index]
+  const proj = projects[cur.p]
+
+  return (
+    <section className="section section--dark sec" data-theme="dark" id="work">
+      <div className="wrap">
+        <div className="work__head">
+          <span className="pill sec__label reveal">Selected work</span>
+          <h2 className="h-section sec__title">
+            <AnimatedTitle mode="fade" lead={workLead} rest={workRest} />
+          </h2>
+        </div>
+
+        <div className="sc">
+          {/* Info panel */}
+          <div className="sc__info reveal">
+            <div className="sc__fade" key={cur.p + index}>
+              <span className="sc__count mono">
+                {String(index + 1).padStart(2, '0')} / {String(n).padStart(2, '0')}
+              </span>
+              <h3 className="h-section sc__name">
+                <a href={'https://' + proj.site} target="_blank" rel="noopener" className="sc__name-link ul">
+                  {proj.name}
+                </a>
+              </h3>
+              <p className="sc__line">{proj.line}</p>
+              <div className="sc__screen">
+                <span className="sc__screen-nm">{cur.screen}</span>
+                <a className="sc__url ul" href={'https://' + cur.url} target="_blank" rel="noopener">
+                  {cur.url} ↗
+                </a>
+              </div>
+              <ul className="project__tags">
+                {proj.tags.map((t, i) => <li key={i}>{t}</li>)}
+              </ul>
+            </div>
+          </div>
+
+          {/* Device */}
+          <div className="sc__stage" ref={stageRef}>
+            <div className="device-frame__outer">
+              <div className="device-frame__screen">
+                {slides.map((s, i) => (
+                  <div
+                    key={i}
+                    className="device-frame__slide"
+                    style={{ opacity: i === index ? 1 : 0, zIndex: i === index ? 1 : 0 }}
+                  >
+                    <img src={s.safari} alt={projects[s.p].name + ' — ' + s.screen} loading="lazy" />
+                  </div>
+                ))}
+              </div>
+              <div className="device-frame__base" />
+              <div className="device-frame__foot" />
+            </div>
+
+            <div className="bars" role="tablist" aria-label="Projects">
+              {slides.map((s, i) => (
+                <button
+                  key={i}
+                  className={'bar' + (i < index ? ' is-done' : '') + (i === index ? ' is-active' : '')}
+                  style={{ '--dur': duration + 'ms', animationPlayState: inView ? 'running' : 'paused' } as React.CSSProperties}
+                  onClick={() => jump(i)}
+                  aria-label={projects[s.p].name + ' — ' + s.screen}
+                  aria-selected={i === index}
+                >
+                  <span
+                    className="bar__fill"
+                    key={i === index ? 'a' + cycle : 's' + i}
+                    style={{ animationPlayState: inView ? 'running' : 'paused' }}
+                    onAnimationEnd={i === index ? advance : undefined}
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
