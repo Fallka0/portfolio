@@ -136,7 +136,7 @@ h1, h2, h3, .syne {
 .glass-button:hover { transform: translateY(-1px); }
 .glass-button:active { transform: translateY(0); }
 
-/* ── Text Roll Animation on glass buttons ───────────────── */
+/* Text Roll Animation on glass buttons */
 .text-roll-wrap {
   overflow: hidden;
   height: 20px;
@@ -150,12 +150,12 @@ h1, h2, h3, .syne {
 }
 .group:hover .text-roll-inner { transform: translateY(-50%); }
 
-/* ── Scrollbar ─────────────────────────────────────────── */
+/* Scrollbar */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(0, 122, 255, 0.22); border-radius: 3px; }
 
-/* ── Lenis smooth scroll ───────────────────────────────── */
+/* Lenis smooth scroll */
 html.lenis,
 html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
