@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
+import Link from 'next/link'
 import AnimatedTitle from './AnimatedTitle'
 
 interface Slide { p: string; screen: string; url: string; safari: string; phone: string | null }
@@ -108,6 +109,17 @@ export default function Showcase({ workLead, workRest, showcase }: Props) {
               ))}
             </div>
           </div>
+        </div>
+
+        {/* More projects link */}
+        <div className="reveal" style={{ marginTop: 'clamp(48px,8vh,90px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px', paddingTop: '28px', borderTop: '1px solid var(--ink-far)' }}>
+          <span style={{ fontSize: '13px', color: 'var(--ink-dim)', letterSpacing: '.02em' }}>FreakDeck · AutoBot · EduMania · Noten-Plus + more</span>
+          <Link href="/projects" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', fontSize: '14px', fontWeight: 600, color: 'var(--ink)', letterSpacing: '.01em', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'opacity .3s' }}
+            onMouseEnter={e => (e.currentTarget.style.opacity = '.6')}
+            onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+          >
+            More projects <span style={{ display: 'inline-block', transition: 'transform .3s' }}>→</span>
+          </Link>
         </div>
       </div>
     </section>
