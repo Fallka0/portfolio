@@ -255,3 +255,56 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
   .atitle .aword__in { animation: none !important; opacity: 1 !important; transform: none !important; filter: none !important; clip-path: none !important; }
   .bar.is-active .bar__fill { animation: none !important; transform: scaleX(1) !important; opacity: 1 !important; }
 }
+
+/* ── Marquee band ── */
+.marquee-band {
+  height: 44px;
+  background: var(--black);
+  border-top: 1px solid var(--ink-far);
+  border-bottom: 1px solid var(--ink-far);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+.marquee-track {
+  display: flex;
+  white-space: nowrap;
+  animation: marquee 32s linear infinite;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-far);
+  will-change: transform;
+  flex-shrink: 0;
+}
+.marquee-track--rev { animation-direction: reverse; }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ── Diagonal dividers (dark ↔ light) ── */
+.diag-divider {
+  position: relative;
+  height: clamp(52px, 5.5vw, 96px);
+}
+/* dark above → light below  (/ diagonal — light wedge rises from right) */
+.diag-divider--to-light {
+  background: var(--black);
+}
+.diag-divider--to-light::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--paper);
+  clip-path: polygon(0 100%, 100% 0, 100% 100%);
+}
+/* light above → dark below  (\ diagonal — dark wedge falls from left) */
+.diag-divider--to-dark {
+  background: var(--paper);
+}
+.diag-divider--to-dark::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--black);
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+}
