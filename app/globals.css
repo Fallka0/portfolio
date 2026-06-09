@@ -255,38 +255,3 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
   .atitle .aword__in { animation: none !important; opacity: 1 !important; transform: none !important; filter: none !important; clip-path: none !important; }
   .bar.is-active .bar__fill { animation: none !important; transform: scaleX(1) !important; opacity: 1 !important; }
 }
-
-/* ── Screenshot strip ── */
-.sc-strip {
-  height: clamp(160px, 18vw, 260px);
-  overflow: hidden;
-  border-top: 1px solid var(--ink-far);
-  border-bottom: 1px solid var(--ink-far);
-  background: var(--black);
-  display: flex;
-  align-items: stretch;
-}
-.sc-strip__track {
-  display: flex;
-  gap: 3px;
-  flex-shrink: 0;
-  animation: strip 38s linear infinite;
-  will-change: transform;
-}
-.sc-strip__track--rev { animation-direction: reverse; }
-@keyframes strip { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-.sc-strip__item {
-  flex-shrink: 0;
-  width: clamp(220px, 26vw, 400px);
-  overflow: hidden;
-}
-.sc-strip__item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top;
-  display: block;
-  filter: grayscale(35%) brightness(0.8);
-  transition: filter .6s var(--ease);
-}
-.sc-strip:hover .sc-strip__item img { filter: grayscale(0%) brightness(1); }

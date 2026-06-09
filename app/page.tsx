@@ -10,7 +10,14 @@ import Showcase from '@/components/Showcase'
 import About from '@/components/About'
 import HowIWork from '@/components/HowIWork'
 import Contact from '@/components/Contact'
-import ScreenshotStrip from '@/components/ScreenshotStrip'
+
+const Fade = ({ from, to }: { from: string; to: string }) => (
+  <div style={{
+    height: 'clamp(80px, 10vw, 160px)',
+    background: `linear-gradient(to bottom, ${from}, ${to})`,
+    pointerEvents: 'none',
+  }} />
+)
 
 export default function Page() {
   useReveal()
@@ -34,13 +41,12 @@ export default function Page() {
             techNote={DATA.techNote}
             techStack={DATA.techStack}
           />
-          <ScreenshotStrip />
           <Showcase
             workLead={DATA.workLead}
             workRest={DATA.workRest}
             showcase={DATA.showcase}
           />
-          <ScreenshotStrip reverse />
+          <Fade from="var(--black)" to="var(--paper)" />
           <About
             aboutLead={DATA.aboutLead}
             aboutRest={DATA.aboutRest}
@@ -48,14 +54,13 @@ export default function Page() {
             stats={DATA.stats}
             languages={DATA.languages}
           />
-          <ScreenshotStrip />
+          <Fade from="var(--paper)" to="var(--black)" />
           <HowIWork
             howLead={DATA.howLead}
             howRest={DATA.howRest}
             principles={DATA.principles}
           />
         </main>
-        <ScreenshotStrip reverse />
         <Contact
           name={DATA.name}
           email={DATA.email}
