@@ -47,7 +47,6 @@ export default function TechStack({ techLead, techRest, techNote, techStack }: P
   return (
     <section className="section section--dark sec" data-theme="dark" id="tech">
       <div className="wrap tech__head">
-        <span className="pill sec__label reveal">Stack</span>
         <h2 className="h-section tech__headline">
           <AnimatedTitle mode="fade" lead={techLead} rest={techRest} />
         </h2>

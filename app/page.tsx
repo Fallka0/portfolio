@@ -21,8 +21,6 @@ export default function Page() {
       <CTAFab />
       <div id="smooth">
         <Hero
-          role={DATA.role}
-          location={DATA.location}
           heroLead={DATA.heroLead}
           heroRest={DATA.heroRest}
           heroLede={DATA.heroLede}
@@ -58,7 +56,6 @@ export default function Page() {
           email={DATA.email}
           github={DATA.github}
           githubUrl={DATA.githubUrl}
-          location={DATA.location}
           contactLead={DATA.contactLead}
           contactRest={DATA.contactRest}
           contactNote={DATA.contactNote}

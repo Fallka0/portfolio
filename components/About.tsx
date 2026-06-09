@@ -12,7 +12,6 @@ export default function About({ aboutLead, aboutRest, aboutBody, stats, language
   return (
     <section className="section section--light sec" data-theme="light" id="about">
       <div className="wrap">
-        <span className="pill sec__label reveal">About</span>
         <h2 className="h-section about__statement">
           <ScrollStatement text={statement} mode="rise" />
         </h2>

@@ -40,7 +40,6 @@ export default function Showcase({ workLead, workRest, showcase }: Props) {
     <section className="section section--dark sec" data-theme="dark" id="work">
       <div className="wrap">
         <div className="work__head">
-          <span className="pill sec__label reveal">Selected work</span>
           <h2 className="h-section sec__title">
             <AnimatedTitle mode="fade" lead={workLead} rest={workRest} />
           </h2>
@@ -113,7 +112,6 @@ export default function Showcase({ workLead, workRest, showcase }: Props) {
 
         {/* More projects link */}
         <div className="reveal" style={{ marginTop: 'clamp(48px,8vh,90px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px', paddingTop: '28px', borderTop: '1px solid var(--ink-far)' }}>
-          <span style={{ fontSize: '13px', color: 'var(--ink-dim)', letterSpacing: '.02em' }}>FreakDeck · AutoBot · EduMania · Noten-Plus + more</span>
           <Link href="/projects" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', fontSize: '14px', fontWeight: 600, color: 'var(--ink)', letterSpacing: '.01em', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'opacity .3s' }}
             onMouseEnter={e => (e.currentTarget.style.opacity = '.6')}
             onMouseLeave={e => (e.currentTarget.style.opacity = '1')}

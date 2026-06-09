@@ -51,7 +51,6 @@ export default function HowIWork({ howLead, howRest, principles }: Props) {
       <div className="how__pin">
         <div className="how__head">
           <div className="how__head-l">
-            <span className="pill sec__label">How I work</span>
             <h2 className="h-section how__title">
               <AnimatedTitle mode="fade" lead={howLead} rest={howRest} />
             </h2>
