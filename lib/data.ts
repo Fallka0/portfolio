@@ -8,7 +8,7 @@ export const DATA = {
   githubUrl: 'https://github.com/Fallka0',
 
   heroLead: "I'm Mykyta — a developer from Ukraine,",
-  heroRest: ' building my future in Bern.',
+  heroRest: ' *building* my future in Bern.',
   heroLede: "I solve real problems and genuinely enjoy the build. I came to Switzerland as a refugee — now I want to help shape where it's going.",
   heroMeta: [
     { k: 'Currently', v: 'Student @ bwd Bern' },
@@ -16,7 +16,7 @@ export const DATA = {
   ],
 
   workLead: 'Two projects',
-  workRest: ' I learned the most from.',
+  workRest: ' I *learned* the most from.',
 
   showcase: {
     duration: 5200,
@@ -45,8 +45,8 @@ export const DATA = {
     ],
   },
 
-  aboutLead: 'I came here with not much.',
-  aboutRest: " Now I build software, and I want to give something back to a country I've grown to love.",
+  aboutLead: 'I came here with *not much.*',
+  aboutRest: " Now I *build* software, and I want to give something back to a country I've grown to *love.*",
   aboutBody: [
     "Ukrainian by birth, Bern by choice. I'm still a student at bwd Bern, but I treat every project like it matters — the work is how you earn trust.",
     "Off the clock I'm a pretty normal teenager: gym, basketball, games, a soft spot for watches. What I really care about, though, is people, leadership, and one day building something of my own.",
@@ -64,7 +64,7 @@ export const DATA = {
   ],
 
   howLead: 'How I',
-  howRest: ' work.',
+  howRest: ' *work.*',
   principles: [
     { t: 'Trust goes both ways',  d: 'I give everyone trust and respect from the start. The people I click with give it right back.' },
     { t: "I build what I'd use",  d: 'I care most about problems I actually relate to — like the real-estate site I built because the space genuinely interests me.' },
@@ -73,7 +73,7 @@ export const DATA = {
   ],
 
   techLead: 'I can read, debug',
-  techRest: ' and reason about the code I ship.',
+  techRest: ' and reason about the code I *ship.*',
   techNote: 'I use AI as a thinking partner, not a shortcut. Every pattern I reach for, I understand — architecture, trade-offs, and all.',
   techStack: [
     { cat: 'Frontend',  items: ['React', 'Next.js', 'TypeScript', 'Vercel'] },
@@ -85,7 +85,7 @@ export const DATA = {
   ],
 
   contactLead: 'Say',
-  contactRest: ' hi.',
+  contactRest: ' *hi.*',
   contactNote: "No big pitch. If any of this clicked, come by my DMs or drop me an email — I'm easy to reach.",
 }
 

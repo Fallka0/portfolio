@@ -1,5 +1,5 @@
 /* Mykyta Pantelei — Portfolio · Black & White Edition */
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@1,400;1,500&display=swap');
 
 :root {
   --black:    #000000;
@@ -52,7 +52,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .section--light .atitle .aword--dim .aword__in { color: var(--pap-dim); }
 .atitle:not(.in) .aword__in { opacity: 0; }
 
-.atitle[data-anim="rise"] .aword { overflow: hidden; padding-bottom: 0.07em; }
+.atitle[data-anim="rise"] .aword { overflow: hidden; padding-bottom: 0.16em; }
 .atitle[data-anim="rise"].in .aword__in { animation: tRise .95s var(--ease-out) both; animation-delay: var(--wd, 0ms); }
 @keyframes tRise { from { transform: translateY(118%); } to { transform: translateY(0); } }
 .atitle[data-anim="fade"].in .aword__in { animation: tFade .85s var(--ease-out) both; animation-delay: var(--wd, 0ms); }
@@ -61,6 +61,10 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 @keyframes tBlur { from { opacity: 0; filter: blur(18px); transform: translateY(0.1em); } to { opacity: 1; filter: blur(0); transform: none; } }
 .atitle[data-anim="wipe"].in .aword__in { animation: tWipe .8s var(--ease-out) both; animation-delay: var(--wd, 0ms); }
 @keyframes tWipe { from { clip-path: inset(0 100% -0.18em 0); } to { clip-path: inset(0 0 -0.18em 0); } }
+
+/* Serif italic emphasis words inside animated headlines */
+.aword__in--em { font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-weight: 400; font-size: 1.06em; letter-spacing: 0.005em; }
+.styword--em   { font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-weight: 400; font-size: 1.06em; letter-spacing: 0.005em; }
 
 .styline { display: inline-block; transform-origin: left center; will-change: transform; }
 .styline .styword { display: inline-block; will-change: opacity, transform, filter; }

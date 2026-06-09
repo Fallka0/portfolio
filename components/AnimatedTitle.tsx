@@ -4,6 +4,21 @@ import { Fragment, useRef, useState, useEffect } from 'react'
 const STEP: Record<string, number> = { rise: 55, fade: 60, blur: 75, wipe: 70 }
 
 interface Props { lead: string; rest: string; className?: string; mode?: string }
+interface Token { word: string; em: boolean }
+
+function parse(text: string): Token[] {
+  const tokens: Token[] = []
+  const re = /\*([^*]+)\*|(\S+)/g
+  let m: RegExpExecArray | null
+  while ((m = re.exec(text)) !== null) {
+    if (m[1]) {
+      m[1].split(/\s+/).filter(Boolean).forEach(w => tokens.push({ word: w, em: true }))
+    } else if (m[2]) {
+      tokens.push({ word: m[2], em: false })
+    }
+  }
+  return tokens
+}
 
 export default function AnimatedTitle({ lead, rest, className = '', mode = 'fade' }: Props) {
   const ref = useRef<HTMLSpanElement>(null)
@@ -22,22 +37,23 @@ export default function AnimatedTitle({ lead, rest, className = '', mode = 'fade
   }, [mode])
 
   const step = STEP[mode] || 60
-  let idx = 0
-  const allWords = `${lead} ${rest}`.trim().split(/\s+/).filter(Boolean).map((w, i) => {
-    const d = (idx++ * step) + 'ms'
-    return (
-      <Fragment key={i}>
-        <span className="aword">
-          <span className="aword__in" style={{ '--wd': d } as React.CSSProperties}>{w}</span>
-        </span>
-        {' '}
-      </Fragment>
-    )
-  })
+  const tokens = parse(`${lead} ${rest}`.trim())
 
   return (
     <span ref={ref} className={`atitle${shown ? ' in' : ''}${className ? ' ' + className : ''}`} data-anim={mode}>
-      {allWords}
+      {tokens.map((tok, i) => (
+        <Fragment key={i}>
+          <span className="aword">
+            <span
+              className={`aword__in${tok.em ? ' aword__in--em' : ''}`}
+              style={{ '--wd': (i * step) + 'ms' } as React.CSSProperties}
+            >
+              {tok.word}
+            </span>
+          </span>
+          {' '}
+        </Fragment>
+      ))}
     </span>
   )
 }
