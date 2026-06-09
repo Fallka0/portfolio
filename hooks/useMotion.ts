@@ -11,6 +11,22 @@ function getDocTop(el: HTMLElement): number {
 
 function c01(v: number): number { return v < 0 ? 0 : v > 1 ? 1 : v }
 function lerp(a: number, b: number, t: number): number { return a + (b - a) * t }
+function easeOut(t: number): number { return Math.pow(t, 0.38) }
+
+// Crash-zoom: section enters from below, inner scales fromScale→1 in last `compress` of entry
+function crashZoom(section: HTMLElement, bcrTop: number, vh: number, fromScale: number, compress = 0.55): void {
+  const inner = section.firstElementChild as HTMLElement
+  if (!inner) return
+  const rawP = c01(1 - bcrTop / (vh * compress))
+  if (rawP >= 1) {
+    inner.style.transform = ''
+    inner.style.filter = ''
+  } else {
+    const p = easeOut(rawP)
+    inner.style.transform = `scale(${lerp(fromScale, 1, p).toFixed(4)})`
+    inner.style.filter = ''
+  }
+}
 
 export function useMotion() {
   useEffect(() => {
@@ -42,52 +58,53 @@ export function useMotion() {
       const secHow     = document.getElementById('how')
       const secContact = document.getElementById('contact')
 
-      // ── Hero: recede (scale-down + lift) as TechStack slides over ───
+      // ── Hero: recede with scale + blur as TechStack crashes in ──────
       if (secTop && secTech) {
         const techBcr = secTech.getBoundingClientRect().top
-        const p = c01(1 - techBcr / vh)
+        const p = c01(easeOut(c01(1 - techBcr / (vh * 0.7))))
         const inner = secTop.firstElementChild as HTMLElement
-        if (inner) inner.style.transform =
-          `scale(${lerp(1, 0.90, p).toFixed(4)}) translateY(${lerp(0, -40, p).toFixed(1)}px)`
+        if (inner) {
+          inner.style.transform = `scale(${lerp(1, 0.78, p).toFixed(4)})`
+          inner.style.filter    = `blur(${(p * 12).toFixed(2)}px)`
+        }
       }
 
-      // ── TechStack: emerge zoom-in as it enters from below ───────────
+      // ── TechStack: crash zoom 2.2 → 1 ───────────────────────────────
       if (secTech) {
         const bcrTop = secTech.getBoundingClientRect().top
-        const p = c01(1 - bcrTop / vh)
-        const inner = secTech.firstElementChild as HTMLElement
-        if (inner) inner.style.transform = p < 1
-          ? `scale(${lerp(0.94, 1, p).toFixed(4)}) translateY(${lerp(30, 0, p).toFixed(1)}px)`
-          : ''
+        crashZoom(secTech, bcrTop, vh, 2.2)
       }
 
-      // ── Showcase: stronger zoom-in + bigger lift ─────────────────────
+      // ── Showcase: crash zoom 2.6 → 1 (bigger impact) ────────────────
       if (secWork) {
         const bcrTop = secWork.getBoundingClientRect().top
-        const p = c01(1 - bcrTop / vh)
-        const inner = secWork.firstElementChild as HTMLElement
-        if (inner) inner.style.transform = p < 1
-          ? `scale(${lerp(0.90, 1, p).toFixed(4)}) translateY(${lerp(60, 0, p).toFixed(1)}px)`
-          : ''
+        crashZoom(secWork, bcrTop, vh, 2.6)
       }
 
-      // ── About: recede as HowIWork slides over ───────────────────────
-      if (secAbout && secHow) {
-        const howBcr = secHow.getBoundingClientRect().top
-        const p = c01(1 - howBcr / vh)
-        const inner = secAbout.firstElementChild as HTMLElement
-        if (inner) inner.style.transform =
-          `scale(${lerp(1, 0.94, p).toFixed(4)}) translateY(${lerp(0, -30, p).toFixed(1)}px)`
+      // ── About: crash zoom in; recede with blur as HowIWork slides over
+      if (secAbout) {
+        const bcrTop = secAbout.getBoundingClientRect().top
+        const inner  = secAbout.firstElementChild as HTMLElement
+        if (inner) {
+          if (secHow) {
+            const howBcr = secHow.getBoundingClientRect().top
+            const rp = c01(easeOut(c01(1 - howBcr / (vh * 0.7))))
+            if (rp > 0) {
+              inner.style.transform = `scale(${lerp(1, 0.80, rp).toFixed(4)})`
+              inner.style.filter    = `blur(${(rp * 10).toFixed(2)}px)`
+            } else {
+              crashZoom(secAbout, bcrTop, vh, 2.2)
+            }
+          } else {
+            crashZoom(secAbout, bcrTop, vh, 2.2)
+          }
+        }
       }
 
-      // ── Contact: emerge with scale + lift ───────────────────────────
+      // ── Contact: crash zoom 2.2 → 1 ─────────────────────────────────
       if (secContact) {
         const bcrTop = secContact.getBoundingClientRect().top
-        const p = c01(1 - bcrTop / vh)
-        const inner = secContact.firstElementChild as HTMLElement
-        if (inner) inner.style.transform = p < 1
-          ? `scale(${lerp(0.93, 1, p).toFixed(4)}) translateY(${lerp(70, 0, p).toFixed(1)}px)`
-          : ''
+        crashZoom(secContact, bcrTop, vh, 2.2)
       }
 
       // ── HowIWork: horizontal scroll driven by vertical scroll ───────
