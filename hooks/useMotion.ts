@@ -36,6 +36,29 @@ export function useMotion() {
     let stPrev: number | null = null
     let raf = 0
 
+    // A sticky cover-stack section pins at top:0, so any content taller than the
+    // viewport has its overflow stranded below the fold (unreachable — scrolling
+    // just advances the cover animation). For those sections we drop the pin and
+    // let them scroll normally, so the whole section can be read. Sections that
+    // fit keep the sticky cover effect. Re-evaluated whenever size/content change.
+    const measureFit = () => {
+      const vh = window.innerHeight
+      for (const id of SECTION_IDS) {
+        const s = document.getElementById(id)
+        if (!s) continue
+        const el = inner(s)
+        if (!el) continue
+        const tall = el.scrollHeight > vh + 8
+        const want = tall ? '1' : '0'
+        if (s.dataset.scroll !== want) {
+          s.dataset.scroll = want
+          // inline position beats the per-id `position: sticky` CSS rule
+          s.style.position = tall ? 'relative' : ''
+          if (tall) { el.style.clipPath = ''; el.style.transform = ''; el.style.filter = '' }
+        }
+      }
+    }
+
     const lightAt = (y: number): boolean => {
       for (let i = SECTION_IDS.length - 1; i >= 0; i--) {
         const s = document.getElementById(SECTION_IDS[i])
@@ -60,7 +83,7 @@ export function useMotion() {
       const secContact = document.getElementById('contact')
 
       // ── Hero: depth-recede (scale down + blur) as TechStack masks in ─
-      if (secTop && secTech) {
+      if (secTop && secTech && secTop.dataset.scroll !== '1') {
         const p = recedeP(secTech.getBoundingClientRect().top, vh, 0.85)
         const el = inner(secTop)
         if (el) {
@@ -103,7 +126,9 @@ export function useMotion() {
       if (secAbout) {
         const el = inner(secAbout)
         if (el) {
-          const rp = secHow ? recedeP(secHow.getBoundingClientRect().top, vh, 0.85) : 0
+          // when About scrolls (tall), never recede it — keep content readable
+          const rp = (secAbout.dataset.scroll !== '1' && secHow)
+            ? recedeP(secHow.getBoundingClientRect().top, vh, 0.85) : 0
           if (rp > 0) {
             el.style.clipPath  = ''
             el.style.transform = `scale(${lerp(1, 0.86, rp).toFixed(4)}) translateY(${lerp(0, -6, rp).toFixed(1)}vh)`
@@ -198,13 +223,22 @@ export function useMotion() {
     }
 
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; fx() }) }
+    const onResize = () => { measureFit(); onScroll() }
+    measureFit()
     fx()
     window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll)
+    window.addEventListener('resize', onResize)
+
+    // catches content-driven height changes (font load, Vault unlock, width reflow)
+    const ro = new ResizeObserver(() => { measureFit(); onScroll() })
+    SECTION_IDS.forEach(id => { const s = document.getElementById(id); if (s) ro.observe(s) })
+    if (document.fonts?.ready) document.fonts.ready.then(() => { measureFit(); onScroll() })
+
     return () => {
       cancelAnimationFrame(raf)
       window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onScroll)
+      window.removeEventListener('resize', onResize)
+      ro.disconnect()
     }
   }, [])
 }
