@@ -87,6 +87,31 @@ export const DATA = {
   contactLead: 'Say',
   contactRest: ' *hi.*',
   contactNote: "No big pitch. If any of this clicked, come by my DMs or drop me an email — I'm easy to reach.",
+
+  vaultValues: [
+    {
+      t: 'Learning is the job',
+      d: "I expect to be taught — and I take that seriously. The faster I stop needing hand-holding, the better I'm doing my part.",
+    },
+    {
+      t: 'I show up fully',
+      d: "Punctual, prepared, honest about what I know and don't. I don't coast — if I'm in the room I'm contributing.",
+    },
+    {
+      t: 'Communication over silence',
+      d: "Stuck? I say so. Something looks wrong? I raise it. I'd rather have a slightly uncomfortable conversation than a preventable mistake.",
+    },
+    {
+      t: 'I want to own something',
+      d: "Even a small module, a test suite, a deployment script — something I built, maintain, and can be accountable for.",
+    },
+    {
+      t: 'People first, always',
+      d: "I pick companies where the team genuinely matters. I'll work harder for people who treat me like a colleague, not a resource.",
+    },
+  ],
+
+  vaultCerts: [] as { name: string; file: string }[],
 }
 
 export const EXTRA_PROJECTS = [

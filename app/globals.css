@@ -36,7 +36,8 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 #work    { position: sticky; top: 0; z-index: 3; background: #1c000d; border-radius: 0; overflow: hidden; }
 #about   { position: sticky; top: 0; z-index: 4; border-radius: 32px 32px 0 0; overflow: hidden; }
 #how     { position: sticky; top: 0; z-index: 5; background: #090909; border-radius: 0; }
-#contact { position: sticky; top: 0; z-index: 6; background: #1c000d; border-radius: 32px 32px 0 0; overflow: hidden; }
+#vault   { position: sticky; top: 0; z-index: 6; background: #0c0c0c; border-radius: 32px 32px 0 0; overflow: hidden; }
+#contact { position: sticky; top: 0; z-index: 7; background: #1c000d; border-radius: 0; overflow: hidden; }
 .wrap { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gut); }
 .sec-inner { will-change: transform, clip-path, filter; }
 
@@ -223,7 +224,7 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
 @keyframes hnudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(7px); } }
 .how__viewport { width: 100%; overflow: hidden; }
 .how__track { display: flex; gap: clamp(18px, 2.2vw, 36px); width: max-content; padding-inline: var(--gut); will-change: transform; }
-.how__card { flex: 0 0 auto; width: clamp(288px, 40vw, 470px); }
+.how__card { flex: 0 0 auto; width: max(288px, 40vw); }
 .how__card-in { height: clamp(330px, 50vh, 470px); border: 1px solid var(--ink-far); border-radius: 22px; background: #0a0a0a; padding: clamp(28px, 3vw, 46px); display: flex; flex-direction: column; will-change: transform, opacity; }
 .how__num { font-size: clamp(40px, 4vw, 62px); font-weight: 800; letter-spacing: -.03em; line-height: 1; color: var(--ink-far); }
 .how__t { font-size: clamp(22px, 2vw, 30px); font-weight: 700; letter-spacing: -.01em; color: var(--ink); margin-top: clamp(20px, 3.5vh, 36px); }
@@ -244,7 +245,7 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
 }
 
 /* CONTACT */
-.contact { padding-block: clamp(90px,16vh,220px); }
+.contact { }
 .contact__big { font-size: clamp(52px, 12vw, 188px); line-height: 0.9; display: block; }
 .contact__note { max-width: 46ch; font-size: clamp(15px,1.35vw,18px); color: var(--ink-dim); line-height: 1.55; margin-top: clamp(24px,4vh,40px); }
 .contact__row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 26px 50px; margin-top: clamp(46px,8vh,90px); align-items: flex-end; }
@@ -255,6 +256,43 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
 .contact__meta .k { font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-dim); }
 .contact__meta .v { font-size: 14px; color: var(--ink); }
 .foot-rule { margin-top: clamp(50px,9vh,100px); padding-top: 24px; border-top: 1px solid var(--ink-far); display: flex; justify-content: space-between; gap: 16px; font-size: 12px; color: var(--ink-dim); flex-wrap: wrap; }
+/* contact: sec-inner fills full viewport height so footer sticks to the bottom */
+.contact .sec-inner { min-height: 100svh; display: flex; flex-direction: column; padding-block: clamp(90px,16vh,220px); }
+.contact .contact__foot { margin-top: auto; }
+
+/* VAULT */
+.vault__inner { min-height: 100svh; display: flex; align-items: center; justify-content: center; padding-block: clamp(80px,12vh,140px); }
+/* locked state */
+.vault__locked { text-align: center; max-width: 500px; width: 100%; }
+.vault__lock { display: inline-flex; margin-bottom: clamp(24px,4vh,40px); opacity: 0.4; }
+.vault__head { font-size: clamp(24px,3vw,44px); font-weight: 800; letter-spacing: -.02em; line-height: 1.1; margin-bottom: 16px; }
+.vault__desc { font-size: clamp(14px,1.2vw,16px); color: var(--ink-dim); line-height: 1.65; margin-bottom: clamp(32px,5vh,52px); max-width: 40ch; margin-inline: auto; }
+.vault__form { display: flex; gap: 10px; }
+.vault__input { flex: 1; min-width: 0; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14); border-radius: 10px; padding: 14px 18px; font: inherit; font-size: 15px; color: var(--ink); outline: none; transition: border-color .2s; }
+.vault__input:focus { border-color: rgba(255,255,255,0.35); }
+.vault--err .vault__input { border-color: rgba(220,60,60,0.7); }
+.vault__btn { padding: 14px 22px; background: var(--ink); color: var(--black); border-radius: 10px; font: inherit; font-size: 13px; font-weight: 700; letter-spacing: .06em; cursor: pointer; white-space: nowrap; transition: opacity .2s; }
+.vault__btn:hover { opacity: .8; }
+.vault__errmsg { font-size: 13px; color: rgba(220,90,90,1); margin-top: 12px; text-align: center; }
+.vault--shake { animation: vshake .4s cubic-bezier(.36,.07,.19,.97); }
+@keyframes vshake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-10px)} 75%{transform:translateX(10px)} }
+/* unlocked state */
+.vault__open { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(48px,8vw,120px); align-items: start; }
+.vault__col { }
+.vault__label { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: clamp(28px,4vh,44px); display: block; }
+.vault__list { list-style: none; display: flex; flex-direction: column; gap: clamp(28px,4vh,40px); }
+.vault__item { border-top: 1px solid var(--ink-far); padding-top: clamp(20px,3vh,28px); }
+.vault__it { display: block; font-size: clamp(16px,1.5vw,20px); font-weight: 700; letter-spacing: -.01em; margin-bottom: 8px; }
+.vault__id { font-size: clamp(14px,1.1vw,16px); color: var(--ink-dim); line-height: 1.6; }
+.vault__docs { display: flex; flex-direction: column; gap: 10px; }
+.vault__dl { display: flex; align-items: center; gap: 14px; padding: 18px 20px; border: 1px solid var(--ink-far); border-radius: 12px; font-size: 14px; font-weight: 500; transition: border-color .2s, background .2s; }
+.vault__dl:hover { border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.04); }
+.vault__dl-arrow { font-size: 16px; opacity: 0.5; flex-shrink: 0; }
+.vault__empty { font-size: 14px; color: var(--ink-dim); line-height: 1.6; }
+@media (max-width: 760px) {
+  .vault__open { grid-template-columns: 1fr; gap: clamp(40px,8vh,60px); }
+  .vault__form { flex-direction: column; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: .001ms !important; transition-duration: .001ms !important; }

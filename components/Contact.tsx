@@ -21,7 +21,7 @@ export default function Contact({ name, email, github, githubUrl, contactLead, c
             <a href={githubUrl} target="_blank" rel="noopener" className="ul">github / {github}</a>
           </div>
         </div>
-        <div className="foot-rule reveal">
+        <div className="foot-rule contact__foot reveal">
           <span>© {new Date().getFullYear()} {name}</span>
         </div>
       </div>

@@ -1,7 +1,7 @@
 'use client'
 import { useEffect } from 'react'
 
-const SECTION_IDS = ['top', 'tech', 'work', 'about', 'how', 'contact']
+const SECTION_IDS = ['top', 'tech', 'work', 'about', 'how', 'vault', 'contact']
 
 function getDocTop(el: HTMLElement): number {
   let top = 0; let node: HTMLElement | null = el
@@ -56,6 +56,7 @@ export function useMotion() {
       const secWork    = document.getElementById('work')
       const secAbout   = document.getElementById('about')
       const secHow     = document.getElementById('how')
+      const secVault   = document.getElementById('vault')
       const secContact = document.getElementById('contact')
 
       // ── Hero: depth-recede (scale down + blur) as TechStack masks in ─
@@ -117,6 +118,21 @@ export function useMotion() {
               el.style.transform = `scale(${lerp(1.05, 1, easeOut(p)).toFixed(4)})`
               el.style.filter    = ''
             }
+          }
+        }
+      }
+
+      // ── Vault: HORIZONTAL SLIT — opens from the centre out ───────────
+      if (secVault) {
+        const el = inner(secVault)
+        if (el) {
+          const p = entryP(secVault.getBoundingClientRect().top, vh, 0.92)
+          if (p >= 1) { el.style.clipPath = ''; el.style.transform = ''; el.style.filter = '' }
+          else {
+            const h = lerp(50, 0, p)
+            el.style.clipPath  = `inset(${h.toFixed(2)}% 0% ${h.toFixed(2)}% 0%)`
+            el.style.transform = `scale(${lerp(1.04, 1, easeOut(p)).toFixed(4)})`
+            el.style.filter    = ''
           }
         }
       }

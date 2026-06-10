@@ -9,6 +9,7 @@ import TechStack from '@/components/TechStack'
 import Showcase from '@/components/Showcase'
 import About from '@/components/About'
 import HowIWork from '@/components/HowIWork'
+import Vault from '@/components/Vault'
 import Contact from '@/components/Contact'
 
 export default function Page() {
@@ -48,6 +49,10 @@ export default function Page() {
           howLead={DATA.howLead}
           howRest={DATA.howRest}
           principles={DATA.principles}
+        />
+        <Vault
+          values={DATA.vaultValues}
+          certs={DATA.vaultCerts}
         />
         <Contact
           name={DATA.name}

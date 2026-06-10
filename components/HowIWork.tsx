@@ -60,7 +60,6 @@ export default function HowIWork({ howLead, howRest, principles }: Props) {
               <AnimatedTitle mode="fade" lead={howLead} rest={howRest} />
             </h2>
           </div>
-          <span className="how__hint">Scroll <i className="how__hint-arrow">→</i></span>
         </div>
         <div className="how__viewport">
           <div className="how__track">
