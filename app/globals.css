@@ -157,6 +157,10 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
 .sc__url:hover { color: var(--ink); }
 .project__tags { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin-top: clamp(22px,3vh,30px); }
 .project__tags li { font-size: 12px; color: var(--ink-dim); letter-spacing: .02em; border: 1px solid var(--ink-far); border-radius: 100px; padding: 7px 14px; }
+.sc__arrows { display: flex; gap: 10px; margin-top: clamp(24px,3.5vh,36px); }
+.sc__arrow { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--ink-far); background: transparent; color: var(--ink); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .25s var(--ease), border-color .25s var(--ease), color .25s var(--ease), transform .2s var(--ease); flex-shrink: 0; }
+.sc__arrow:hover { background: var(--ink); color: var(--black); border-color: var(--ink); transform: scale(1.08); }
+.sc__arrow:active { transform: scale(0.95); }
 
 .sc__stage { min-width: 0; }
 .device-frame__outer { background: #1c1c1e; border-radius: 14px; padding: 14px 14px 6px; box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 30px 80px rgba(0,0,0,0.7); }
