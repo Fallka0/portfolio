@@ -31,6 +31,8 @@ export default function Showcase({ workLead, workRest, showcase }: Props) {
   }, [])
 
   const advance = () => { setIndex(i => (i + 1) % n); setCycle(c => c + 1) }
+  const prev    = () => { setIndex(i => (i - 1 + n) % n); setCycle(c => c + 1) }
+  const next    = () => { setIndex(i => (i + 1) % n);     setCycle(c => c + 1) }
   const jump = (i: number) => { if (i === index) return; setIndex(i); setCycle(c => c + 1) }
 
   const cur  = slides[index]
@@ -67,6 +69,19 @@ export default function Showcase({ workLead, workRest, showcase }: Props) {
               <ul className="project__tags">
                 {proj.tags.map((t, i) => <li key={i}>{t}</li>)}
               </ul>
+            </div>
+
+            <div className="sc__arrows">
+              <button onClick={prev} className="sc__arrow" aria-label="Previous project">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10 3L5 8l5 5" />
+                </svg>
+              </button>
+              <button onClick={next} className="sc__arrow" aria-label="Next project">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 3l5 5-5 5" />
+                </svg>
+              </button>
             </div>
           </div>
 
