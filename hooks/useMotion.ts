@@ -48,12 +48,17 @@ export function useMotion() {
         if (!s) continue
         const el = inner(s)
         if (!el) continue
-        const tall = el.scrollHeight > vh + 8
+        // Use vh - 16 so sections within 16px of the viewport also scroll —
+        // this catches the TechStack which sits right at the boundary on laptops.
+        const tall = el.scrollHeight > vh - 16
         const want = tall ? '1' : '0'
         if (s.dataset.scroll !== want) {
           s.dataset.scroll = want
           // inline position beats the per-id `position: sticky` CSS rule
           s.style.position = tall ? 'relative' : ''
+          // overflow:hidden clips absolute children (tooltips) and is only needed
+          // for the pin/clip-path reveal; clear it once the section scrolls freely.
+          s.style.overflow = tall ? 'visible' : ''
           if (tall) { el.style.clipPath = ''; el.style.transform = ''; el.style.filter = '' }
         }
       }
