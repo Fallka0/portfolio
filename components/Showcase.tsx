@@ -3,6 +3,12 @@ import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import AnimatedTitle from './AnimatedTitle'
 
+// map project key → case study slug (only projects that have one)
+const CS_SLUGS: Record<string, string> = {
+  planary: 'planary',
+  milla:   'milla-homes',
+}
+
 interface Slide { p: string; screen: string; url: string; safari: string; phone: string | null }
 interface Project { name: string; site: string; line: string; tags: string[] }
 interface Props {
@@ -69,6 +75,15 @@ export default function Showcase({ workLead, workRest, showcase }: Props) {
               <ul className="project__tags">
                 {proj.tags.map((t, i) => <li key={i}>{t}</li>)}
               </ul>
+
+              {CS_SLUGS[cur.p] && (
+                <Link href={`/work/${CS_SLUGS[cur.p]}`} className="sc__cs-link">
+                  Case study
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M2.5 7h9M7.5 3l4 4-4 4" />
+                  </svg>
+                </Link>
+              )}
             </div>
 
             <div className="sc__arrows">
