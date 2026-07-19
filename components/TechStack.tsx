@@ -1,20 +1,44 @@
 'use client'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import AnimatedTitle from './AnimatedTitle'
 import { TECH_CONFIG } from '@/lib/data'
 
 function TechItem({ name }: { name: string }) {
-  const [hovered, setHovered] = useState(false)
+  const [open, setOpen] = useState(false)
+  const rootRef = useRef<HTMLSpanElement>(null)
   const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const onEnter = () => { if (leaveTimer.current) clearTimeout(leaveTimer.current); setHovered(true) }
-  const onLeave = () => { leaveTimer.current = setTimeout(() => setHovered(false), 320) }
+  const lastPointer = useRef('mouse')
+
+  // Mouse: open on hover with a grace period before closing.
+  const onPointerEnter = (e: React.PointerEvent) => {
+    if (e.pointerType !== 'mouse') return
+    if (leaveTimer.current) clearTimeout(leaveTimer.current)
+    setOpen(true)
+  }
+  const onPointerLeave = (e: React.PointerEvent) => {
+    if (e.pointerType !== 'mouse') return
+    leaveTimer.current = setTimeout(() => setOpen(false), 320)
+  }
+  // Touch/pen: tap toggles the popover instead.
+  const onPointerDown = (e: React.PointerEvent) => { lastPointer.current = e.pointerType }
+  const onClick = () => { if (lastPointer.current !== 'mouse') setOpen(o => !o) }
+
+  // Close an open popover when tapping anywhere outside it.
+  useEffect(() => {
+    if (!open) return
+    const close = (e: PointerEvent) => {
+      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('pointerdown', close)
+    return () => document.removeEventListener('pointerdown', close)
+  }, [open])
 
   const cfg = TECH_CONFIG[name] || {}
   const iconUrl = cfg.icon ? `https://cdn.simpleicons.org/${cfg.icon}/ffffff` : null
   const projs = cfg.projects || []
 
   return (
-    <span className="tech__flip-wrap" onMouseEnter={onEnter} onMouseLeave={onLeave}>
+    <span ref={rootRef} className="tech__flip-wrap" onPointerEnter={onPointerEnter} onPointerLeave={onPointerLeave} onPointerDown={onPointerDown} onClick={onClick}>
       <span className="tech__flip">
         <span className="tech__flip-front tech__item">{name}</span>
         <span className="tech__flip-back">
@@ -25,7 +49,7 @@ function TechItem({ name }: { name: string }) {
         </span>
       </span>
       {projs.length > 0 && (
-        <div className={'tech__item-projs' + (hovered ? ' is-open' : '')} onMouseEnter={onEnter} onMouseLeave={onLeave}>
+        <div className={'tech__item-projs' + (open ? ' is-open' : '')}>
           <span className="tech__projs-label mono">Used in</span>
           {projs.map(p => (
             <a key={p.url} className="tech__proj-link" href={p.url} target="_blank" rel="noopener noreferrer">

@@ -100,8 +100,9 @@ export default function Showcase({ workLead, workRest, showcase }: Props) {
             </div>
           </div>
 
-          {/* Device */}
-          <div className="sc__stage" ref={stageRef}>
+          {/* Device — laptop frame on desktop; phone frame on mobile when the
+              slide has a portrait screenshot, laptop otherwise */}
+          <div className={'sc__stage' + (cur.phone ? ' sc__stage--phone' : '')} ref={stageRef}>
             <div className="device-frame__outer">
               <div className="device-frame__screen">
                 {slides.map((s, i) => (
@@ -116,6 +117,20 @@ export default function Showcase({ workLead, workRest, showcase }: Props) {
               </div>
               <div className="device-frame__base" />
               <div className="device-frame__foot" />
+            </div>
+
+            <div className="phone-frame">
+              <div className="phone-frame__screen">
+                {slides.map((s, i) => s.phone && (
+                  <div
+                    key={i}
+                    className="device-frame__slide"
+                    style={{ opacity: i === index ? 1 : 0, zIndex: i === index ? 1 : 0 }}
+                  >
+                    <img src={s.phone} alt={projects[s.p].name + ' — ' + s.screen + ' (mobile)'} loading="lazy" />
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="bars" role="tablist" aria-label="Projects">
