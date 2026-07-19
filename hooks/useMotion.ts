@@ -76,10 +76,12 @@ export function useMotion() {
 
     const fx = () => {
       const vh = window.innerHeight
-      // Entry animations scale sections up to 112%, which creates real
-      // horizontal overflow. iOS Safari lets touch-panning reach into that
-      // overflow, so on phones we keep the clip-path reveals but skip the zoom.
-      const zoom = window.innerWidth >= 760
+      // Phones get the "lite" treatment: no per-frame clip-path/scale/blur.
+      // Those effects re-rasterize whole sections every frame, which stutters
+      // badly on mobile GPUs (blur especially), and mid-animation transforms
+      // are what iOS touch-panning could sneak into sideways. The sticky
+      // cover-stack alone carries the design on small screens.
+      const lite = window.innerWidth < 760
       if (nav) nav.classList.toggle('is-light', lightAt(48))
       if (fab) {
         fab.classList.toggle('is-light', lightAt(vh - 48))
@@ -102,7 +104,7 @@ export function useMotion() {
         const el = inner(secTop)
         if (el) {
           el.style.transform = `scale(${lerp(1, 0.86, p).toFixed(4)}) translateY(${lerp(0, -6, p).toFixed(1)}vh)`
-          el.style.filter    = `blur(${(p * 9).toFixed(2)}px)`
+          el.style.filter    = lite ? '' : `blur(${(p * 9).toFixed(2)}px)`
         }
       }
 
@@ -111,10 +113,10 @@ export function useMotion() {
         const el = inner(secTech)
         if (el) {
           const p = entryP(secTech.getBoundingClientRect().top, vh, 0.92)
-          if (p >= 1) { el.style.clipPath = ''; el.style.transform = ''; el.style.filter = '' }
+          if (lite || p >= 1) { el.style.clipPath = ''; el.style.transform = ''; el.style.filter = '' }
           else {
             el.style.clipPath  = `circle(${(p * p * 75).toFixed(2)}vmax at 50% 44%)`
-            el.style.transform = zoom ? `scale(${lerp(1.12, 1, easeOut(p)).toFixed(4)})` : ''
+            el.style.transform = `scale(${lerp(1.12, 1, easeOut(p)).toFixed(4)})`
             el.style.filter    = ''
           }
         }
@@ -125,12 +127,12 @@ export function useMotion() {
         const el = inner(secWork)
         if (el) {
           const p = entryP(secWork.getBoundingClientRect().top, vh, 0.92)
-          if (p >= 1) { el.style.clipPath = ''; el.style.transform = ''; el.style.filter = '' }
+          if (lite || p >= 1) { el.style.clipPath = ''; el.style.transform = ''; el.style.filter = '' }
           else {
             const inset = lerp(50, 0, p)
             const round = lerp(60, 0, p)
             el.style.clipPath  = `inset(0% ${inset.toFixed(2)}% 0% ${inset.toFixed(2)}% round ${round.toFixed(1)}px)`
-            el.style.transform = zoom ? `scale(${lerp(1.06, 1, easeOut(p)).toFixed(4)})` : ''
+            el.style.transform = `scale(${lerp(1.06, 1, easeOut(p)).toFixed(4)})`
             el.style.filter    = ''
           }
         }
@@ -146,15 +148,15 @@ export function useMotion() {
           if (rp > 0) {
             el.style.clipPath  = ''
             el.style.transform = `scale(${lerp(1, 0.86, rp).toFixed(4)}) translateY(${lerp(0, -6, rp).toFixed(1)}vh)`
-            el.style.filter    = `blur(${(rp * 9).toFixed(2)}px)`
+            el.style.filter    = lite ? '' : `blur(${(rp * 9).toFixed(2)}px)`
           } else {
             const p = entryP(secAbout.getBoundingClientRect().top, vh, 0.92)
-            if (p >= 1) { el.style.clipPath = ''; el.style.transform = ''; el.style.filter = '' }
+            if (lite || p >= 1) { el.style.clipPath = ''; el.style.transform = ''; el.style.filter = '' }
             else {
               // slanted edge travels across from top-left to bottom-right
               const q = lerp(-60, 170, p)
               el.style.clipPath  = `polygon(0% 0%, ${q.toFixed(2)}% 0%, ${(q - 60).toFixed(2)}% 100%, 0% 100%)`
-              el.style.transform = zoom ? `scale(${lerp(1.05, 1, easeOut(p)).toFixed(4)})` : ''
+              el.style.transform = `scale(${lerp(1.05, 1, easeOut(p)).toFixed(4)})`
               el.style.filter    = ''
             }
           }
@@ -166,11 +168,11 @@ export function useMotion() {
         const el = inner(secVault)
         if (el) {
           const p = entryP(secVault.getBoundingClientRect().top, vh, 0.92)
-          if (p >= 1) { el.style.clipPath = ''; el.style.transform = ''; el.style.filter = '' }
+          if (lite || p >= 1) { el.style.clipPath = ''; el.style.transform = ''; el.style.filter = '' }
           else {
             const h = lerp(50, 0, p)
             el.style.clipPath  = `inset(${h.toFixed(2)}% 0% ${h.toFixed(2)}% 0%)`
-            el.style.transform = zoom ? `scale(${lerp(1.04, 1, easeOut(p)).toFixed(4)})` : ''
+            el.style.transform = `scale(${lerp(1.04, 1, easeOut(p)).toFixed(4)})`
             el.style.filter    = ''
           }
         }
@@ -181,7 +183,7 @@ export function useMotion() {
         const el = inner(secContact)
         if (el) {
           const p = entryP(secContact.getBoundingClientRect().top, vh, 0.92)
-          if (p >= 1) { el.style.clipPath = ''; el.style.transform = ''; el.style.filter = '' }
+          if (lite || p >= 1) { el.style.clipPath = ''; el.style.transform = ''; el.style.filter = '' }
           else {
             el.style.clipPath  = `inset(${lerp(100, 0, p).toFixed(2)}% 0% 0% 0%)`
             el.style.transform = `translateY(${lerp(10, 0, easeOut(p)).toFixed(2)}vh)`
