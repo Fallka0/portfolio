@@ -5,6 +5,7 @@ import { TECH_CONFIG } from '@/lib/data'
 
 function TechItem({ name }: { name: string }) {
   const [open, setOpen] = useState(false)
+  const [iconFailed, setIconFailed] = useState(false)
   const rootRef = useRef<HTMLSpanElement>(null)
   const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lastPointer = useRef('mouse')
@@ -38,13 +39,13 @@ function TechItem({ name }: { name: string }) {
   const projs = cfg.projects || []
 
   return (
-    <span ref={rootRef} className="tech__flip-wrap" onPointerEnter={onPointerEnter} onPointerLeave={onPointerLeave} onPointerDown={onPointerDown} onClick={onClick}>
+    <span ref={rootRef} className={'tech__flip-wrap' + (open ? ' is-open' : '')} onPointerEnter={onPointerEnter} onPointerLeave={onPointerLeave} onPointerDown={onPointerDown} onClick={onClick}>
       <span className="tech__flip">
         <span className="tech__flip-front tech__item">{name}</span>
         <span className="tech__flip-back">
-          {iconUrl
+          {iconUrl && !iconFailed
             ? <img src={iconUrl} alt={name} width={30} height={30} loading="lazy"
-                onError={e => { (e.target as HTMLImageElement).style.display = 'none' }} />
+                onError={() => setIconFailed(true)} />
             : <span className="tech__flip-fallback">{name}</span>}
         </span>
       </span>

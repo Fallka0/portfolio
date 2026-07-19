@@ -27,7 +27,9 @@ img { display: block; max-width: 100%; }
 button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
 a, button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 
-#smooth { width: 100%; }
+/* overflow-x: clip (not hidden) — it blocks iOS sideways panning without
+   creating a scroll container, so the sticky section stack keeps working */
+#smooth { width: 100%; overflow-x: clip; }
 .section { position: relative; min-height: 100svh; }
 .section--dark  { background: var(--black); color: var(--ink); }
 .section--light { background: var(--paper); color: var(--on-pap); }
@@ -235,16 +237,18 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
 .tech__row-cat { flex: 0 0 clamp(90px, 12vw, 160px); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-dim); padding-top: .55em; }
 .tech__row-body { flex: 1; }
 .tech__row-items { display: flex; flex-wrap: wrap; gap: 6px clamp(20px, 2.5vw, 36px); }
-.tech__flip-wrap { display: inline-block; position: relative; perspective: 500px; }
-.tech__flip { display: inline-block; position: relative; transform-style: preserve-3d; transition: transform .42s cubic-bezier(.4,0,.2,1); cursor: default; }
+/* perspective lives inside .tech__flip's own transform — a `perspective`
+   property on the wrapper would make it the containing block for the
+   absolutely-positioned popover and break its row anchoring on mobile */
+.tech__flip-wrap { display: inline-block; position: relative; }
+.tech__flip { display: inline-block; position: relative; transform-style: preserve-3d; transform: perspective(500px); transition: transform .42s cubic-bezier(.4,0,.2,1); cursor: default; }
 .tech__flip-front { display: block; backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: opacity .18s; }
 .tech__flip-back { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; backface-visibility: hidden; -webkit-backface-visibility: hidden; transform: rotateX(180deg) translateZ(0.1px); opacity: 0; transition: opacity .18s; }
-/* flip is a hover flourish — mouse only, so touch taps don't leave items stuck upside-down */
-@media (hover: hover) and (pointer: fine) {
-  .tech__flip-wrap:hover .tech__flip { transform: rotateX(180deg); }
-  .tech__flip-wrap:hover .tech__flip-front { opacity: 0; }
-  .tech__flip-wrap:hover .tech__flip-back { opacity: 1; }
-}
+/* .is-open is set by JS on hover (mouse) and on tap (touch) — one state drives
+   both the flip and the popover on every input type */
+.tech__flip-wrap.is-open .tech__flip { transform: perspective(500px) rotateX(180deg); }
+.tech__flip-wrap.is-open .tech__flip-front { opacity: 0; }
+.tech__flip-wrap.is-open .tech__flip-back { opacity: 1; }
 .tech__flip-back img { width: clamp(22px, 2vw, 30px); height: auto; }
 .tech__item { font-size: clamp(22px, 2.2vw, 34px); font-weight: 500; letter-spacing: -.01em; color: var(--ink); line-height: 1.25; }
 .tech__item-projs { position: absolute; bottom: calc(100% + 10px); left: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; background: #111; border: 1px solid rgba(255,255,255,0.18); border-radius: 10px; padding: 10px 14px; white-space: nowrap; z-index: 200; opacity: 0; transform: translateY(6px); pointer-events: none; transition: opacity .2s ease, transform .2s ease; }
@@ -259,9 +263,8 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
   .tech__row-cat { padding-top: 0; flex: 0 0 auto; }
   .tech__item { font-size: clamp(20px, 6vw, 28px); }
   /* anchor the popover to the full row instead of the tapped word, so it can
-     never hang off the right edge of the screen (perspective must go too —
-     it would keep the word as the popover's containing block) */
-  .tech__flip-wrap { position: static; perspective: none; }
+     never hang off the right edge of the screen */
+  .tech__flip-wrap { position: static; }
   .tech__row-body { position: relative; }
   .tech__item-projs { left: 0; right: 0; top: calc(100% + 8px); bottom: auto; white-space: normal; }
 }
