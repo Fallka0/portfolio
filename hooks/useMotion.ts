@@ -77,7 +77,12 @@ export function useMotion() {
     const fx = () => {
       const vh = window.innerHeight
       if (nav) nav.classList.toggle('is-light', lightAt(48))
-      if (fab) fab.classList.toggle('is-light', lightAt(vh - 48))
+      if (fab) {
+        fab.classList.toggle('is-light', lightAt(vh - 48))
+        // hide once the contact section is mostly on screen — the FAB's target
+        const c = document.getElementById('contact')
+        if (c) fab.classList.toggle('is-hidden', c.getBoundingClientRect().top < vh * 0.55)
+      }
 
       const secTop     = document.getElementById('top')
       const secTech    = document.getElementById('tech')

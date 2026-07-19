@@ -36,17 +36,10 @@ export default function ProjectsPage() {
             {EXTRA_PROJECTS.map((p, i) => (
               <article
                 key={p.num}
-                className="reveal"
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'clamp(40px,6vw,90px) 1fr',
-                  gap: 'clamp(24px,4vw,64px)',
-                  padding: 'clamp(32px,5vh,60px) 0',
-                  borderBottom: '1px solid var(--ink-far)',
-                  '--d': `${i * 55}ms`,
-                } as React.CSSProperties}
+                className="reveal proj"
+                style={{ '--d': `${i * 55}ms` } as React.CSSProperties}
               >
-                <span className="mono" style={{ fontSize: 'clamp(11px,1vw,14px)', color: 'var(--ink-dim)', paddingTop: '0.4em', letterSpacing: '.1em' }}>{p.num}</span>
+                <span className="mono proj__num">{p.num}</span>
 
                 <div>
                   {/* Name row */}
@@ -58,9 +51,9 @@ export default function ProjectsPage() {
                         <a href={p.github} target="_blank" rel="noopener" className="ul" style={{ color: 'inherit' }}>{p.name}</a>
                       )}
                     </h2>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', flexShrink: 0 }}>
-                      <span style={{ fontSize: '12px', color: 'var(--ink-dim)', letterSpacing: '.08em' }}>{p.cat}</span>
-                      <span style={{ fontSize: '13px', color: 'var(--ink-dim)' }}>{p.year}</span>
+                    <div className="proj__meta">
+                      <span className="proj__cat">{p.cat}</span>
+                      <span className="proj__year">{p.year}</span>
                     </div>
                   </div>
 
