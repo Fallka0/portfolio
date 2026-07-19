@@ -76,6 +76,10 @@ export function useMotion() {
 
     const fx = () => {
       const vh = window.innerHeight
+      // Entry animations scale sections up to 112%, which creates real
+      // horizontal overflow. iOS Safari lets touch-panning reach into that
+      // overflow, so on phones we keep the clip-path reveals but skip the zoom.
+      const zoom = window.innerWidth >= 760
       if (nav) nav.classList.toggle('is-light', lightAt(48))
       if (fab) {
         fab.classList.toggle('is-light', lightAt(vh - 48))
@@ -110,7 +114,7 @@ export function useMotion() {
           if (p >= 1) { el.style.clipPath = ''; el.style.transform = ''; el.style.filter = '' }
           else {
             el.style.clipPath  = `circle(${(p * p * 75).toFixed(2)}vmax at 50% 44%)`
-            el.style.transform = `scale(${lerp(1.12, 1, easeOut(p)).toFixed(4)})`
+            el.style.transform = zoom ? `scale(${lerp(1.12, 1, easeOut(p)).toFixed(4)})` : ''
             el.style.filter    = ''
           }
         }
@@ -126,7 +130,7 @@ export function useMotion() {
             const inset = lerp(50, 0, p)
             const round = lerp(60, 0, p)
             el.style.clipPath  = `inset(0% ${inset.toFixed(2)}% 0% ${inset.toFixed(2)}% round ${round.toFixed(1)}px)`
-            el.style.transform = `scale(${lerp(1.06, 1, easeOut(p)).toFixed(4)})`
+            el.style.transform = zoom ? `scale(${lerp(1.06, 1, easeOut(p)).toFixed(4)})` : ''
             el.style.filter    = ''
           }
         }
@@ -150,7 +154,7 @@ export function useMotion() {
               // slanted edge travels across from top-left to bottom-right
               const q = lerp(-60, 170, p)
               el.style.clipPath  = `polygon(0% 0%, ${q.toFixed(2)}% 0%, ${(q - 60).toFixed(2)}% 100%, 0% 100%)`
-              el.style.transform = `scale(${lerp(1.05, 1, easeOut(p)).toFixed(4)})`
+              el.style.transform = zoom ? `scale(${lerp(1.05, 1, easeOut(p)).toFixed(4)})` : ''
               el.style.filter    = ''
             }
           }
@@ -166,7 +170,7 @@ export function useMotion() {
           else {
             const h = lerp(50, 0, p)
             el.style.clipPath  = `inset(${h.toFixed(2)}% 0% ${h.toFixed(2)}% 0%)`
-            el.style.transform = `scale(${lerp(1.04, 1, easeOut(p)).toFixed(4)})`
+            el.style.transform = zoom ? `scale(${lerp(1.04, 1, easeOut(p)).toFixed(4)})` : ''
             el.style.filter    = ''
           }
         }
