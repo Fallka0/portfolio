@@ -19,8 +19,8 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; background: var(--black); overflow-x: clip; }
-body { background: var(--black); color: var(--ink); font-family: var(--font); font-weight: 400; line-height: 1.5; overflow-x: clip; }
+html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; background: var(--black); overflow-x: clip; overscroll-behavior-x: none; }
+body { background: var(--black); color: var(--ink); font-family: var(--font); font-weight: 400; line-height: 1.5; overflow-x: clip; overscroll-behavior-x: none; touch-action: pan-y pinch-zoom; }
 ::selection { background: var(--ink); color: var(--black); }
 a { color: inherit; text-decoration: none; }
 img { display: block; max-width: 100%; }
@@ -43,6 +43,11 @@ a, button { -webkit-tap-highlight-color: transparent; touch-action: manipulation
 #contact { position: sticky; top: 0; z-index: 7; background: #1c000d; border-radius: 0; overflow: hidden; }
 .wrap { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gut); }
 .sec-inner { will-change: transform, clip-path, filter; }
+/* Phones run the lite motion path (no clip-path/filter animation, see
+   useMotion), so don't ask the browser to keep those layers around */
+@media (max-width: 760px) {
+  .sec-inner { will-change: transform; }
+}
 /* Sections too tall to pin (set by useMotion) scroll normally; give their
    content a tail of space below so it stays fully readable before the next
    section slides up to cover it. */
