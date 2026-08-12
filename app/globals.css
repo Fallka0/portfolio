@@ -15,7 +15,7 @@
   /* Full-bleed layout: content spans the whole viewport, the gutter is the
      only inset. Paragraphs keep their own ch-based measure for readability. */
   --maxw:     100%;
-  --gut:      clamp(20px, 4vw, 72px);
+  --gut:      clamp(24px, 4.5vw, 120px);
   --ease:     cubic-bezier(0.22, 1, 0.36, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
