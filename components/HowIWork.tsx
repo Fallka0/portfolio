@@ -30,7 +30,9 @@ export default function HowIWork({ howLead, howRest, principles }: Props) {
     }
 
     const measure = () => {
-      if (reduce || window.innerWidth < 760) { reset(); return }
+      // `<=` matches the CSS breakpoint exactly (max-width: 760px), so at 760
+      // the stacked layout and the JS agree on which mode is active
+      if (reduce || window.innerWidth <= 760) { reset(); return }
       // Cache natural document top before sticky can distort offsetTop
       const bcrTop = how.getBoundingClientRect().top
       if (bcrTop > 0 || window.scrollY < 50) {
