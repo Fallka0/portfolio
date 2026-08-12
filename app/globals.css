@@ -296,14 +296,28 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
 .how__bar { position: absolute; left: var(--gut); right: var(--gut); bottom: clamp(26px, 5vh, 52px); height: 2px; background: rgba(255,255,255,0.12); border-radius: 2px; overflow: hidden; }
 .how__bar-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: var(--ink); }
 @media (max-width: 760px) {
+  /* The desktop section is deliberately taller than the viewport: it pins via
+     `position: sticky` while JS scrubs the track sideways. On phones the cards
+     stack instead, so that pin has nothing to drive — it just froze the section
+     at top:0 and swallowed ~1800px of scrolling with cards 3 and 4 stranded
+     below the fold. (useMotion's un-pin pass skips #how: it looks for a
+     `> .sec-inner` child, and HowIWork renders `.how__pin`.) Scroll normally. */
+  #how { position: relative; }
   .how { height: auto !important; }
-  .how__pin { height: auto; min-height: 0; display: block; overflow: visible; padding-block: clamp(80px, 14vh, 140px); transform: none !important; }
-  .how__head { flex-direction: column; align-items: flex-start; }
+  /* extra tail so the last card is readable before Vault slides over it */
+  .how__pin { height: auto; min-height: 0; display: block; overflow: visible; padding-block: clamp(64px, 11vh, 110px) clamp(100px, 20vh, 200px); transform: none !important; }
+  .how__head { flex-direction: column; align-items: flex-start; margin-bottom: clamp(22px, 3.5vh, 34px); }
   .how__hint { display: none; }
   .how__viewport { overflow: visible; }
-  .how__track { flex-direction: column; width: 100%; gap: 16px; transform: none !important; }
+  .how__track { flex-direction: column; width: 100%; gap: 12px; transform: none !important; }
   .how__card { width: 100%; }
-  .how__card-in { height: auto; opacity: 1 !important; transform: none !important; }
+  /* compact cards — the desktop card is sized to fill a pinned viewport, which
+     on a phone made each one ~570px tall and the section a long empty scroll */
+  .how__card-in { height: auto; opacity: 1 !important; transform: none !important; padding: 22px 20px 24px; border-radius: 18px; }
+  .how__num { font-size: 28px; line-height: 1; }
+  .how__t { font-size: 19px; margin-top: 10px; }
+  .how__d { font-size: 15px; margin-top: 8px; max-width: none; }
+  .how__idx { display: none; }   /* redundant next to the card's own number */
   .how__bar { display: none; }
 }
 
