@@ -4,12 +4,14 @@ import { useParams } from 'next/navigation'
 import { notFound } from 'next/navigation'
 import { CASE_STUDIES, type CsSection } from '@/lib/case-studies'
 import { useReveal } from '@/hooks/useReveal'
+import { useSmoothScroll } from '@/hooks/useSmoothScroll'
 
 export default function CaseStudyPage() {
   const { slug } = useParams() as { slug: string }
   const cs = CASE_STUDIES.find(c => c.slug === slug)
 
   useReveal()
+  useSmoothScroll()
 
   if (!cs) notFound()
 
@@ -65,7 +67,8 @@ export default function CaseStudyPage() {
         {/* ── Hero screenshot ───────────────────────────────────────── */}
         <div className="cs-screenshot-hero">
           <div className="wrap">
-            <div className="device-frame__outer" style={{ maxWidth: 900, margin: '0 auto' }}>
+            {/* capped at the screenshots' native 1600px so they never upscale */}
+            <div className="device-frame__outer" style={{ maxWidth: 1600, margin: '0 auto' }}>
               <div className="device-frame__screen">
                 <img src={cs.hero} alt={cs.name + ' — main screenshot'} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', display: 'block' }} />
               </div>

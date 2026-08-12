@@ -2,6 +2,7 @@
 import { DATA } from '@/lib/data'
 import { useReveal } from '@/hooks/useReveal'
 import { useMotion } from '@/hooks/useMotion'
+import { useSmoothScroll } from '@/hooks/useSmoothScroll'
 import Nav from '@/components/Nav'
 import CTAFab from '@/components/CTAFab'
 import Hero from '@/components/Hero'
@@ -15,6 +16,7 @@ import Contact from '@/components/Contact'
 export default function Page() {
   useReveal()
   useMotion()
+  useSmoothScroll()
 
   return (
     <>

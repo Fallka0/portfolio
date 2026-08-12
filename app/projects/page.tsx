@@ -3,9 +3,11 @@ import Link from 'next/link'
 import { EXTRA_PROJECTS } from '@/lib/data'
 import AnimatedTitle from '@/components/AnimatedTitle'
 import { useReveal } from '@/hooks/useReveal'
+import { useSmoothScroll } from '@/hooks/useSmoothScroll'
 
 export default function ProjectsPage() {
   useReveal()
+  useSmoothScroll()
 
   return (
     <>
