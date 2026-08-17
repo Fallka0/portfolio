@@ -50,6 +50,34 @@ src/
 └── main.tsx      # React entry point
 ```
 
+## 🔒 Vault
+
+The `#vault` section holds personal documents (school reports, üK certificates)
+behind an access code shared with recruiters on request.
+
+Set **`VAULT_PASS`** — the access code — in the environment (locally in
+`.env.local`, on Vercel under Project → Settings → Environment Variables):
+
+```
+VAULT_PASS=your-access-code
+```
+
+Notes:
+
+- The name must **not** start with `NEXT_PUBLIC_`. That prefix inlines a value
+  into the browser bundle, where anyone can read it.
+- Without `VAULT_PASS` the unlock endpoint answers `503` and the section shows
+  "The vault is not configured yet." Documents are never served either way.
+- The PDFs live in `private/docs/`, deliberately outside `public/` so nothing
+  serves them statically. They are reachable only via `/api/vault/doc/[id]`,
+  which requires the signed, httpOnly session cookie that `/api/vault/unlock`
+  issues after a correct code. Sessions last 12 hours, and changing
+  `VAULT_PASS` invalidates every existing one.
+- `next.config.ts` lists `private/docs/**` under `outputFileTracingIncludes`,
+  which is what ships the files with the serverless function. Adding a document
+  means dropping the PDF in that folder and adding an entry to
+  `lib/vaultDocs.ts` plus a card in `vaultDocs` in `lib/data.ts`.
+
 ---
 
 Built with 💜 using React + Tailwind + glassmorphism.

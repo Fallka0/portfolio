@@ -367,13 +367,50 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
 .vault__it { display: block; font-size: clamp(16px,1.5vw,20px); font-weight: 700; letter-spacing: -.01em; margin-bottom: 8px; }
 .vault__id { font-size: clamp(14px,1.1vw,16px); color: var(--ink-dim); line-height: 1.6; }
 .vault__docs { display: flex; flex-direction: column; gap: 10px; }
-.vault__dl { display: flex; align-items: center; gap: 14px; padding: 18px 20px; border: 1px solid var(--ink-far); border-radius: 12px; font-size: 14px; font-weight: 500; transition: border-color .2s, background .2s; }
-.vault__dl:hover { border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.04); }
-.vault__dl-arrow { font-size: 16px; opacity: 0.5; flex-shrink: 0; }
 .vault__empty { font-size: 14px; color: var(--ink-dim); line-height: 1.6; }
+/* document card (collapsed) */
+.vault__card { display: grid; gap: 6px; width: 100%; text-align: left; padding: 18px 20px; border: 1px solid var(--ink-far); border-radius: 14px; background: rgba(255,255,255,0.02); transition: border-color .22s var(--ease), background .22s var(--ease), transform .22s var(--ease); }
+.vault__card:hover { border-color: rgba(255,255,255,0.26); background: rgba(255,255,255,0.055); transform: translateY(-2px); }
+.vault__card:focus-visible { outline: 2px solid rgba(255,255,255,0.55); outline-offset: 3px; }
+.vault__card-top { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; }
+.vault__card-kind { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-dim); }
+.vault__card-grade { font-size: 22px; font-weight: 800; line-height: 1; }
+.vault__card-title { font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+.vault__card-meta { font-size: 13px; color: var(--ink-dim); line-height: 1.5; }
+.vault__card-cue { font-size: 11px; letter-spacing: .1em; color: var(--ink-dim); opacity: 0; transition: opacity .22s var(--ease); }
+.vault__card:hover .vault__card-cue, .vault__card:focus-visible .vault__card-cue { opacity: 1; }
+
+/* enlarged card */
+.vault__overlay { position: fixed; inset: 0; z-index: 300; display: flex; align-items: center; justify-content: center; padding: clamp(16px,4vh,48px) clamp(16px,4vw,48px); background: rgba(0,0,0,0.72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); animation: vfade .22s var(--ease-out) both; }
+@keyframes vfade { from { opacity: 0 } to { opacity: 1 } }
+.vault__sheet { position: relative; width: min(660px, 100%); max-height: 100%; overflow-y: auto; overscroll-behavior: contain; background: #0c0c0c; border: 1px solid rgba(255,255,255,0.16); border-radius: 20px; padding: clamp(28px,4vw,44px); animation: vrise .3s var(--ease-out) both; }
+@keyframes vrise { from { opacity: 0; transform: translateY(18px) scale(.98) } to { opacity: 1; transform: none } }
+.vault__close { position: absolute; top: 14px; right: 16px; width: 36px; height: 36px; border-radius: 50%; font-size: 24px; line-height: 1; color: var(--ink-dim); transition: background .2s, color .2s; }
+.vault__close:hover { background: rgba(255,255,255,0.08); color: var(--ink); }
+.vault__sheet-kind { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-dim); }
+.vault__sheet-title { font-size: clamp(26px,3vw,38px); font-weight: 800; letter-spacing: -.02em; line-height: 1.1; margin-top: 10px; }
+.vault__sheet-meta { font-size: 14px; color: var(--ink-dim); margin-top: 8px; }
+.vault__sheet-grade { display: flex; align-items: baseline; gap: 12px; margin-top: clamp(20px,3vh,28px); padding-block: 16px; border-block: 1px solid var(--ink-far); }
+.vault__sheet-num { font-size: clamp(38px,4.5vw,54px); font-weight: 800; line-height: 1; }
+.vault__sheet-lab { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-dim); }
+.vault__sheet-sum { font-size: 15px; line-height: 1.65; color: var(--ink-dim); margin-top: clamp(18px,2.5vh,24px); }
+.vault__sheet-note { font-size: 15px; line-height: 1.6; font-style: italic; color: var(--ink); margin-top: 18px; padding-left: 16px; border-left: 2px solid rgba(255,255,255,0.22); }
+.vault__grp { margin-top: clamp(24px,3.5vh,34px); }
+.vault__grp-label { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 12px; }
+.vault__grades { list-style: none; display: flex; flex-direction: column; }
+.vault__grade-row { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.07); font-size: 14px; }
+.vault__grade-row:last-child { border-bottom: 0; }
+.vault__grade-k { color: var(--ink-dim); line-height: 1.45; }
+.vault__grade-v { font-weight: 700; flex-shrink: 0; }
+.vault__get { display: inline-flex; align-items: center; gap: 10px; margin-top: clamp(26px,4vh,36px); padding: 14px 22px; background: var(--ink); color: var(--black); border-radius: 10px; font-size: 13px; font-weight: 700; letter-spacing: .06em; transition: opacity .2s; }
+.vault__get:hover { opacity: .82; }
+.vault__get-arrow { font-size: 15px; }
 @media (max-width: 760px) {
   .vault__open { grid-template-columns: 1fr; gap: clamp(40px,8vh,60px); }
   .vault__form { flex-direction: column; }
+  /* the cue is hover-driven, so on touch it would never show */
+  .vault__card-cue { opacity: 1; }
+  .vault__sheet { border-radius: 16px; }
 }
 
 /* CASE STUDIES ──────────────────────────────────────────────────────────── */

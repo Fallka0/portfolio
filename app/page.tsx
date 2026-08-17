@@ -52,7 +52,7 @@ export default function Page() {
         />
         <Vault
           values={DATA.vaultValues}
-          certs={DATA.vaultCerts}
+          docs={DATA.vaultDocs}
         />
         <Contact
           name={DATA.name}
