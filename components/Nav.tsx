@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
+import ThemeToggle from './ThemeToggle'
 
 // Sections that map to nav links, in page order.
 // Active = last one whose document-top has scrolled past 38% of the viewport.
@@ -73,6 +74,7 @@ export default function Nav({ mark }: { mark: string }) {
             </a>
           ))}
         </div>
+        <ThemeToggle />
       </div>
     </nav>
   )
