@@ -42,9 +42,6 @@ export default function Vault({ values, certs }: Props) {
               </svg>
             </div>
             <h2 className="vault__head">Hiring managers &amp; recruiters</h2>
-            <p className="vault__desc">
-              My certificates and what I&#8217;m looking for in an apprenticeship — available with the access code I share on request.
-            </p>
             <div className={`vault__form${error ? ' vault--err' : ''}`}>
               <input
                 ref={inputRef}

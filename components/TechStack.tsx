@@ -64,11 +64,11 @@ function TechItem({ name }: { name: string }) {
 }
 
 interface Props {
-  techLead: string; techRest: string; techNote: string
+  techLead: string; techRest: string
   techStack: { cat: string; items: string[] }[]
 }
 
-export default function TechStack({ techLead, techRest, techNote, techStack }: Props) {
+export default function TechStack({ techLead, techRest, techStack }: Props) {
   return (
     <section className="section section--dark sec sec-cover" data-theme="dark" id="tech">
       <div className="sec-inner">
@@ -76,7 +76,6 @@ export default function TechStack({ techLead, techRest, techNote, techStack }: P
         <h2 className="h-section tech__headline">
           <AnimatedTitle mode="fade" lead={techLead} rest={techRest} />
         </h2>
-        <p className="tech__note reveal">{techNote}</p>
       </div>
       <div className="tech__rows">
         {techStack.map((group, i) => (

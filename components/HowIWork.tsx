@@ -71,7 +71,6 @@ export default function HowIWork({ howLead, howRest, principles }: Props) {
                   <span className="how__num mono">{String(i + 1).padStart(2, '0')}</span>
                   <h3 className="how__t">{p.t}</h3>
                   <p className="how__d">{p.d}</p>
-                  <span className="how__idx mono">{i + 1} / {n}</span>
                 </div>
               </article>
             ))}
