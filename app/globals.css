@@ -366,7 +366,11 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
 .vault__item { border-top: 1px solid var(--ink-far); padding-top: clamp(20px,3vh,28px); }
 .vault__it { display: block; font-size: clamp(16px,1.5vw,20px); font-weight: 700; letter-spacing: -.01em; margin-bottom: 8px; }
 .vault__id { font-size: clamp(14px,1.1vw,16px); color: var(--ink-dim); line-height: 1.6; }
-.vault__docs { display: flex; flex-direction: column; gap: 10px; }
+/* auto-fill rather than a breakpoint: the column is half the page, so this
+   settles on two cards per row on a desktop and one on a phone by itself.
+   Past ~6 documents a single column outgrows the viewport and the section
+   loses its sticky cover effect to useMotion's un-pin pass. */
+.vault__docs { display: grid; grid-template-columns: repeat(auto-fill, minmax(235px, 1fr)); gap: 10px; align-content: start; }
 .vault__empty { font-size: 14px; color: var(--ink-dim); line-height: 1.6; }
 /* document card (collapsed) */
 .vault__card { display: grid; gap: 6px; width: 100%; text-align: left; padding: 18px 20px; border: 1px solid var(--ink-far); border-radius: 14px; background: rgba(255,255,255,0.02); transition: border-color .22s var(--ease), background .22s var(--ease), transform .22s var(--ease); }
