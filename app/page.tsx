@@ -26,13 +26,11 @@ export default function Page() {
         <Hero
           heroLead={DATA.heroLead}
           heroRest={DATA.heroRest}
-          heroLede={DATA.heroLede}
           heroMeta={DATA.heroMeta}
         />
         <TechStack
           techLead={DATA.techLead}
           techRest={DATA.techRest}
-          techNote={DATA.techNote}
           techStack={DATA.techStack}
         />
         <Showcase
@@ -63,7 +61,6 @@ export default function Page() {
           githubUrl={DATA.githubUrl}
           contactLead={DATA.contactLead}
           contactRest={DATA.contactRest}
-          contactNote={DATA.contactNote}
         />
       </div>
     </>

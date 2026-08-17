@@ -9,7 +9,6 @@ export const DATA = {
 
   heroLead: "I'm Mykyta — a developer from Ukraine,",
   heroRest: ' *building my future* in Bern.',
-  heroLede: "I solve real problems and genuinely enjoy the build. I came to Switzerland as a refugee — now I want to help shape where it's going.",
   heroMeta: [
     { k: 'Currently', v: 'Student @ bwd Bern' },
     { k: 'Based in',  v: 'Bern, CH' },
@@ -74,7 +73,6 @@ export const DATA = {
 
   techLead: 'I can read, debug',
   techRest: ' and reason about the *code I ship.*',
-  techNote: 'I use AI as a thinking partner, not a shortcut. Every pattern I reach for, I understand — architecture, trade-offs, and all.',
   techStack: [
     { cat: 'Frontend',  items: ['React', 'Next.js', 'TypeScript', 'Vercel'] },
     { cat: 'Backend',   items: ['Go', 'Java', 'Python', 'C#', 'PHP'] },
@@ -86,7 +84,6 @@ export const DATA = {
 
   contactLead: 'Say',
   contactRest: ' *hi.*',
-  contactNote: "No big pitch. If any of this clicked, come by my DMs or drop me an email — I'm easy to reach.",
 
   vaultValues: [
     {

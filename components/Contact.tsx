@@ -3,10 +3,10 @@ import AnimatedTitle from './AnimatedTitle'
 
 interface Props {
   name: string; email: string; github: string; githubUrl: string
-  contactLead: string; contactRest: string; contactNote: string
+  contactLead: string; contactRest: string
 }
 
-export default function Contact({ name, email, github, githubUrl, contactLead, contactRest, contactNote }: Props) {
+export default function Contact({ name, email, github, githubUrl, contactLead, contactRest }: Props) {
 
   return (
     <section className="section section--dark contact sec-cover" data-theme="dark" id="contact">
@@ -14,7 +14,6 @@ export default function Contact({ name, email, github, githubUrl, contactLead, c
         <a href={`mailto:${email}`} className="h-display contact__big" style={{ marginTop: '22px', display: 'block' }}>
           <AnimatedTitle mode="fade" lead={contactLead} rest={contactRest} />
         </a>
-        <p className="contact__note reveal" style={{ '--d': '120ms' } as React.CSSProperties}>{contactNote}</p>
         <div className="contact__row">
           <div className="contact__links reveal">
             <a href={`mailto:${email}`} className="ul">{email}</a>
