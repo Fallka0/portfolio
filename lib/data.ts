@@ -108,7 +108,165 @@ export const DATA = {
     },
   ],
 
-  vaultCerts: [] as { name: string; file: string }[],
+  /* Card content for the vault documents. The PDFs themselves are not in
+     /public — each `id` is fetched through /api/vault/doc/[id], which only
+     answers for a session that passed the access code. */
+  vaultDocs: [
+    {
+      id: 'bm-zeugnis',
+      title: 'Berufsmaturität',
+      kind: 'School report',
+      issuer: 'bwd Informatikmittelschule Bern',
+      date: 'July 2026',
+      grade: '5.4',
+      gradeNote: 'Durchschnitt',
+      summary:
+        'Informatiker EFZ Applikationsentwicklung mit BM 1, Wirtschaft und Dienstleistungen (Typ Wirtschaft), class IM24A. Grades below are the most recent semester; promoted in every semester so far.',
+      groups: [
+        {
+          label: 'Grundlagenbereich',
+          rows: [
+            { k: 'Mathematik', v: '6.0' },
+            { k: 'Englisch', v: '5.5' },
+            { k: 'Informatik (gibb)', v: '5.5' },
+            { k: 'Deutsch', v: '5.0' },
+            { k: 'Französisch', v: '5.0' },
+          ],
+        },
+        {
+          label: 'Schwerpunkt & Ergänzung',
+          rows: [
+            { k: 'Finanz- und Rechnungswesen', v: '5.5' },
+            { k: 'Technik und Umwelt', v: '5.5' },
+            { k: 'Wirtschaft und Recht', v: '5.0' },
+            { k: 'Geschichte und Politik', v: '5.0' },
+          ],
+        },
+        {
+          label: 'Weitere',
+          rows: [
+            { k: 'Sport', v: '6.0' },
+            { k: 'Interdisziplinäres Arbeiten', v: '5.5' },
+            { k: 'Promotion', v: 'promoviert' },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'inf-zeugnis',
+      title: 'Informatik',
+      kind: 'School report',
+      issuer: 'gibb Berufsfachschule Bern',
+      date: 'July 2026',
+      grade: '5.5',
+      gradeNote: 'Erfahrungsnote',
+      summary:
+        'Informatiker EFZ Applikationsentwicklung, class INF2024i. Every module graded across the apprenticeship so far.',
+      groups: [
+        {
+          label: 'Informatikkompetenzen',
+          rows: [
+            { k: '319 Applikationen entwerfen und implementieren', v: '6.0' },
+            { k: '122 Abläufe mit einer Scriptsprache automatisieren', v: '6.0' },
+            { k: '114 Codierungs-, Kompressions- und Verschlüsselungsverfahren', v: '6.0' },
+            { k: '293 Webauftritt erstellen und veröffentlichen', v: '6.0' },
+            { k: '165 NoSQL-Datenbanken einsetzen', v: '6.0' },
+            { k: '347 Dienst mit Container anwenden', v: '6.0' },
+            { k: '254 Geschäftsprozesse im eigenen Berufsumfeld beschreiben', v: '6.0' },
+            { k: '431 Aufträge im eigenen Berufsumfeld selbständig durchführen', v: '5.5' },
+            { k: '117 Informatik- und Netzinfrastruktur realisieren', v: '5.5' },
+            { k: '164 Datenbanken erstellen und Daten einfügen', v: '5.5' },
+            { k: '320 Objektorientiert programmieren', v: '5.5' },
+            { k: '346 Cloud Lösungen konzipieren und realisieren', v: '5.5' },
+            { k: '322 Benutzerschnittstellen entwerfen und implementieren', v: '5.5' },
+            { k: '162 Daten analysieren und modellieren', v: '5.0' },
+            { k: '231 Datenschutz und Datensicherheit anwenden', v: '5.0' },
+            { k: '426 Software mit agilen Methoden entwickeln', v: '5.0' },
+          ],
+        },
+        {
+          label: 'Überbetriebliche Kurse',
+          rows: [
+            { k: '187 ICT-Arbeitsplatz in Betrieb nehmen', v: '6.0' },
+            { k: '106 Datenbanken abfragen, bearbeiten und warten', v: '5.5' },
+            { k: '294 Frontend einer interaktiven Webapplikation', v: '5.5' },
+            { k: '295 Backend für Applikationen realisieren', v: '4.0' },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'uek-335',
+      title: 'Modul 335',
+      kind: 'Kompetenznachweis üK',
+      issuer: 'ICT-Berufsbildung Bern',
+      date: 'June–July 2026',
+      grade: '5.5',
+      gradeNote: 'Modulnote',
+      summary:
+        'Mobile-Applikation realisieren — five-day inter-company course, class 335-AE-IMS-24.',
+      groups: [
+        {
+          label: 'Selbst- und Sozialkompetenzen',
+          rows: [
+            { k: 'Kommunikation und Initiative', v: '6' },
+            { k: 'Kursbeteiligung und Interesse', v: '5' },
+            { k: 'Selbständigkeit', v: '5' },
+            { k: 'Arbeitsqualität, Einsatz und Ausdauer', v: '5' },
+            { k: 'Umgang mit Infrastruktur', v: '5' },
+            { k: 'Auftreten und Umgangsformen', v: '5' },
+            { k: 'Teamfähigkeit', v: '5' },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'uek-106',
+      title: 'Modul 106',
+      kind: 'Kompetenznachweis üK',
+      issuer: 'ICT-Berufsbildung Bern',
+      date: 'March 2025',
+      grade: '5.5',
+      gradeNote: 'Modulnote',
+      summary:
+        'Datenbanken abfragen, bearbeiten und warten — five-day inter-company course under Christian Feuz.',
+      groups: [
+        {
+          label: 'Allgemeine Rückmeldungen',
+          rows: [
+            { k: 'Ist teamfähig', v: '++' },
+            { k: 'Zeigt Interesse, ist aktiv dabei', v: '+' },
+            { k: 'Hat gute Umgangsformen', v: '+' },
+            { k: 'Arbeitet selbständig', v: '+' },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'uek-187',
+      title: 'Modul 187',
+      kind: 'Kompetenznachweis üK',
+      issuer: 'ICT-Berufsbildung Bern',
+      date: 'September 2024',
+      grade: '6.0',
+      gradeNote: 'Modulnote',
+      summary:
+        'ICT-Arbeitsplatz mit Betriebssystem in Betrieb nehmen — five-day inter-company course under Daniel Meyer, no absences.',
+      note: 'Mykyta war sehr engagiert, sein Interesse an der Informatik war deutlich zu spüren. Sehr gute Fragequalität.',
+      groups: [
+        {
+          label: 'Allgemeine Rückmeldungen',
+          rows: [
+            { k: 'Zeigt Interesse, ist aktiv dabei', v: '+' },
+            { k: 'Lässt sich wenig ablenken', v: '+' },
+            { k: 'Ist teamfähig', v: '+' },
+            { k: 'Hat gute Umgangsformen', v: '+' },
+            { k: 'Arbeitet selbständig', v: '+' },
+          ],
+        },
+      ],
+    },
+  ],
 }
 
 export const EXTRA_PROJECTS = [
