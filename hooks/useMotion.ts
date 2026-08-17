@@ -77,10 +77,23 @@ export function useMotion() {
         const s = document.getElementById(id)
         if (!s) continue
         const el = inner(s)
+        // No .sec-inner means HowIWork, which drives its own height in JS —
+        // measuring it here would un-pin the section it deliberately pins.
         if (!el) continue
-        // Use vh - 16 so sections within 16px of the viewport also scroll —
-        // this catches the TechStack which sits right at the boundary on laptops.
-        const tall = el.scrollHeight > vh - 16
+        // Count the section's own top padding. Pinned at top:0, content clears
+        // the fold only if paddingTop + content does, and leaving the padding
+        // out is what let the TechStack overflow unnoticed — `.sec` contributes
+        // ~120px there, so a section measuring 728px was really 850px tall in a
+        // 810px viewport. Bottom padding stays out: it is a decorative tail, and
+        // the far larger [data-scroll="1"] padding would otherwise feed back
+        // into the next measurement.
+        const padTop = parseFloat(getComputedStyle(s).paddingTop) || 0
+        const content = padTop + el.scrollHeight
+        // 5px of slack rather than none: Hero, Vault and Contact size their
+        // inner to exactly 100svh, so they land on `total === vh` and would
+        // flip on sub-pixel rounding. They fill the viewport with nothing to
+        // spare, so scrolling is the safe side to round to.
+        const tall = content > vh - 5
         const want = tall ? '1' : '0'
         if (s.dataset.scroll !== want) {
           s.dataset.scroll = want
