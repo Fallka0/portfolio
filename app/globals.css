@@ -1,6 +1,18 @@
 /* Mykyta Pantelei — Portfolio · Black & White Edition */
 @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@1,400;1,500&display=swap');
 
+/* THEMING
+   The page already ran two palettes: sections authored `data-theme="dark"`
+   (most of them) and the one authored `light` (About). Light mode swaps what
+   those two palettes contain rather than repainting each rule — so About stays
+   the odd one out and the design's contrast rhythm survives the flip.
+
+   --on-rgb is the channel every translucent overlay is mixed from. Keeping the
+   alphas untouched and flipping only the channel means the dark theme renders
+   byte-identical to before, and every hairline and hover wash inverts for free.
+
+   Anything added here needs a value in BOTH blocks. A colour defined only in
+   :root silently keeps its dark value in light mode. */
 :root {
   --black:    #000000;
   --white:    #ffffff;
@@ -11,6 +23,26 @@
   --on-pap:   #0a0a0a;
   --pap-dim:  #9a988f;
   --pap-line: rgba(10,10,10,0.14);
+  --on-rgb:     255,255,255;
+  --shadow-rgb: 0,0,0;
+  --scrim:      rgba(0,0,0,0.72);
+  --err:        rgba(220,90,90,1);
+  --err-line:   rgba(220,60,60,0.7);
+  /* section tints */
+  --bg-tech:    #0e0e0e;
+  --bg-work:    #1c000d;
+  --bg-how:     #090909;
+  --bg-vault:   #0c0c0c;
+  --bg-contact: #1c000d;
+  /* raised surfaces */
+  --surface:      #0a0a0a;
+  --surface-high: #0c0c0c;
+  --surface-pop:  #111111;
+  /* nav pill — `-alt` is the variant used over the opposite-palette section */
+  --glass:          rgba(140,140,140,0.14);
+  --glass-line:     rgba(255,255,255,0.14);
+  --glass-alt:      rgba(10,10,10,0.06);
+  --glass-alt-line: rgba(10,10,10,0.12);
   --font:     'Archivo', system-ui, -apple-system, sans-serif;
   /* Full-bleed layout: content spans the whole viewport, the gutter is the
      only inset. Paragraphs keep their own ch-based measure for readability. */
@@ -18,6 +50,39 @@
   --gut:      clamp(24px, 4.5vw, 120px);
   --ease:     cubic-bezier(0.22, 1, 0.36, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root[data-theme="light"] {
+  /* --black is misnamed by now: every use of it means "the base the majority
+     palette sits on / the colour that contrasts --ink", so it has to flip.
+     --white is literal and stays put — it is deliberately not listed here. */
+  --black:    #f3f2ef;
+  --ink:      #12120f;
+  /* not --pap-dim (#9a988f): that tone is tuned for large display words, and
+     at ~2.4:1 on paper it fails as body text, which is what --ink-dim carries */
+  --ink-dim:  #5c5a53;
+  --ink-far:  #dcdad3;
+  --paper:    #0e0e0e;   /* …and the About palette inverts to match */
+  --on-pap:   #f4f4f2;
+  --pap-dim:  #6e6c66;
+  --pap-line: rgba(244,244,242,0.16);
+  --on-rgb:     18,18,15;
+  --shadow-rgb: 90,86,78;
+  --scrim:      rgba(28,26,22,0.55);
+  --err:        rgba(168,38,38,1);
+  --err-line:   rgba(190,60,60,0.75);
+  --bg-tech:    #eceae4;
+  --bg-work:    #f7e8ed;
+  --bg-how:     #f0eee8;
+  --bg-vault:   #eeece6;
+  --bg-contact: #f7e8ed;
+  --surface:      #ffffff;
+  --surface-high: #ffffff;
+  --surface-pop:  #ffffff;
+  --glass:          rgba(255,255,255,0.55);
+  --glass-line:     rgba(10,10,10,0.10);
+  --glass-alt:      rgba(255,255,255,0.10);
+  --glass-alt-line: rgba(255,255,255,0.16);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -37,12 +102,12 @@ a, button { -webkit-tap-highlight-color: transparent; touch-action: manipulation
 .section--light { background: var(--paper); color: var(--on-pap); }
 /* Sticky stacking — each section covers the one above */
 #top     { position: sticky; top: 0; z-index: 1; }
-#tech    { position: sticky; top: 0; z-index: 2; background: #0e0e0e; border-radius: 32px 32px 0 0; overflow: hidden; }
-#work    { position: sticky; top: 0; z-index: 3; background: #1c000d; border-radius: 0; overflow: hidden; }
+#tech    { position: sticky; top: 0; z-index: 2; background: var(--bg-tech); border-radius: 32px 32px 0 0; overflow: hidden; }
+#work    { position: sticky; top: 0; z-index: 3; background: var(--bg-work); border-radius: 0; overflow: hidden; }
 #about   { position: sticky; top: 0; z-index: 4; border-radius: 32px 32px 0 0; overflow: hidden; }
-#how     { position: sticky; top: 0; z-index: 5; background: #090909; border-radius: 0; }
-#vault   { position: sticky; top: 0; z-index: 6; background: #0c0c0c; border-radius: 32px 32px 0 0; overflow: hidden; }
-#contact { position: sticky; top: 0; z-index: 7; background: #1c000d; border-radius: 0; overflow: hidden; }
+#how     { position: sticky; top: 0; z-index: 5; background: var(--bg-how); border-radius: 0; }
+#vault   { position: sticky; top: 0; z-index: 6; background: var(--bg-vault); border-radius: 32px 32px 0 0; overflow: hidden; }
+#contact { position: sticky; top: 0; z-index: 7; background: var(--bg-contact); border-radius: 0; overflow: hidden; }
 .wrap { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gut); }
 .sec-inner { will-change: transform, clip-path, filter; }
 /* Phones run the lite motion path (no clip-path/filter animation, see
@@ -115,16 +180,26 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
 
 /* NAV */
 .nav { position: fixed; top: calc(18px + env(safe-area-inset-top, 0px)); left: 0; right: 0; z-index: 200; display: flex; justify-content: center; pointer-events: none; }
-.nav__bar { pointer-events: auto; display: flex; align-items: center; gap: clamp(14px, 2.4vw, 40px); padding: 11px 14px 11px 22px; border-radius: 100px; background: rgba(140,140,140,0.14); backdrop-filter: blur(18px) saturate(1.2); -webkit-backdrop-filter: blur(18px) saturate(1.2); border: 1px solid rgba(255,255,255,0.14); transition: background .5s var(--ease), border-color .5s var(--ease); }
+.nav__bar { pointer-events: auto; display: flex; align-items: center; gap: clamp(14px, 2.4vw, 40px); padding: 11px 14px 11px 22px; border-radius: 100px; background: var(--glass); backdrop-filter: blur(18px) saturate(1.2); -webkit-backdrop-filter: blur(18px) saturate(1.2); border: 1px solid var(--glass-line); transition: background .5s var(--ease), border-color .5s var(--ease); }
 .nav__links { display: flex; gap: clamp(14px, 2.2vw, 34px); }
 .nav__links a { font-size: 14px; font-weight: 500; letter-spacing: 0.01em; color: var(--ink); opacity: .55; transition: opacity .3s var(--ease), color .4s var(--ease); position: relative; padding-bottom: 1px; }
 .nav__links a:hover { opacity: .85; }
 .nav__links a.is-active { opacity: 1; }
 .nav__links a.is-active::after { content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); width: 3px; height: 3px; border-radius: 50%; background: currentColor; }
 .nav__mark { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-weight: 800; font-size: 13px; letter-spacing: -0.02em; background: var(--ink); color: var(--black); margin-right: 4px; transition: background .4s var(--ease), color .4s var(--ease); flex-shrink: 0; }
-.nav.is-light .nav__bar { background: rgba(10,10,10,0.06); border-color: rgba(10,10,10,0.12); }
+.nav.is-light .nav__bar { background: var(--glass-alt); border-color: var(--glass-alt-line); }
 .nav.is-light .nav__links a { color: var(--on-pap); }
 .nav.is-light .nav__mark   { background: var(--on-pap); color: var(--paper); }
+/* theme toggle */
+.nav__theme { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; color: var(--ink); opacity: .6; flex-shrink: 0; transition: opacity .3s var(--ease), background .3s var(--ease), color .4s var(--ease); }
+.nav__theme:hover { opacity: 1; background: rgba(var(--on-rgb),0.10); }
+.nav__theme:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; opacity: 1; }
+.nav.is-light .nav__theme { color: var(--on-pap); }
+/* the icon depends on the stored theme, so it mounts a frame late — fade it in
+   rather than letting it pop after hydration */
+.nav__theme-icon { display: grid; place-items: center; opacity: 0; transition: opacity .25s var(--ease); }
+.nav__theme-icon[data-ready] { opacity: 1; }
+@media (max-width: 400px) { .nav__theme { width: 28px; height: 28px; } }
 @media (max-width: 560px) { .nav__links { gap: 16px; } .nav__links a { font-size: 13px; } }
 /* Narrow phones: 4-link nav (sub-pages) must still fit on one line */
 @media (max-width: 400px) {
@@ -135,7 +210,7 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
 }
 
 /* CTA FAB */
-.cta-fab { position: fixed; right: calc(clamp(16px,3vw,40px) + env(safe-area-inset-right, 0px)); bottom: calc(clamp(16px,3vw,40px) + env(safe-area-inset-bottom, 0px)); z-index: 200; display: inline-flex; align-items: center; gap: 12px; padding: 14px 22px; border-radius: 100px; background: var(--ink); color: var(--black); font-size: 14px; font-weight: 600; letter-spacing: 0.01em; box-shadow: 0 10px 40px rgba(0,0,0,0.4); transition: transform .4s var(--ease), background .4s var(--ease), color .4s var(--ease), opacity .35s var(--ease); white-space: nowrap; }
+.cta-fab { position: fixed; right: calc(clamp(16px,3vw,40px) + env(safe-area-inset-right, 0px)); bottom: calc(clamp(16px,3vw,40px) + env(safe-area-inset-bottom, 0px)); z-index: 200; display: inline-flex; align-items: center; gap: 12px; padding: 14px 22px; border-radius: 100px; background: var(--ink); color: var(--black); font-size: 14px; font-weight: 600; letter-spacing: 0.01em; box-shadow: 0 10px 40px rgba(var(--shadow-rgb),0.4); transition: transform .4s var(--ease), background .4s var(--ease), color .4s var(--ease), opacity .35s var(--ease); white-space: nowrap; }
 .cta-fab:hover { transform: translateY(-3px); }
 /* hidden once the contact section is on screen — it points at itself there */
 .cta-fab.is-hidden { opacity: 0; pointer-events: none; transform: translateY(10px); }
@@ -188,7 +263,9 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
 .sc__arrow:active { transform: scale(0.95); }
 
 .sc__stage { min-width: 0; }
-.device-frame__outer { background: #1c1c1e; border-radius: 14px; padding: 14px 14px 6px; box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 30px 80px rgba(0,0,0,0.7); }
+/* Device frames stay dark in both themes — a phone/laptop bezel is a dark
+   object, and its white hairline is deliberately not on the overlay channel. */
+.device-frame__outer { background: #1c1c1e; border-radius: 14px; padding: 14px 14px 6px; box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 30px 80px rgba(var(--shadow-rgb),0.7); }
 .device-frame__screen { border-radius: 5px; overflow: hidden; background: #000; aspect-ratio: 16/10; position: relative; }
 .device-frame__slide { position: absolute; inset: 0; transition: opacity .6s var(--ease); }
 .device-frame__slide img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
@@ -198,15 +275,15 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
 .bars { display: flex; gap: 10px; justify-content: center; margin-top: clamp(4px,0.8vh,10px); }
 /* the button is a 28px-tall touch target; the visible 3px track is drawn inside it */
 .bar { position: relative; flex: 1 1 0; max-width: 96px; height: 28px; padding: 0; background: none; cursor: pointer; }
-.bar::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 3px; margin-top: -1.5px; border-radius: 3px; background: rgba(255,255,255,0.14); transition: background .3s var(--ease); }
-.bar:hover::before { background: rgba(255,255,255,0.24); }
+.bar::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 3px; margin-top: -1.5px; border-radius: 3px; background: rgba(var(--on-rgb),0.14); transition: background .3s var(--ease); }
+.bar:hover::before { background: rgba(var(--on-rgb),0.24); }
 .bar__fill { position: absolute; left: 0; right: 0; top: 50%; height: 3px; margin-top: -1.5px; border-radius: 3px; transform-origin: left; transform: scaleX(0); background: var(--ink); }
 .bar.is-done .bar__fill { transform: scaleX(1); opacity: .55; }
 .bar.is-active .bar__fill { animation: barfill var(--dur) linear forwards; }
 @keyframes barfill { from { transform: scaleX(0); opacity: .5; } to { transform: scaleX(1); opacity: 1; } }
 
 /* Phone mockup — used on mobile for slides that ship a portrait screenshot */
-.phone-frame { display: none; width: min(272px, 72vw); margin-inline: auto; background: #1c1c1e; border-radius: 40px; padding: 10px; box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 24px 60px rgba(0,0,0,0.6); }
+.phone-frame { display: none; width: min(272px, 72vw); margin-inline: auto; background: #1c1c1e; border-radius: 40px; padding: 10px; box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 24px 60px rgba(var(--shadow-rgb),0.6); }
 .phone-frame__screen { position: relative; overflow: hidden; border-radius: 30px; background: #000; aspect-ratio: 720 / 1538; }
 
 @media (max-width: 820px) {
@@ -238,7 +315,7 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
 .tech__headline { font-size: clamp(28px, 3.6vw, 84px); max-width: 26ch; }
 .tech__rows { width: 100%; border-top: 1px solid var(--ink-far); }
 .tech__row { display: flex; align-items: flex-start; gap: clamp(24px, 4vw, 64px); padding: clamp(16px, 2.2vh, 24px) var(--gut); border-bottom: 1px solid var(--ink-far); transition: background .22s; }
-.tech__row:hover { background: rgba(255,255,255,0.03); }
+.tech__row:hover { background: rgba(var(--on-rgb),0.03); }
 .tech__row-cat { flex: 0 0 clamp(90px, 12vw, 160px); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-dim); padding-top: .55em; }
 .tech__row-body { flex: 1; }
 .tech__row-items { display: flex; flex-wrap: wrap; gap: 6px clamp(20px, 2.5vw, 36px); }
@@ -254,9 +331,13 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
 .tech__flip-wrap.is-open .tech__flip { transform: perspective(500px) rotateX(180deg); }
 .tech__flip-wrap.is-open .tech__flip-front { opacity: 0; }
 .tech__flip-wrap.is-open .tech__flip-back { opacity: 1; }
+/* The CDN serves these logos as solid #ffffff (see TECH_CONFIG's icon URL).
+   Inverting is how they turn solid black for the light palette — cheaper and
+   flicker-free next to refetching every icon at a second colour. */
 .tech__flip-back img { width: clamp(22px, 2vw, 30px); height: auto; }
+:root[data-theme="light"] .tech__flip-back img { filter: invert(1); }
 .tech__item { font-size: clamp(22px, 2.2vw, 34px); font-weight: 500; letter-spacing: -.01em; color: var(--ink); line-height: 1.25; }
-.tech__item-projs { position: absolute; bottom: calc(100% + 10px); left: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; background: #111; border: 1px solid rgba(255,255,255,0.18); border-radius: 10px; padding: 10px 14px; white-space: nowrap; z-index: 200; opacity: 0; transform: translateY(6px); pointer-events: none; transition: opacity .2s ease, transform .2s ease; }
+.tech__item-projs { position: absolute; bottom: calc(100% + 10px); left: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; background: var(--surface-pop); border: 1px solid rgba(var(--on-rgb),0.18); border-radius: 10px; padding: 10px 14px; white-space: nowrap; z-index: 200; opacity: 0; transform: translateY(6px); pointer-events: none; transition: opacity .2s ease, transform .2s ease; }
 .tech__item-projs.is-open { opacity: 1; transform: translateY(0); pointer-events: auto; }
 .tech__projs-label { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-dim); }
 .tech__proj-link { font-size: 13px; font-weight: 500; color: var(--ink); border-bottom: 1px solid var(--ink-far); padding-bottom: 1px; transition: border-color .15s; }
@@ -288,19 +369,19 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
 .how__card { flex: 0 0 auto; width: max(340px, 46vw); }
 /* No `transform` in the lit state: useMotion writes an inline transform on
    this element every scroll frame, so any CSS transform would be overridden. */
-.how__card-in { height: clamp(370px, 58vh, 545px); border: 1px solid var(--ink-far); border-radius: 22px; background: #0a0a0a; padding: clamp(32px, 3.4vw, 54px); display: flex; flex-direction: column; will-change: transform, opacity; transition: background .3s var(--ease), border-color .3s var(--ease), box-shadow .3s var(--ease); }
+.how__card-in { height: clamp(370px, 58vh, 545px); border: 1px solid var(--ink-far); border-radius: 22px; background: var(--surface); padding: clamp(32px, 3.4vw, 54px); display: flex; flex-direction: column; will-change: transform, opacity; transition: background .3s var(--ease), border-color .3s var(--ease), box-shadow .3s var(--ease); }
 /* Frosted grey, carried by scroll position: useMotion marks whichever card
    sits nearest the middle of the viewport `.is-active`. The section behind is
    flat near-black, so a `backdrop-filter` would blur nothing — the glass read
    comes from the translucent grey wash, the lit top edge and the drop shadow
    instead (and costs no extra layer in a section that repaints every frame). */
-.how__card-in.is-active { background: linear-gradient(158deg, rgba(255,255,255,0.19), rgba(255,255,255,0.075)); border-color: rgba(255,255,255,0.30); box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 22px 56px rgba(0,0,0,0.5); }
+.how__card-in.is-active { background: linear-gradient(158deg, rgba(var(--on-rgb),0.19), rgba(var(--on-rgb),0.075)); border-color: rgba(var(--on-rgb),0.30); box-shadow: inset 0 1px 0 rgba(var(--on-rgb),0.16), 0 22px 56px rgba(var(--shadow-rgb),0.5); }
 .how__num { font-size: clamp(44px, 4.4vw, 70px); font-weight: 800; letter-spacing: -.03em; line-height: 1; color: var(--ink-far); transition: color .3s var(--ease); }
 /* --ink-far all but vanishes against the lightened panel */
-.how__card-in.is-active .how__num { color: rgba(255,255,255,0.34); }
+.how__card-in.is-active .how__num { color: rgba(var(--on-rgb),0.34); }
 .how__t { font-size: clamp(24px, 2.3vw, 34px); font-weight: 700; letter-spacing: -.01em; color: var(--ink); margin-top: clamp(22px, 3.8vh, 40px); }
 .how__d { font-size: clamp(16px, 1.4vw, 23px); line-height: 1.55; color: var(--ink-dim); margin-top: 18px; max-width: 34ch; }
-.how__bar { position: absolute; left: var(--gut); right: var(--gut); bottom: clamp(26px, 5vh, 52px); height: 2px; background: rgba(255,255,255,0.12); border-radius: 2px; overflow: hidden; }
+.how__bar { position: absolute; left: var(--gut); right: var(--gut); bottom: clamp(26px, 5vh, 52px); height: 2px; background: rgba(var(--on-rgb),0.12); border-radius: 2px; overflow: hidden; }
 .how__bar-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: var(--ink); }
 @media (max-width: 760px) {
   /* The desktop section is deliberately taller than the viewport: it pins via
@@ -350,12 +431,12 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
 .vault__head { font-size: clamp(24px,3vw,44px); font-weight: 800; letter-spacing: -.02em; line-height: 1.1; margin-bottom: clamp(32px,5vh,52px); }
 .vault__form { display: flex; gap: 10px; }
 /* 16px minimum — anything smaller makes iOS Safari zoom the page on focus */
-.vault__input { flex: 1; min-width: 0; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14); border-radius: 10px; padding: 14px 18px; font: inherit; font-size: 16px; color: var(--ink); outline: none; transition: border-color .2s; }
-.vault__input:focus { border-color: rgba(255,255,255,0.35); }
-.vault--err .vault__input { border-color: rgba(220,60,60,0.7); }
+.vault__input { flex: 1; min-width: 0; background: rgba(var(--on-rgb),0.05); border: 1px solid rgba(var(--on-rgb),0.14); border-radius: 10px; padding: 14px 18px; font: inherit; font-size: 16px; color: var(--ink); outline: none; transition: border-color .2s; }
+.vault__input:focus { border-color: rgba(var(--on-rgb),0.35); }
+.vault--err .vault__input { border-color: var(--err-line); }
 .vault__btn { padding: 14px 22px; background: var(--ink); color: var(--black); border-radius: 10px; font: inherit; font-size: 13px; font-weight: 700; letter-spacing: .06em; cursor: pointer; white-space: nowrap; transition: opacity .2s; }
 .vault__btn:hover { opacity: .8; }
-.vault__errmsg { font-size: 13px; color: rgba(220,90,90,1); margin-top: 12px; text-align: center; }
+.vault__errmsg { font-size: 13px; color: var(--err); margin-top: 12px; text-align: center; }
 .vault--shake { animation: vshake .4s cubic-bezier(.36,.07,.19,.97); }
 @keyframes vshake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-10px)} 75%{transform:translateX(10px)} }
 /* unlocked state */
@@ -373,9 +454,9 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
 .vault__docs { display: grid; grid-template-columns: repeat(auto-fill, minmax(235px, 1fr)); gap: 10px; align-content: start; }
 .vault__empty { font-size: 14px; color: var(--ink-dim); line-height: 1.6; }
 /* document card (collapsed) */
-.vault__card { display: grid; gap: 6px; width: 100%; text-align: left; padding: 18px 20px; border: 1px solid var(--ink-far); border-radius: 14px; background: rgba(255,255,255,0.02); transition: border-color .22s var(--ease), background .22s var(--ease), transform .22s var(--ease); }
-.vault__card:hover { border-color: rgba(255,255,255,0.26); background: rgba(255,255,255,0.055); transform: translateY(-2px); }
-.vault__card:focus-visible { outline: 2px solid rgba(255,255,255,0.55); outline-offset: 3px; }
+.vault__card { display: grid; gap: 6px; width: 100%; text-align: left; padding: 18px 20px; border: 1px solid var(--ink-far); border-radius: 14px; background: rgba(var(--on-rgb),0.02); transition: border-color .22s var(--ease), background .22s var(--ease), transform .22s var(--ease); }
+.vault__card:hover { border-color: rgba(var(--on-rgb),0.26); background: rgba(var(--on-rgb),0.055); transform: translateY(-2px); }
+.vault__card:focus-visible { outline: 2px solid rgba(var(--on-rgb),0.55); outline-offset: 3px; }
 .vault__card-top { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; }
 .vault__card-kind { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-dim); }
 .vault__card-grade { font-size: 22px; font-weight: 800; line-height: 1; }
@@ -385,12 +466,12 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
 .vault__card:hover .vault__card-cue, .vault__card:focus-visible .vault__card-cue { opacity: 1; }
 
 /* enlarged card */
-.vault__overlay { position: fixed; inset: 0; z-index: 300; display: flex; align-items: center; justify-content: center; padding: clamp(16px,4vh,48px) clamp(16px,4vw,48px); background: rgba(0,0,0,0.72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); animation: vfade .22s var(--ease-out) both; }
+.vault__overlay { position: fixed; inset: 0; z-index: 300; display: flex; align-items: center; justify-content: center; padding: clamp(16px,4vh,48px) clamp(16px,4vw,48px); background: var(--scrim); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); animation: vfade .22s var(--ease-out) both; }
 @keyframes vfade { from { opacity: 0 } to { opacity: 1 } }
-.vault__sheet { position: relative; width: min(660px, 100%); max-height: 100%; overflow-y: auto; overscroll-behavior: contain; background: #0c0c0c; border: 1px solid rgba(255,255,255,0.16); border-radius: 20px; padding: clamp(28px,4vw,44px); animation: vrise .3s var(--ease-out) both; }
+.vault__sheet { position: relative; width: min(660px, 100%); max-height: 100%; overflow-y: auto; overscroll-behavior: contain; background: var(--surface-high); border: 1px solid rgba(var(--on-rgb),0.16); border-radius: 20px; padding: clamp(28px,4vw,44px); animation: vrise .3s var(--ease-out) both; }
 @keyframes vrise { from { opacity: 0; transform: translateY(18px) scale(.98) } to { opacity: 1; transform: none } }
 .vault__close { position: absolute; top: 14px; right: 16px; width: 36px; height: 36px; border-radius: 50%; font-size: 24px; line-height: 1; color: var(--ink-dim); transition: background .2s, color .2s; }
-.vault__close:hover { background: rgba(255,255,255,0.08); color: var(--ink); }
+.vault__close:hover { background: rgba(var(--on-rgb),0.08); color: var(--ink); }
 .vault__sheet-kind { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-dim); }
 .vault__sheet-title { font-size: clamp(26px,3vw,38px); font-weight: 800; letter-spacing: -.02em; line-height: 1.1; margin-top: 10px; }
 .vault__sheet-meta { font-size: 14px; color: var(--ink-dim); margin-top: 8px; }
@@ -398,11 +479,11 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
 .vault__sheet-num { font-size: clamp(38px,4.5vw,54px); font-weight: 800; line-height: 1; }
 .vault__sheet-lab { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-dim); }
 .vault__sheet-sum { font-size: 15px; line-height: 1.65; color: var(--ink-dim); margin-top: clamp(18px,2.5vh,24px); }
-.vault__sheet-note { font-size: 15px; line-height: 1.6; font-style: italic; color: var(--ink); margin-top: 18px; padding-left: 16px; border-left: 2px solid rgba(255,255,255,0.22); }
+.vault__sheet-note { font-size: 15px; line-height: 1.6; font-style: italic; color: var(--ink); margin-top: 18px; padding-left: 16px; border-left: 2px solid rgba(var(--on-rgb),0.22); }
 .vault__grp { margin-top: clamp(24px,3.5vh,34px); }
 .vault__grp-label { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 12px; }
 .vault__grades { list-style: none; display: flex; flex-direction: column; }
-.vault__grade-row { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.07); font-size: 14px; }
+.vault__grade-row { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; padding: 9px 0; border-bottom: 1px solid rgba(var(--on-rgb),0.07); font-size: 14px; }
 .vault__grade-row:last-child { border-bottom: 0; }
 .vault__grade-k { color: var(--ink-dim); line-height: 1.45; }
 .vault__grade-v { font-weight: 700; flex-shrink: 0; }
