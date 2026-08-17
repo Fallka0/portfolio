@@ -24,6 +24,18 @@ export const VAULT_FILES: Record<string, { file: string; download: string }> = {
     file: 'uek-335-mobile-applikation.pdf',
     download: 'Pantelei_Mykyta_ueK_335.pdf',
   },
+  'uek-210': {
+    file: 'uek-210-public-cloud.pdf',
+    download: 'Pantelei_Mykyta_ueK_210.pdf',
+  },
+  'uek-294': {
+    file: 'uek-294-frontend.pdf',
+    download: 'Pantelei_Mykyta_ueK_294.pdf',
+  },
+  'uek-295': {
+    file: 'uek-295-backend.pdf',
+    download: 'Pantelei_Mykyta_ueK_295.pdf',
+  },
 }
 
 export type VaultDocId = keyof typeof VAULT_FILES

@@ -221,6 +221,81 @@ export const DATA = {
       ],
     },
     {
+      id: 'uek-210',
+      title: 'Modul 210',
+      kind: 'Kompetenznachweis üK',
+      issuer: 'ICT-Berufsbildung Bern',
+      date: 'June 2026',
+      grade: '5.5',
+      gradeNote: 'Modulnote',
+      summary:
+        'Public Cloud für Anwendungen nutzen — five-day inter-company course under Andy Bigler, class 210-AE-IMS-24. No absences.',
+      groups: [
+        {
+          label: 'Selbst- und Sozialkompetenzen',
+          rows: [
+            { k: 'Kursbeteiligung und Interesse', v: '6' },
+            { k: 'Selbständigkeit', v: '6' },
+            { k: 'Arbeitsqualität, Einsatz und Ausdauer', v: '6' },
+            { k: 'Kommunikation und Initiative', v: '5' },
+            { k: 'Umgang mit Infrastruktur', v: '5' },
+            { k: 'Auftreten und Umgangsformen', v: '5' },
+            { k: 'Teamfähigkeit', v: '5' },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'uek-294',
+      title: 'Modul 294',
+      kind: 'Kompetenznachweis üK',
+      issuer: 'ICT-Berufsbildung Bern',
+      date: 'April 2026',
+      grade: '5.5',
+      gradeNote: 'Modulnote',
+      summary:
+        'Frontend einer interaktiven Webapplikation realisieren — five-day inter-company course, class 294-AE-IMS-24. No absences.',
+      groups: [
+        {
+          label: 'Selbst- und Sozialkompetenzen',
+          rows: [
+            { k: 'Kursbeteiligung und Interesse', v: '5' },
+            { k: 'Kommunikation und Initiative', v: '5' },
+            { k: 'Selbständigkeit', v: '5' },
+            { k: 'Arbeitsqualität, Einsatz und Ausdauer', v: '5' },
+            { k: 'Umgang mit Infrastruktur', v: '5' },
+            { k: 'Auftreten und Umgangsformen', v: '5' },
+            { k: 'Teamfähigkeit', v: '5' },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'uek-295',
+      title: 'Modul 295',
+      kind: 'Kompetenznachweis üK',
+      issuer: 'ICT-Berufsbildung Bern',
+      date: 'October 2025',
+      grade: '4.0',
+      gradeNote: 'Modulnote',
+      summary:
+        'Backend für Applikationen realisieren — five-day inter-company course under Ramon Binz and Mateusz Rüfenacht, class 295-AE-IMS-24. No absences.',
+      groups: [
+        {
+          label: 'Selbst- und Sozialkompetenzen',
+          rows: [
+            { k: 'Kursbeteiligung und Interesse', v: '5' },
+            { k: 'Selbständigkeit', v: '5' },
+            { k: 'Umgang mit Infrastruktur', v: '5' },
+            { k: 'Auftreten und Umgangsformen', v: '5' },
+            { k: 'Teamfähigkeit', v: '5' },
+            { k: 'Kommunikation und Initiative', v: '4' },
+            { k: 'Arbeitsqualität, Einsatz und Ausdauer', v: '4' },
+          ],
+        },
+      ],
+    },
+    {
       id: 'uek-106',
       title: 'Modul 106',
       kind: 'Kompetenznachweis üK',
