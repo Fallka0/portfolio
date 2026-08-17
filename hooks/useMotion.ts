@@ -29,6 +29,36 @@ function inner(section: HTMLElement): HTMLElement | null {
   return section.querySelector(':scope > .sec-inner') as HTMLElement | null
 }
 
+// Flags the HowIWork card nearest the middle of the viewport as `.is-active`,
+// so the lit panel follows the scroll instead of the pointer. The axis is read
+// off the cards themselves rather than a breakpoint: they sit side by side
+// while the track scrubs horizontally and stack on phones, and reduced-motion
+// keeps the horizontal layout without the scrub. Cards fully off screen never
+// win, so nothing stays lit once the section scrolls away.
+function markActive(track: HTMLElement, vh: number): void {
+  const cards = track.children
+  if (!cards.length) return
+  const horizontal = cards.length < 2 ||
+    Math.abs(cards[1].getBoundingClientRect().top - cards[0].getBoundingClientRect().top) < 1
+  const vw = window.innerWidth
+  const size = horizontal ? vw : vh
+  let best = -1
+  let bestDist = Infinity
+  for (let i = 0; i < cards.length; i++) {
+    const r = cards[i].getBoundingClientRect()
+    // Both axes: the pinned section sits far down the document while the page
+    // is at the top, where every card is still on-screen *horizontally*.
+    if (r.right <= 0 || r.left >= vw || r.bottom <= 0 || r.top >= vh) continue
+    const mid = horizontal ? (r.left + r.right) / 2 : (r.top + r.bottom) / 2
+    const dist = Math.abs(mid - size / 2)
+    if (dist < bestDist) { bestDist = dist; best = i }
+  }
+  for (let i = 0; i < cards.length; i++) {
+    const inr = cards[i].firstElementChild as HTMLElement | null
+    if (inr) inr.classList.toggle('is-active', i === best)
+  }
+}
+
 export function useMotion() {
   useEffect(() => {
     const nav = document.querySelector('.nav')     as HTMLElement | null
@@ -193,25 +223,30 @@ export function useMotion() {
       }
 
       // ── HowIWork: horizontal scroll driven by vertical scroll ───────
-      if (secHow && parseFloat(secHow.dataset.maxx ?? '0') > 0) {
-        const maxX      = parseFloat(secHow.dataset.maxx!)
-        const scrollLen = parseFloat(secHow.dataset.scrolllen ?? '0') || maxX
-        const track = secHow.querySelector('.how__track')    as HTMLElement
-        const fill  = secHow.querySelector('.how__bar-fill') as HTMLElement
-        const sectionDocTop = parseFloat(secHow.dataset.doctop ?? '0') || getDocTop(secHow)
-        const prog = c01((window.scrollY - sectionDocTop) / scrollLen)
-        if (track) track.style.transform = `translate3d(${(-prog * maxX).toFixed(2)}px,0,0)`
-        if (fill)  fill.style.width      = (prog * 100).toFixed(2) + '%'
-        const cards = track ? track.children : []
-        const vwid = window.innerWidth
-        for (let i = 0; i < cards.length; i++) {
-          const inr = cards[i].firstElementChild as HTMLElement
-          if (!inr) continue
-          const cr = cards[i].getBoundingClientRect()
-          const cp = c01((vwid * 0.92 - cr.left) / (vwid * 0.40))
-          inr.style.opacity   = (0.1 + 0.9 * cp).toFixed(3)
-          inr.style.transform = `translate3d(0,${((1 - cp) * 40).toFixed(1)}px,0)`
+      if (secHow) {
+        const maxX  = parseFloat(secHow.dataset.maxx ?? '0')
+        const track = secHow.querySelector('.how__track') as HTMLElement | null
+        if (track && maxX > 0) {
+          const scrollLen = parseFloat(secHow.dataset.scrolllen ?? '0') || maxX
+          const fill  = secHow.querySelector('.how__bar-fill') as HTMLElement
+          const sectionDocTop = parseFloat(secHow.dataset.doctop ?? '0') || getDocTop(secHow)
+          const prog = c01((window.scrollY - sectionDocTop) / scrollLen)
+          track.style.transform = `translate3d(${(-prog * maxX).toFixed(2)}px,0,0)`
+          if (fill) fill.style.width = (prog * 100).toFixed(2) + '%'
+          const cards = track.children
+          const vwid = window.innerWidth
+          for (let i = 0; i < cards.length; i++) {
+            const inr = cards[i].firstElementChild as HTMLElement
+            if (!inr) continue
+            const cr = cards[i].getBoundingClientRect()
+            const cp = c01((vwid * 0.92 - cr.left) / (vwid * 0.40))
+            inr.style.opacity   = (0.1 + 0.9 * cp).toFixed(3)
+            inr.style.transform = `translate3d(0,${((1 - cp) * 40).toFixed(1)}px,0)`
+          }
         }
+        // Runs in every layout mode, including the stacked phone list and the
+        // reduced-motion fallback, which never enter the scrub branch above.
+        if (track) markActive(track, vh)
       }
 
       // ── Scroll-driven typography ────────────────────────────────────
