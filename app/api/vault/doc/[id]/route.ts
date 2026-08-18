@@ -1,7 +1,7 @@
 import { readFile } from 'fs/promises'
 import path from 'path'
 import { NextResponse } from 'next/server'
-import { VAULT_COOKIE, verifyToken } from '@/lib/vaultAuth'
+import { hasValidSession } from '@/lib/vaultAuth'
 import { VAULT_FILES } from '@/lib/vaultDocs'
 
 export const runtime = 'nodejs'
@@ -19,16 +19,7 @@ export async function GET(
   // caller cannot use the status code to enumerate which documents exist.
   if (!entry) return new NextResponse('Not found', { status: 404 })
 
-  const cookie = req.headers.get('cookie') ?? ''
-  const token = cookie
-    .split(';')
-    .map(c => c.trim())
-    .find(c => c.startsWith(`${VAULT_COOKIE}=`))
-    ?.slice(VAULT_COOKIE.length + 1)
-
-  if (!verifyToken(token ? decodeURIComponent(token) : undefined)) {
-    return new NextResponse('Not found', { status: 404 })
-  }
+  if (!hasValidSession(req)) return new NextResponse('Not found', { status: 404 })
 
   let data: Buffer
   try {
