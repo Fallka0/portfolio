@@ -66,3 +66,14 @@ export function verifyToken(token: string | undefined): boolean {
 }
 
 export const SESSION_MAX_AGE = TTL_MS / 1000
+
+/** Reads and verifies the session cookie off a request. Shared by every gated
+ *  route so the parsing rules can't drift between them. */
+export function hasValidSession(req: Request): boolean {
+  const token = (req.headers.get('cookie') ?? '')
+    .split(';')
+    .map(c => c.trim())
+    .find(c => c.startsWith(`${VAULT_COOKIE}=`))
+    ?.slice(VAULT_COOKIE.length + 1)
+  return verifyToken(token ? decodeURIComponent(token) : undefined)
+}

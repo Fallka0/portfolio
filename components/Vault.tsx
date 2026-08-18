@@ -160,7 +160,18 @@ export default function Vault({ values, docs }: Props) {
             </div>
 
             <div className="vault__col">
-              <p className="vault__label mono">Documents</p>
+              <div className="vault__col-head">
+                <p className="vault__label mono">Documents</p>
+                {docs.length > 1 && (
+                  /* A plain link, not a fetch: the response carries
+                     Content-Disposition: attachment, so the browser saves it
+                     without JS and right-click/keyboard behave normally. */
+                  <a className="vault__all" href="/api/vault/archive">
+                    <span className="vault__all-icon" aria-hidden="true">↓</span>
+                    Download all ({docs.length})
+                  </a>
+                )}
+              </div>
               <div className="vault__docs">
                 {docs.length === 0
                   ? <p className="vault__empty">Certificates will appear here once uploaded.</p>

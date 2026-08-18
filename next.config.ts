@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
   // them explicitly or the deployed function reads an empty directory.
   outputFileTracingIncludes: {
     '/api/vault/doc/[id]': ['./private/docs/**'],
+    '/api/vault/archive': ['./private/docs/**'],
   },
 }
 
