@@ -3,7 +3,7 @@ import { THEME_INIT_SCRIPT } from '@/lib/theme'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Mykyta Pantelei — Developer',
+  title: 'Mykyta Pantelei',
   description: 'Developer based in Bern, CH. Building full-stack apps with React, Next.js, Go, and TypeScript.',
   icons: { icon: '/favicon.svg', shortcut: '/favicon.svg' },
 }
