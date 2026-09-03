@@ -30,7 +30,6 @@ export default function ImsPage() {
   return (
     <PageShell>
       <section className="wrap page__hero">
-        <span className="pill" style={{ marginBottom: 'clamp(22px,3.5vh,40px)' }}>Ausbildungsüberblick</span>
         <h1 className="h-display page__title">
           <AnimatedTitle mode="fade" lead="How the" rest=" *IMS* programme works." />
         </h1>

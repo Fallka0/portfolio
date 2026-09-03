@@ -26,7 +26,6 @@ export default async function GradesPage() {
   return (
     <PageShell>
       <section className="wrap page__hero">
-        <span className="pill" style={{ marginBottom: 'clamp(22px,3.5vh,40px)' }}>Grades</span>
         <h1 className="h-display page__title">School reports &amp; certificates</h1>
         <p className="page__lede">
           Every semester report and üK Kompetenznachweis from the apprenticeship,

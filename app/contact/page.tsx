@@ -9,7 +9,6 @@ export default function ContactPage() {
   return (
     <PageShell>
       <section className="wrap page__hero">
-        <span className="pill" style={{ marginBottom: 'clamp(22px,3.5vh,40px)' }}>Contact</span>
         {/* the heading is the h1; the mailto sits inside it so the page still
             has one, which an anchor-only title did not */}
         <h1 className="h-display page__title">
