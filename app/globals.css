@@ -111,7 +111,17 @@ a, button { -webkit-tap-highlight-color: transparent; touch-action: manipulation
 #smooth #top   { position: sticky; top: 0; z-index: 1; }
 #smooth #tech  { position: sticky; top: 0; z-index: 2; border-radius: 32px 32px 0 0; overflow: hidden; }
 #smooth #about { position: sticky; top: 0; z-index: 3; border-radius: 32px 32px 0 0; overflow: hidden; }
-#smooth #how   { position: sticky; top: 0; z-index: 4; border-radius: 0; }
+/* #how is the one section that must NOT be the sticky box itself. It sizes
+   itself to 100vh + the horizontal scrub distance (~2300px), and a sticky box
+   only stays pinned while its containing block has room left below it — so the
+   pin lasted only as long as the sections that happened to follow it. Vault
+   and Contact used to supply ~1800px of that; once they became their own
+   routes only #more was left and the pin released ~470px early, scrolling the
+   last card away mid-scrub. Sticking the 100vh child inside instead makes the
+   pin range #how's own height minus the viewport — exactly the scrub distance,
+   whatever follows it. */
+#smooth #how   { position: relative; z-index: 4; border-radius: 0; }
+#smooth #how .how__pin { position: sticky; top: 0; }
 #smooth #more  { position: sticky; top: 0; z-index: 5; border-radius: 32px 32px 0 0; overflow: hidden; }
 /* Section tints travel with the section wherever it renders */
 #tech    { background: var(--bg-tech); }
@@ -421,7 +431,9 @@ html.reveal-fallback .sc__fade { animation: none !important; opacity: 1 !importa
   #how { position: relative; }
   .how { height: auto !important; }
   /* extra tail so the last card is readable before Vault slides over it */
-  .how__pin { height: auto; min-height: 0; display: block; overflow: visible; padding-block: clamp(64px, 11vh, 110px) clamp(100px, 20vh, 200px); transform: none !important; }
+  /* position: static undoes the desktop pin — with height:auto a sticky pin
+     would latch onto the top of a stacked list that is meant to scroll by */
+  .how__pin, #smooth #how .how__pin { position: static; height: auto; min-height: 0; display: block; overflow: visible; padding-block: clamp(64px, 11vh, 110px) clamp(100px, 20vh, 200px); transform: none !important; }
   .how__head { flex-direction: column; align-items: flex-start; margin-bottom: clamp(22px, 3.5vh, 34px); }
   .how__hint { display: none; }
   .how__viewport { overflow: visible; }
