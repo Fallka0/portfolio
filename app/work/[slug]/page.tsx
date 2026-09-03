@@ -3,35 +3,18 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { notFound } from 'next/navigation'
 import { CASE_STUDIES, type CsSection } from '@/lib/case-studies'
-import { useReveal } from '@/hooks/useReveal'
-import { useSmoothScroll } from '@/hooks/useSmoothScroll'
+import PageShell from '@/components/PageShell'
 
 export default function CaseStudyPage() {
   const { slug } = useParams() as { slug: string }
   const cs = CASE_STUDIES.find(c => c.slug === slug)
-
-  useReveal()
-  useSmoothScroll()
 
   if (!cs) notFound()
 
   const other = CASE_STUDIES.find(c => c.slug !== cs.slug)
 
   return (
-    <>
-      {/* Nav */}
-      <nav className="nav">
-        <div className="nav__bar">
-          <Link href="/" className="nav__mark" style={{ textDecoration: 'none' }}>MP</Link>
-          <div className="nav__links">
-            <Link href="/">Home</Link>
-            <Link href="/#work">Work</Link>
-            <Link href="/#about">About</Link>
-            <Link href="/#contact">Contact</Link>
-          </div>
-        </div>
-      </nav>
-
+    <PageShell>
       <article className="section section--dark" data-theme="dark" style={{ minHeight: '100svh' }}>
 
         {/* ── Hero ──────────────────────────────────────────────────── */}
@@ -168,6 +151,6 @@ export default function CaseStudyPage() {
         </div>
 
       </article>
-    </>
+    </PageShell>
   )
 }

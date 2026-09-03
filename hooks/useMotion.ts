@@ -1,7 +1,10 @@
 'use client'
 import { useEffect } from 'react'
 
-const SECTION_IDS = ['top', 'tech', 'work', 'about', 'how', 'vault', 'contact']
+// The home page's own sections, in order. Work, Grades and Contact are their
+// own routes now and never appear here; the per-section effects below still
+// guard on the element existing, so this list is the single source of truth.
+const SECTION_IDS = ['top', 'tech', 'about', 'how', 'more']
 
 function getDocTop(el: HTMLElement): number {
   let top = 0; let node: HTMLElement | null = el
@@ -133,13 +136,11 @@ export function useMotion() {
         if (c) fab.classList.toggle('is-hidden', c.getBoundingClientRect().top < vh * 0.55)
       }
 
-      const secTop     = document.getElementById('top')
-      const secTech    = document.getElementById('tech')
-      const secWork    = document.getElementById('work')
-      const secAbout   = document.getElementById('about')
-      const secHow     = document.getElementById('how')
-      const secVault   = document.getElementById('vault')
-      const secContact = document.getElementById('contact')
+      const secTop   = document.getElementById('top')
+      const secTech  = document.getElementById('tech')
+      const secAbout = document.getElementById('about')
+      const secHow   = document.getElementById('how')
+      const secMore  = document.getElementById('more')
 
       // ── Hero: depth-recede (scale down + blur) as TechStack masks in ─
       if (secTop && secTech && secTop.dataset.scroll !== '1') {
@@ -160,22 +161,6 @@ export function useMotion() {
           else {
             el.style.clipPath  = `circle(${(p * p * 75).toFixed(2)}vmax at 50% 44%)`
             el.style.transform = `scale(${lerp(1.12, 1, easeOut(p)).toFixed(4)})`
-            el.style.filter    = ''
-          }
-        }
-      }
-
-      // ── Showcase: CENTER CURTAIN — splits open from the middle line ──
-      if (secWork) {
-        const el = inner(secWork)
-        if (el) {
-          const p = entryP(secWork.getBoundingClientRect().top, vh, 0.92)
-          if (lite || p >= 1) { el.style.clipPath = ''; el.style.transform = ''; el.style.filter = '' }
-          else {
-            const inset = lerp(50, 0, p)
-            const round = lerp(60, 0, p)
-            el.style.clipPath  = `inset(0% ${inset.toFixed(2)}% 0% ${inset.toFixed(2)}% round ${round.toFixed(1)}px)`
-            el.style.transform = `scale(${lerp(1.06, 1, easeOut(p)).toFixed(4)})`
             el.style.filter    = ''
           }
         }
@@ -206,26 +191,13 @@ export function useMotion() {
         }
       }
 
-      // ── Vault: HORIZONTAL SLIT — opens from the centre out ───────────
-      if (secVault) {
-        const el = inner(secVault)
+      // ── Elsewhere: RISING BLIND — wipes up from the bottom edge ──────
+      //    Inherited from the old Contact section, which now closes the home
+      //    page as the links-out block instead.
+      if (secMore) {
+        const el = inner(secMore)
         if (el) {
-          const p = entryP(secVault.getBoundingClientRect().top, vh, 0.92)
-          if (lite || p >= 1) { el.style.clipPath = ''; el.style.transform = ''; el.style.filter = '' }
-          else {
-            const h = lerp(50, 0, p)
-            el.style.clipPath  = `inset(${h.toFixed(2)}% 0% ${h.toFixed(2)}% 0%)`
-            el.style.transform = `scale(${lerp(1.04, 1, easeOut(p)).toFixed(4)})`
-            el.style.filter    = ''
-          }
-        }
-      }
-
-      // ── Contact: RISING BLIND — wipes up from the bottom edge ────────
-      if (secContact) {
-        const el = inner(secContact)
-        if (el) {
-          const p = entryP(secContact.getBoundingClientRect().top, vh, 0.92)
+          const p = entryP(secMore.getBoundingClientRect().top, vh, 0.92)
           if (lite || p >= 1) { el.style.clipPath = ''; el.style.transform = ''; el.style.filter = '' }
           else {
             el.style.clipPath  = `inset(${lerp(100, 0, p).toFixed(2)}% 0% 0% 0%)`
