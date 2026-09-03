@@ -1,12 +1,12 @@
 'use client'
+import Link from 'next/link'
+
+/** Contact is a route now, so this navigates instead of scrolling to a section
+ *  that no longer exists on the home page. */
 export default function CTAFab() {
-  const go = (e: React.MouseEvent) => {
-    e.preventDefault()
-    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
   return (
-    <a href="#contact" className="cta-fab" onClick={go}>
+    <Link href="/contact" className="cta-fab">
       <span className="cta-fab__dot" />Say hi
-    </a>
+    </Link>
   )
 }
